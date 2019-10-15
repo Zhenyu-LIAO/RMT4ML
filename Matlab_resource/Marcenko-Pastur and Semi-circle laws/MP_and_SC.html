@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Foundational Random Matrix Results</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-10-15"><meta name="DC.source" content="MP_and_SC.m"><style type="text/css">
+      --><title>Section 2.2.2: The Marcenko-Pastur and semi-circle laws</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-10-15"><meta name="DC.source" content="MP_and_SC.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,125 +66,83 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Foundational Random Matrix Results</h1><!--introduction--><p>This page contains the comparison between</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">The Marcenko-Pastur law</a></li><li><a href="#2">Semi-Circle law</a></li></ul></div><h2 id="1">The Marcenko-Pastur law</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 2.2.2: The Marcenko-Pastur and semi-circle laws</h1><!--introduction--><p>This repository contains the simulations in Section 2.2.2.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">The Marcenko-Pastur law</a></li><li><a href="#3">The Semi-circle law</a></li></ul></div><h2 id="1">The Marcenko-Pastur law</h2><p>Generate a (Gaussian) random matrix <img src="MP_and_SC_eq12362013959998143435.png" alt="$X$" style="width:10px;height:8px;"> of dimension <img src="MP_and_SC_eq00624470566282429309.png" alt="$p \times n$" style="width:26px;height:8px;">.</p><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
-coef = 4;
-p = 128*coef;
-n = 256*coef;
+coeff = 5;
+p = 100*coeff;
+n = 1000*coeff;
 c = p/n;
-a = (1-sqrt(c))^2;
-b = (1+sqrt(c))^2;
 
 X = randn(p,n);
-SCM = X*(X')/n;
+</pre><p>Empirical eigenvalues of <img src="MP_and_SC_eq04476533116490492850.png" alt="$\frac1n X X^T$" style="width:32px;height:14px;"> versus the Marcenko-Pastur law.</p><pre class="codeinput">SCM = X*(X')/n;
+a = (1-sqrt(c))^2;
+b = (1+sqrt(c))^2;
+edges=linspace(a-eps,b+eps,60);
 
-<span class="comment">% P = eye(n) - ones(n,n)/n;</span>
-<span class="comment">%</span>
-<span class="comment">% W = randn(p,p);</span>
-<span class="comment">% SCM = cos(W*X)*cos(X'*W')/n;</span>
-<span class="comment">% SCM = P*SCM*P;</span>
-
-xs=linspace(a-.1,b+.1,50);
-step = xs(2) - xs(1);
-
-histo=histc(eig(SCM),xs);
 figure
-bar(xs,histo/step/p,<span class="string">'b'</span>);
+histogram(eig(SCM),edges, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
 hold <span class="string">on</span>;
-f=sqrt( max(xs-a,0).*max(b-xs,0) )/2/pi/c./xs;
-plot(xs,f,<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,2);
+f=sqrt( max(edges-a,0).*max(b-edges,0) )/2/pi/c./edges;
+plot(edges,f,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
+legend(<span class="string">'Empirical eigenvalues'</span>, <span class="string">'Marcenko-Pastur law'</span>, <span class="string">'FontSize'</span>, 15)
+</pre><img vspace="5" hspace="5" src="MP_and_SC_01.png" alt=""> <h2 id="3">The Semi-circle law</h2><p>Generate a (Gaussian) symmetric random matrix <img src="MP_and_SC_eq12362013959998143435.png" alt="$X$" style="width:10px;height:8px;"> of size <img src="MP_and_SC_eq14662025674782596410.png" alt="$n \times n$" style="width:27px;height:6px;">.</p><pre class="codeinput">coeff = 5;
+n=100*coeff;
+X=randn(n);
+X=(X'+X)/sqrt(2);
+</pre><p>Empirical eigenvalues of <img src="MP_and_SC_eq10357368482456357479.png" alt="$\frac{X}{\sqrt{n}}$" style="width:12px;height:16px;"> versus the Marcenko-Pastur law.</p><pre class="codeinput">edges=linspace(-2-eps,2+eps,50);
 
-<span class="comment">% sprintf('(%f, %f)',[xs',histo/step/p]')</span>
-<span class="comment">% sprintf('(%f, %f)',[xs',f']')</span>
-<span class="comment">%</span>
-<span class="comment">% eig_SCM = eig(SCM);</span>
-<span class="comment">% sprintf('(%f, %f)',[eig_SCM,zeros(size(eig_SCM))]')</span>
-</pre><img vspace="5" hspace="5" src="MP_and_SC_01.png" alt=""> <h2 id="2">Semi-Circle law</h2><pre class="codeinput">N=1000;
-M=randn(N);
-M=(M'+M)/sqrt(2*N); <span class="comment">% M^T=M.</span>
-
-x=linspace(-2-eps,2+eps,50);
-step = x(2) - x(1);
-
-histo1=histc(eig(M),x);
 figure
-bar(x,histo1/step/N,<span class="string">'b'</span>);
-<span class="comment">%set(h,'FaceColor','none');</span>
+histogram(eig(X/sqrt(n)),edges,<span class="string">'Normalization'</span>,<span class="string">'pdf'</span>);
 hold <span class="string">on</span>;
-
-f=sqrt( max(4 - x.^2,0) )/2/pi;
-plot(x,f,<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,2);
-
-sprintf(<span class="string">'(%f, %f)'</span>,[x',histo1/step/N]')
-sprintf(<span class="string">'(%f, %f)'</span>,[x',f']')
-</pre><pre class="codeoutput">
-ans =
-
-    '(-2.000000, 0.073500)(-1.918367, 0.110250)(-1.836735, 0.147000)(-1.755102, 0.159250)(-1.673469, 0.171500)(-1.591837, 0.196000)(-1.510204, 0.220500)(-1.428571, 0.220500)(-1.346939, 0.232750)(-1.265306, 0.257250)(-1.183673, 0.269500)(-1.102041, 0.269500)(-1.020408, 0.294000)(-0.938776, 0.269500)(-0.857143, 0.269500)(-0.775510, 0.318500)(-0.693878, 0.306250)(-0.612245, 0.294000)(-0.530612, 0.318500)(-0.448980, 0.318500)(-0.367347, 0.306250)(-0.285714, 0.318500)(-0.204082, 0.306250)(-0.122449, 0.318500)(-0.040816, 0.318500)(0.040816, 0.318500)(0.122449, 0.306250)(0.204082, 0.330750)(0.285714, 0.318500)(0.367347, 0.294000)(0.448980, 0.318500)(0.530612, 0.306250)(0.612245, 0.318500)(0.693878, 0.281750)(0.775510, 0.281750)(0.857143, 0.269500)(0.938776, 0.294000)(1.020408, 0.257250)(1.102041, 0.269500)(1.183673, 0.245000)(1.265306, 0.245000)(1.346939, 0.232750)(1.428571, 0.220500)(1.510204, 0.208250)(1.591837, 0.183750)(1.673469, 0.159250)(1.755102, 0.134750)(1.836735, 0.122500)(1.918367, 0.049000)(2.000000, 0.000000)'
-
-
-ans =
-
-    '(-2.000000, 0.000000)(-1.918367, 0.090013)(-1.836735, 0.125964)(-1.755102, 0.152624)(-1.673469, 0.174309)(-1.591837, 0.192706)(-1.510204, 0.208686)(-1.428571, 0.222771)(-1.346939, 0.235299)(-1.265306, 0.246510)(-1.183673, 0.256576)(-1.102041, 0.265627)(-1.020408, 0.273763)(-0.938776, 0.281065)(-0.857143, 0.287595)(-0.775510, 0.293406)(-0.693878, 0.298539)(-0.612245, 0.303029)(-0.530612, 0.306903)(-0.448980, 0.310185)(-0.367347, 0.312895)(-0.285714, 0.315045)(-0.204082, 0.316648)(-0.122449, 0.317713)(-0.040816, 0.318244)(0.040816, 0.318244)(0.122449, 0.317713)(0.204082, 0.316648)(0.285714, 0.315045)(0.367347, 0.312895)(0.448980, 0.310185)(0.530612, 0.306903)(0.612245, 0.303029)(0.693878, 0.298539)(0.775510, 0.293406)(0.857143, 0.287595)(0.938776, 0.281065)(1.020408, 0.273763)(1.102041, 0.265627)(1.183673, 0.256576)(1.265306, 0.246510)(1.346939, 0.235299)(1.428571, 0.222771)(1.510204, 0.208686)(1.591837, 0.192706)(1.673469, 0.174309)(1.755102, 0.152624)(1.836735, 0.125964)(1.918367, 0.090013)(2.000000, 0.000000)'
-
+f = sqrt( max(4 - edges.^2,0) )/2/pi;
+plot(edges,f,<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,2);
+legend(<span class="string">'Empirical eigenvalues'</span>, <span class="string">'Wigner semi-circle law'</span>, <span class="string">'FontSize'</span>, 15)
 </pre><img vspace="5" hspace="5" src="MP_and_SC_02.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% Foundational Random Matrix Results
-% This page contains the comparison between 
+%% Section 2.2.2: The Marcenko-Pastur and semi-circle laws
+% This repository contains the simulations in Section 2.2.2.
+
 %% The Marcenko-Pastur law
+% Generate a (Gaussian) random matrix $X$ of dimension $p \times n$.
 close all; clear; clc
 
-coef = 4;
-p = 128*coef;
-n = 256*coef;
+coeff = 5; 
+p = 100*coeff;
+n = 1000*coeff;
 c = p/n;
-a = (1-sqrt(c))^2;
-b = (1+sqrt(c))^2;
 
 X = randn(p,n);
+%%
+% Empirical eigenvalues of $\frac1n X X^T$ versus the Marcenko-Pastur law.
 SCM = X*(X')/n;
+a = (1-sqrt(c))^2;
+b = (1+sqrt(c))^2;
+edges=linspace(a-eps,b+eps,60);
 
-% P = eye(n) - ones(n,n)/n;
-% 
-% W = randn(p,p);
-% SCM = cos(W*X)*cos(X'*W')/n;
-% SCM = P*SCM*P;
-
-xs=linspace(a-.1,b+.1,50);
-step = xs(2) - xs(1);
-
-histo=histc(eig(SCM),xs);
 figure
-bar(xs,histo/step/p,'b');
+histogram(eig(SCM),edges, 'Normalization', 'pdf');
 hold on;
-f=sqrt( max(xs-a,0).*max(b-xs,0) )/2/pi/c./xs;
-plot(xs,f,'r','LineWidth',2);
+f=sqrt( max(edges-a,0).*max(b-edges,0) )/2/pi/c./edges;
+plot(edges,f,'r', 'Linewidth',2);
+legend('Empirical eigenvalues', 'Marcenko-Pastur law', 'FontSize', 15)
 
-% sprintf('(%f, %f)',[xs',histo/step/p]')
-% sprintf('(%f, %f)',[xs',f']')
-% 
-% eig_SCM = eig(SCM);
-% sprintf('(%f, %f)',[eig_SCM,zeros(size(eig_SCM))]')
+%% The Semi-circle law
+% Generate a (Gaussian) symmetric random matrix $X$ of size $n \times n$.
 
-%% Semi-Circle law
-N=1000;
-M=randn(N);
-M=(M'+M)/sqrt(2*N); % M^T=M.
+coeff = 5;
+n=100*coeff;
+X=randn(n);
+X=(X'+X)/sqrt(2);
+%%
+% Empirical eigenvalues of $\frac{X}{\sqrt{n}}$ versus the Marcenko-Pastur law.
+edges=linspace(-2-eps,2+eps,50);
 
-x=linspace(-2-eps,2+eps,50);
-step = x(2) - x(1);
-
-histo1=histc(eig(M),x);
 figure
-bar(x,histo1/step/N,'b');
-%set(h,'FaceColor','none');
+histogram(eig(X/sqrt(n)),edges,'Normalization','pdf');
 hold on;
-
-f=sqrt( max(4 - x.^2,0) )/2/pi;
-plot(x,f,'r','LineWidth',2);
-
-sprintf('(%f, %f)',[x',histo1/step/N]')
-sprintf('(%f, %f)',[x',f']')
+f = sqrt( max(4 - edges.^2,0) )/2/pi;
+plot(edges,f,'r','LineWidth',2);
+legend('Empirical eigenvalues', 'Wigner semi-circle law', 'FontSize', 15)
 
 ##### SOURCE END #####
 --></body></html>
