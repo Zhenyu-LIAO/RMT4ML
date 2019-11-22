@@ -1,0 +1,469 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Section 2.3: Advanced spectrum considerations for sample covariances</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-11-20"><meta name="DC.source" content="advanced_spectrum.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Section 2.3: Advanced spectrum considerations for sample covariances</h1><!--introduction--><p>This page contains simulations in Section 2.3.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Section 2.3.1 Limiting spectrum</a></li><li><a href="#2">Section 2.3.1 Limiting spectrum (continuation)</a></li><li><a href="#3">Section 2.3.2 "No eigenvalue outside the support"</a></li></ul></div><h2 id="1">Section 2.3.1 Limiting spectrum</h2><p>Theorem 2.9 (Silverstin and Choi, 1995): study of the support of (the limiting spectrum of) sample covariance matrix <img src="advanced_spectrum_eq03881776580003947557.png" alt="$\frac1n C^{\frac12} Z Z^T C ^{\frac12}$" style="width:57px;height:15px;"> as well as its connection to the functional inverse <img src="advanced_spectrum_eq13807618874342395150.png" alt="$x(\tilde m)$" style="width:24px;height:11px;"></p><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+coeff = 3;
+p = 100*coeff;
+n = 1000*coeff;
+c = p/n;
+
+eigs_C = [1,3,7];
+eigs_C_diag = [eigs_C(1)*ones(p/3,1); eigs_C(2)*ones(p/3,1); eigs_C(3)*ones(p/3,1)];
+C = diag(eigs_C_diag); <span class="comment">% population covariance</span>
+
+Z = randn(p,n);
+X = C^(1/2)*Z;
+
+SCM = X*(X')/n; <span class="comment">%%% sample covariance matrix and its empirical spectral measure</span>
+eigs_SCM = eig(SCM);
+edges=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.1,100);
+
+clear <span class="string">i</span>
+y = 1e-5;
+zs = edges+y*1i;
+mu = zeros(length(zs),1);
+
+tilde_m=0;
+<span class="keyword">for</span> j=1:length(zs)
+    z = zs(j);
+
+    tilde_m_tmp=-1;
+    <span class="keyword">while</span> abs(tilde_m-tilde_m_tmp)&gt;1e-6
+        tilde_m_tmp=tilde_m;
+        tilde_m = 1/( -z + 1/n*sum(eigs_C_diag./(1+tilde_m*eigs_C_diag)) );
+    <span class="keyword">end</span>
+
+    m = tilde_m/c+(1-c)/(c*z);
+    mu(j)=imag(m)/pi;
+<span class="keyword">end</span>
+
+figure <span class="comment">%%% limiting versus empirical spectral measure of SCM</span>
+hold <span class="string">on</span>
+histogram(eigs_SCM,edges, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+plot(edges,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
+legend(<span class="string">'Empirical eigenvalues'</span>, <span class="string">'Limiting spectrum'</span>, <span class="string">'FontSize'</span>, 15)
+
+x = @(tilde_m, eigs_C) -1./tilde_m + c*( eigs_C(1)./(1+eigs_C(1)*tilde_m)/3 + eigs_C(2)./(1+eigs_C(2)*tilde_m)/3 + eigs_C(3)./(1+eigs_C(3)*tilde_m)/3 ); <span class="comment">%%% functional inverse</span>
+
+tilde_ms = linspace(-2,1,1000);
+<span class="keyword">for</span> eig_C = [eigs_C,0]
+    tol = eps;
+    tilde_ms(tilde_ms&lt;=-1/eig_C+tol &amp; tilde_ms&gt;=-1/eig_C-tol)=NaN;
+<span class="keyword">end</span>
+figure <span class="comment">%%% corresponds to Figure 2.4</span>
+hold <span class="string">on</span>
+p1 = plot(tilde_ms, x(tilde_ms,eigs_C), <span class="string">'r'</span>);
+p2 = xline(-1/eigs_C(1),<span class="string">'--k'</span>);
+xline(-1/eigs_C(2),<span class="string">'--k'</span>);
+xline(-1/eigs_C(3),<span class="string">'--k'</span>);
+p3 = plot(zeros(p,1),eigs_SCM,<span class="string">'xb'</span>);
+yline(0,<span class="string">'--k'</span>);
+xline(0,<span class="string">'--k'</span>);
+axis([-2 1 -2 12]) <span class="comment">%%% set different axis limits, to see for instance when tilde_m &gt;0</span>
+xlabel(<span class="string">'$\tilde m$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
+ylabel(<span class="string">'$x(\tilde m)$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
+legend([p1 p2 p3], {<span class="string">'$x(\tilde m)$'</span>, <span class="string">'$-\frac1{\tilde m} \in supp(\nu)$'</span>, <span class="string">'empirical eigenvalues of SCM'</span>},<span class="keyword">...</span>
+  <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'Location'</span>, <span class="string">'northwest'</span>, <span class="string">'FontSize'</span>, 15);
+</pre><img vspace="5" hspace="5" src="advanced_spectrum_01.png" alt=""> <img vspace="5" hspace="5" src="advanced_spectrum_02.png" alt=""> <h2 id="2">Section 2.3.1 Limiting spectrum (continuation)</h2><p>Variable change: relating <img src="advanced_spectrum_eq05097260018428731883.png" alt="$supp(\nu)$" style="width:36px;height:11px;"> and <img src="advanced_spectrum_eq17691640637048316503.png" alt="$supp(\mu)$" style="width:36px;height:11px;"></p><p>study of the function <img src="advanced_spectrum_eq09705653840908532616.png" alt="$\gamma(\cdot)$" style="width:17px;height:11px;"> that maps <img src="advanced_spectrum_eq05091898876483306075.png" alt="$z(\tilde m)$" style="width:23px;height:11px;"> to <img src="advanced_spectrum_eq13837998589214136442.png" alt="$-\frac1{\tilde m}$" style="width:16px;height:14px;"> and in particular, the exclusion region that cannot be reached by <img src="advanced_spectrum_eq17096441642737911057.png" alt="$\gamma$" style="width:6px;height:8px;"></p><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+coeff = 3;
+p = 100*coeff;
+n = 1000*coeff;
+<span class="comment">% p = 200*coeff;</span>
+<span class="comment">% n = 100*coeff;</span>
+c = p/n;
+
+eigs_C = [ones(p/3,1); 3*ones(p/3,1); 5*ones(p/3,1)];
+C = diag(eigs_C);
+Z = randn(p,n);
+X = C^(1/2)*Z;
+SCM = X*(X')/n;
+eigs_SCM = eig(SCM);
+
+clear <span class="string">i</span>
+y_min = -1;
+y_max = 1;
+x_min = -1;
+x_max = 10;
+<span class="comment">% x_max = 30;</span>
+
+zs1 = (x_max:-0.1:x_min) + y_max*1i;
+zs2 = x_min + (y_max:-0.1:y_min)*1i;
+zs3 = (x_min:0.1:x_max) + y_min*1i;
+zs4 = x_max + (y_min:0.1:y_max)*1i;
+
+zs = [zs1, zs2, zs3, zs4]; <span class="comment">%%% contour Gamma_mu circling around the (limiting) support mu</span>
+gamma_zs = zeros(length(zs),1);
+
+tilde_m=0;
+<span class="keyword">for</span> j=1:length(zs)
+    z = zs(j);
+
+    tilde_m_tmp=-1;
+    <span class="keyword">while</span> abs(tilde_m-tilde_m_tmp)&gt;1e-6
+        tilde_m_tmp=tilde_m;
+        tilde_m = 1/( -z + 1/n*sum(eigs_C./(1+tilde_m*eigs_C)) );
+    <span class="keyword">end</span>
+
+    gamma_zs(j)= -1/tilde_m;
+<span class="keyword">end</span>
+
+figure
+subplot(2,1,1)
+hold <span class="string">on</span>
+plot(zs,<span class="string">'r'</span>,<span class="string">'Linewidth'</span>,2)
+plot(eigs_SCM,zeros(p,1),<span class="string">'xk'</span>)
+yline(0,<span class="string">'k'</span>);
+xline(0,<span class="string">'k'</span>);
+axis([-2 11 -2 2])
+<span class="comment">% axis([-2 30 -2 2])</span>
+xlabel(<span class="string">'$\Re[z]$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+ylabel(<span class="string">'$\Im[z]$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+legend(<span class="string">'Typical contour $\Gamma_\mu$ (of $z$)'</span>, <span class="string">'Empirical spectrum of SCM'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+subplot(2,1,2)
+hold <span class="string">on</span>
+plot(gamma_zs, <span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2)
+plot(eigs_C,zeros(p,1),<span class="string">'xk'</span>);
+yline(0,<span class="string">'k'</span>);
+xline(0,<span class="string">'k'</span>);
+axis([-2 11 -2 2])
+<span class="comment">% axis([-5 25 -6 6])</span>
+xlabel(<span class="string">'$\Re[-1/\tilde m(z)]$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+ylabel(<span class="string">'$\Im[-1/\tilde m(z)]$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+legend(<span class="string">'Typical contour $\Gamma_\nu$ (of $-1/\tilde m(z)$)'</span>, <span class="string">'Support of $\nu$'</span> , <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+</pre><img vspace="5" hspace="5" src="advanced_spectrum_03.png" alt=""> <h2 id="3">Section 2.3.2 "No eigenvalue outside the support"</h2><p>Theorem 2.10 (Bai and Silverstin, 1998): Study the behavior of SCM eigenvalues that possibly "escapes" from the limiting support <img src="advanced_spectrum_eq05371638286043275527.png" alt="$\mu$" style="width:7px;height:8px;"></p><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+coeff = 6;
+p = 100*coeff;
+n = 1000*coeff;
+c = p/n;
+
+eigs_C = [1,3,7];
+eigs_C_diag = [eigs_C(1)*ones(p/3,1); eigs_C(2)*ones(p/3,1); eigs_C(3)*ones(p/3,1)];
+C = diag(eigs_C_diag); <span class="comment">%%% population covariance</span>
+nu_student = 3; <span class="comment">%%% degrees of freedom nu of Student's t distribution</span>
+
+Z1 = randn(p,n);
+Z2 = trnd(nu_student,p,n)/sqrt(nu_student/(nu_student-2));
+
+X1 = C^(1/2)*Z1;
+X2 = C^(1/2)*Z2;
+
+SCM1 = X1*(X1')/n; <span class="comment">%%% Gaussian SCM</span>
+SCM2 = X2*(X2')/n; <span class="comment">%%% Student's t SCM</span>
+eigs_SCM1 = eig(SCM1);
+eigs_SCM2 = eig(SCM2);
+edges1=linspace(min(eigs_SCM1)-.1,max(eigs_SCM1)+.2,100);
+edges2=linspace(min(eigs_SCM2)-.1,max(eigs_SCM2)+.2,100);
+
+clear <span class="string">i</span>
+y = 1e-5;
+zs = edges1+y*1i;
+mu = zeros(length(zs),1);
+
+tilde_m=0;
+<span class="keyword">for</span> j=1:length(zs)
+    z = zs(j);
+
+    tilde_m_tmp=-1;
+    <span class="keyword">while</span> abs(tilde_m-tilde_m_tmp)&gt;1e-6
+        tilde_m_tmp=tilde_m;
+        tilde_m = 1/( -z + 1/n*sum(eigs_C_diag./(1+tilde_m*eigs_C_diag)) );
+    <span class="keyword">end</span>
+
+    m = tilde_m/c+(1-c)/(c*z);
+    mu(j)=imag(m)/pi;
+<span class="keyword">end</span>
+
+figure
+subplot(2,1,1)
+hold <span class="string">on</span>
+histogram(eigs_SCM1,edges1, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+plot(edges1,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
+title(<span class="string">'Gaussian SCM'</span>)
+legend(<span class="string">'Empirical eigenvalues'</span>, <span class="string">'Limiting spectrum'</span>, <span class="string">'FontSize'</span>, 12)
+subplot(2,1,2)
+hold <span class="string">on</span>
+histogram(eigs_SCM2,edges2, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+plot(edges1,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
+legend(<span class="string">'Empirical eigenvalues'</span>, <span class="string">'Limiting spectrum'</span>, <span class="string">'FontSize'</span>, 12)
+title(<span class="string">'Student-t SCM'</span>)
+</pre><img vspace="5" hspace="5" src="advanced_spectrum_04.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Section 2.3: Advanced spectrum considerations for sample covariances
+% This page contains simulations in Section 2.3.
+
+%% Section 2.3.1 Limiting spectrum
+% Theorem 2.9 (Silverstin and Choi, 1995):
+% study of the support of (the limiting spectrum of) sample covariance matrix $\frac1n C^{\frac12} Z Z^T C ^{\frac12}$
+% as well as its connection to the functional inverse $x(\tilde m)$
+close all; clear; clc
+
+coeff = 3;
+p = 100*coeff;
+n = 1000*coeff;
+c = p/n;
+
+eigs_C = [1,3,7];
+eigs_C_diag = [eigs_C(1)*ones(p/3,1); eigs_C(2)*ones(p/3,1); eigs_C(3)*ones(p/3,1)];
+C = diag(eigs_C_diag); % population covariance
+
+Z = randn(p,n);
+X = C^(1/2)*Z;
+
+SCM = X*(X')/n; %%% sample covariance matrix and its empirical spectral measure
+eigs_SCM = eig(SCM);
+edges=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.1,100);
+
+clear i 
+y = 1e-5;
+zs = edges+y*1i;
+mu = zeros(length(zs),1);
+
+tilde_m=0;
+for j=1:length(zs)
+    z = zs(j);
+    
+    tilde_m_tmp=-1;
+    while abs(tilde_m-tilde_m_tmp)>1e-6
+        tilde_m_tmp=tilde_m;
+        tilde_m = 1/( -z + 1/n*sum(eigs_C_diag./(1+tilde_m*eigs_C_diag)) );
+    end
+    
+    m = tilde_m/c+(1-c)/(c*z);
+    mu(j)=imag(m)/pi;
+end
+
+figure %%% limiting versus empirical spectral measure of SCM
+hold on
+histogram(eigs_SCM,edges, 'Normalization', 'pdf');
+plot(edges,mu,'r', 'Linewidth',2);
+legend('Empirical eigenvalues', 'Limiting spectrum', 'FontSize', 15)
+
+x = @(tilde_m, eigs_C) -1./tilde_m + c*( eigs_C(1)./(1+eigs_C(1)*tilde_m)/3 + eigs_C(2)./(1+eigs_C(2)*tilde_m)/3 + eigs_C(3)./(1+eigs_C(3)*tilde_m)/3 ); %%% functional inverse 
+
+tilde_ms = linspace(-2,1,1000);
+for eig_C = [eigs_C,0]
+    tol = eps;
+    tilde_ms(tilde_ms<=-1/eig_C+tol & tilde_ms>=-1/eig_C-tol)=NaN;
+end
+figure %%% corresponds to Figure 2.4
+hold on
+p1 = plot(tilde_ms, x(tilde_ms,eigs_C), 'r');
+p2 = xline(-1/eigs_C(1),'REPLACE_WITH_DASH_DASHk');
+xline(-1/eigs_C(2),'REPLACE_WITH_DASH_DASHk');
+xline(-1/eigs_C(3),'REPLACE_WITH_DASH_DASHk');
+p3 = plot(zeros(p,1),eigs_SCM,'xb');
+yline(0,'REPLACE_WITH_DASH_DASHk');
+xline(0,'REPLACE_WITH_DASH_DASHk');
+axis([-2 1 -2 12]) %%% set different axis limits, to see for instance when tilde_m >0
+xlabel('$\tilde m$', 'Interpreter', 'latex');
+ylabel('$x(\tilde m)$', 'Interpreter', 'latex');
+legend([p1 p2 p3], {'$x(\tilde m)$', '$-\frac1{\tilde m} \in supp(\nu)$', 'empirical eigenvalues of SCM'},...
+  'Interpreter', 'latex', 'Location', 'northwest', 'FontSize', 15);
+
+%% Section 2.3.1 Limiting spectrum (continuation)
+% Variable change: relating $supp(\nu)$ and $supp(\mu)$
+%
+% study of the function $\gamma(\cdot)$ that maps $z(\tilde m)$ to $-\frac1{\tilde m}$
+% and in particular, the exclusion region that cannot be reached by $\gamma$
+close all; clear; clc
+
+coeff = 3;
+p = 100*coeff; 
+n = 1000*coeff;
+% p = 200*coeff; 
+% n = 100*coeff;
+c = p/n;
+
+eigs_C = [ones(p/3,1); 3*ones(p/3,1); 5*ones(p/3,1)];
+C = diag(eigs_C); 
+Z = randn(p,n);
+X = C^(1/2)*Z;
+SCM = X*(X')/n; 
+eigs_SCM = eig(SCM);
+
+clear i 
+y_min = -1;
+y_max = 1;
+x_min = -1;
+x_max = 10;
+% x_max = 30;
+
+zs1 = (x_max:-0.1:x_min) + y_max*1i;
+zs2 = x_min + (y_max:-0.1:y_min)*1i;
+zs3 = (x_min:0.1:x_max) + y_min*1i;
+zs4 = x_max + (y_min:0.1:y_max)*1i;
+
+zs = [zs1, zs2, zs3, zs4]; %%% contour Gamma_mu circling around the (limiting) support mu
+gamma_zs = zeros(length(zs),1);
+
+tilde_m=0;
+for j=1:length(zs)
+    z = zs(j);
+    
+    tilde_m_tmp=-1;
+    while abs(tilde_m-tilde_m_tmp)>1e-6
+        tilde_m_tmp=tilde_m;
+        tilde_m = 1/( -z + 1/n*sum(eigs_C./(1+tilde_m*eigs_C)) );
+    end
+    
+    gamma_zs(j)= -1/tilde_m;
+end
+
+figure
+subplot(2,1,1)
+hold on
+plot(zs,'r','Linewidth',2)
+plot(eigs_SCM,zeros(p,1),'xk')
+yline(0,'k');
+xline(0,'k');
+axis([-2 11 -2 2])
+% axis([-2 30 -2 2])
+xlabel('$\Re[z]$', 'Interpreter', 'latex')
+ylabel('$\Im[z]$', 'Interpreter', 'latex')
+legend('Typical contour $\Gamma_\mu$ (of $z$)', 'Empirical spectrum of SCM', 'Interpreter', 'latex')
+subplot(2,1,2)
+hold on
+plot(gamma_zs, 'r', 'Linewidth',2)
+plot(eigs_C,zeros(p,1),'xk');
+yline(0,'k');
+xline(0,'k');
+axis([-2 11 -2 2])
+% axis([-5 25 -6 6])
+xlabel('$\Re[-1/\tilde m(z)]$', 'Interpreter', 'latex')
+ylabel('$\Im[-1/\tilde m(z)]$', 'Interpreter', 'latex')
+legend('Typical contour $\Gamma_\nu$ (of $-1/\tilde m(z)$)', 'Support of $\nu$' , 'Interpreter', 'latex')
+
+%% Section 2.3.2 "No eigenvalue outside the support"
+% Theorem 2.10 (Bai and Silverstin, 1998):
+% Study the behavior of SCM eigenvalues that possibly "escapes" from the
+% limiting support $\mu$
+close all; clear; clc
+
+coeff = 6;
+p = 100*coeff;
+n = 1000*coeff;
+c = p/n;
+
+eigs_C = [1,3,7];
+eigs_C_diag = [eigs_C(1)*ones(p/3,1); eigs_C(2)*ones(p/3,1); eigs_C(3)*ones(p/3,1)];
+C = diag(eigs_C_diag); %%% population covariance
+nu_student = 3; %%% degrees of freedom nu of Student's t distribution
+
+Z1 = randn(p,n);
+Z2 = trnd(nu_student,p,n)/sqrt(nu_student/(nu_student-2));
+
+X1 = C^(1/2)*Z1;
+X2 = C^(1/2)*Z2;
+
+SCM1 = X1*(X1')/n; %%% Gaussian SCM
+SCM2 = X2*(X2')/n; %%% Student's t SCM
+eigs_SCM1 = eig(SCM1);
+eigs_SCM2 = eig(SCM2);
+edges1=linspace(min(eigs_SCM1)-.1,max(eigs_SCM1)+.2,100);
+edges2=linspace(min(eigs_SCM2)-.1,max(eigs_SCM2)+.2,100);
+
+clear i 
+y = 1e-5;
+zs = edges1+y*1i;
+mu = zeros(length(zs),1);
+
+tilde_m=0;
+for j=1:length(zs)
+    z = zs(j);
+    
+    tilde_m_tmp=-1;
+    while abs(tilde_m-tilde_m_tmp)>1e-6
+        tilde_m_tmp=tilde_m;
+        tilde_m = 1/( -z + 1/n*sum(eigs_C_diag./(1+tilde_m*eigs_C_diag)) );
+    end
+    
+    m = tilde_m/c+(1-c)/(c*z);
+    mu(j)=imag(m)/pi;
+end
+
+figure
+subplot(2,1,1)
+hold on
+histogram(eigs_SCM1,edges1, 'Normalization', 'pdf');
+plot(edges1,mu,'r', 'Linewidth',2);
+title('Gaussian SCM')
+legend('Empirical eigenvalues', 'Limiting spectrum', 'FontSize', 12)
+subplot(2,1,2)
+hold on
+histogram(eigs_SCM2,edges2, 'Normalization', 'pdf');
+plot(edges1,mu,'r', 'Linewidth',2);
+legend('Empirical eigenvalues', 'Limiting spectrum', 'FontSize', 12)
+title('Student-t SCM')
+
+
+
+##### SOURCE END #####
+--></body></html>

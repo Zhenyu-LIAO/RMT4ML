@@ -1,0 +1,434 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Section 2.4.2: Eigenvector projections and subspace methods</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-11-22"><meta name="DC.source" content="eigenvec_proj.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Section 2.4.2: Eigenvector projections and subspace methods</h1><!--introduction--><p>This page contains an application example of estimating functionals of random matrices <img src="eigenvec_proj_eq12362013959998143435.png" alt="$X$" style="width:10px;height:8px;"></p><p><b>Fully separable case</b> with <img src="eigenvec_proj_eq05819522707354563341.png" alt="$\nu = \frac13 (\delta_1 + \delta_3 + \delta_7)$" style="width:89px;height:14px;"> and <img src="eigenvec_proj_eq12910918360393135672.png" alt="$c = 1/10$" style="width:41px;height:11px;"></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Empirical eigenvalues of <img src="eigenvec_proj_eq04476533116490492850.png" alt="$\frac1n X X^T$" style="width:32px;height:14px;"> versus limiting spectrum</a></li><li><a href="#2">Determine the support of <img src="eigenvec_proj_eq05371638286043275527.png" alt="$\mu$" style="width:7px;height:8px;"> with Theorem 2.9</a></li><li><a href="#3">Empirical eigenspace correlation with the proposed estimator</a></li><li><a href="#4">Estimation of eigenspace correlation with rectangular contour</a></li><li><a href="#5">Estimation of eigenspace correlation with line integrals</a></li><li><a href="#6">FUNCTIONS</a></li></ul></div><h2 id="1">Empirical eigenvalues of <img src="eigenvec_proj_eq04476533116490492850.png" alt="$\frac1n X X^T$" style="width:32px;height:14px;"> versus limiting spectrum</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+coeff = 3;
+p = 100*coeff;
+n = 1000*coeff;
+c = p/n;
+
+eig_C = [1,3,7];
+cs = [1/3 1/3 1/3];
+
+C = diag([eig_C(1)*ones(p/3,1); eig_C(2)*ones(p/3,1); eig_C(3)*ones(p/3,1)]); <span class="comment">%%% population covariance</span>
+[U,eigs_C] = eig(C);
+eigs_C = diag(eigs_C);
+
+Z = randn(p,n);
+X = C^(1/2)*Z;
+
+SCM = X*(X')/n; <span class="comment">%%% sample covariance matrix and its empirical spectral measure</span>
+[hat_U,eigs_SCM] = eig(SCM);
+eigs_SCM = diag(eigs_SCM);
+edges=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.1,100);
+
+clear <span class="string">i</span>
+y = 1e-5;
+zs = edges+y*1i;
+mu = zeros(length(zs),1);
+
+tilde_m=0;
+<span class="keyword">for</span> j=1:length(zs)
+    z = zs(j);
+
+    tilde_m_tmp=-1;
+    <span class="keyword">while</span> abs(tilde_m-tilde_m_tmp)&gt;1e-6
+        tilde_m_tmp=tilde_m;
+        tilde_m = 1/( -z + 1/n*sum(eigs_C./(1+tilde_m*eigs_C)) );
+    <span class="keyword">end</span>
+
+    m = tilde_m/c+(1-c)/(c*z);
+    mu(j)=imag(m)/pi;
+<span class="keyword">end</span>
+
+figure <span class="comment">%%% limiting versus empirical spectral measure of SCM</span>
+hold <span class="string">on</span>
+histogram(eigs_SCM,edges, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+plot(edges,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
+legend(<span class="string">'Empirical eigenvalues'</span>, <span class="string">'Limiting spectrum'</span>, <span class="string">'FontSize'</span>, 15)
+</pre><img vspace="5" hspace="5" src="eigenvec_proj_01.png" alt=""> <h2 id="2">Determine the support of <img src="eigenvec_proj_eq05371638286043275527.png" alt="$\mu$" style="width:7px;height:8px;"> with Theorem 2.9</h2><pre class="codeinput">tol = 1e-3;
+search_min = -2;
+search_max = tol;
+search_domain = linspace(search_min, search_max, 5000); <span class="comment">%%% search domain of tilde_m</span>
+
+[~,x_d] = SCM_func_inv(search_domain, eig_C, cs, c);
+x_d_1 = x_d(1:end-1);
+x_d_2 = x_d(2:end);
+zero_deri_index =find(sign(x_d_1).*sign(x_d_2)&lt;0);
+support_edges = SCM_func_inv(search_domain(zero_deri_index), eig_C, cs ,c);
+
+<span class="keyword">if</span> length(support_edges) ~= 2*length(eig_C)
+    error(<span class="string">'Error: nb of (discrete) eigenvalues and nb of suport edges not match!'</span>)
+<span class="keyword">end</span>
+
+figure <span class="comment">%%% compare estimated support with empirical eigenvalues</span>
+hold <span class="string">on</span>
+plot(eigs_SCM, zeros(size(eigs_SCM)), <span class="string">'bx'</span>);
+<span class="keyword">for</span> edge=support_edges
+    plot(edge*ones(10,1), linspace(-.1,.1,10),<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
+<span class="keyword">end</span>
+xlabel(<span class="string">'$\Re[z]$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+ylabel(<span class="string">'$\Im[z]$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+axis([0 max(eigs_SCM)+.5 -.5 .5]);
+</pre><img vspace="5" hspace="5" src="eigenvec_proj_02.png" alt=""> <h2 id="3">Empirical eigenspace correlation with the proposed estimator</h2><pre class="codeinput">emp_eig_corr = zeros(1,length(cs));
+
+index = 1;
+<span class="keyword">for</span> a=1:length(cs)
+    U_a = U(:,index:index+p*cs(a)-1);
+    hat_U_a = hat_U(:,index:index+p*cs(a)-1);
+    emp_eig_corr(a) = trace(U_a*(U_a')*hat_U_a*(hat_U_a'))/p/cs(a);
+
+    index = index+p*cs(a);
+<span class="keyword">end</span>
+disp(<span class="string">'Empirical eigenspace correlation'</span>)
+disp(emp_eig_corr)
+</pre><pre class="codeoutput">Empirical eigenspace correlation
+    0.9658    0.9279    0.9486
+
+</pre><h2 id="4">Estimation of eigenspace correlation with rectangular contour</h2><pre class="codeinput">estim_eig_corr = zeros(1,length(cs));
+
+<span class="keyword">for</span> a=1:length(cs)
+    popu_eig = eig_C(a);
+
+    clear <span class="string">i</span>
+    y_min = -1;
+    y_max = 1;
+    x_min = support_edges(2*a-1)-.1;
+    x_max = support_edges(2*a)+.1;
+
+    zs1 = (x_max:-0.1:x_min) + y_max*1i;
+    zs2 = x_min + (y_max:-0.1:y_min)*1i;
+    zs3 = (x_min:0.1:x_max) + y_min*1i;
+    zs4 = x_max + (y_min:0.1:y_max)*1i;
+
+    zs = [zs1, zs2, zs3, zs4]; <span class="comment">%%% rectangular contour</span>
+    <span class="comment">%zs = [zs1, zs3];</span>
+
+    integrand = zeros(length(zs),1);
+
+    tilde_m=0;
+    <span class="keyword">for</span> j=1:length(zs)
+        z = zs(j);
+
+        tilde_m_tmp=-1;
+        <span class="keyword">while</span> abs(tilde_m-tilde_m_tmp)&gt;1e-6
+            tilde_m_tmp=tilde_m;
+            tilde_m = 1/( -z + 1/n*sum(eigs_C./(1+tilde_m*eigs_C)) );
+        <span class="keyword">end</span>
+
+        integrand(j) = 1/z/(1+tilde_m*popu_eig);
+    <span class="keyword">end</span>
+    estim_eig_corr(a) = real(trapz(zs,integrand)/(pi*2i));
+<span class="keyword">end</span>
+
+disp(<span class="string">'Eigenspace correlation estimated with contour integration'</span>)
+disp(estim_eig_corr)
+</pre><pre class="codeoutput">Eigenspace correlation estimated with contour integration
+    0.9655    0.9278    0.9484
+
+</pre><h2 id="5">Estimation of eigenspace correlation with line integrals</h2><pre class="codeinput">estim_eig_corr = zeros(1,length(cs));
+
+<span class="keyword">for</span> a=1:length(cs)
+
+    xs = linspace(support_edges(2*a-1),support_edges(2*a), 500);
+    popu_eig = eig_C(a);
+    integrand = zeros(length(xs),1);
+
+    tilde_m=0;
+    <span class="keyword">for</span> j=1:length(xs)
+        clear <span class="string">i</span>
+        x = xs(j);
+        y = 1e-5;
+        z = x+y*1i;
+
+        tilde_m_tmp=-1;
+        <span class="keyword">while</span> abs(tilde_m-tilde_m_tmp)&gt;1e-6
+            tilde_m_tmp=tilde_m;
+            tilde_m = 1/( -z + 1/n*sum(eigs_C./(1+tilde_m*eigs_C)) );
+        <span class="keyword">end</span>
+
+        integrand(j) = popu_eig*imag(tilde_m)/( 1 + 2*popu_eig*real(tilde_m) + popu_eig^2*abs(tilde_m)^2 )/pi/x;
+    <span class="keyword">end</span>
+    estim_eig_corr(a) = trapz(xs,integrand);
+<span class="keyword">end</span>
+disp(<span class="string">'Eigenspace correlation estimated with line integral'</span>)
+disp(estim_eig_corr)
+</pre><pre class="codeoutput">Eigenspace correlation estimated with line integral
+    0.9659    0.9281    0.9485
+
+</pre><h2 id="6">FUNCTIONS</h2><pre class="codeinput"><span class="keyword">function</span> [x,x_d] = SCM_func_inv(tilde_m, eig_C, cs, c)
+<span class="comment">%SCM_func_inv functional inverse of Stieltjes transform of large sample</span>
+<span class="comment">%covariance model</span>
+<span class="comment">%   INPUT: Stieltjes transform tilde_m, (k-discrete) eigenvalues of C (or</span>
+<span class="comment">%   nu), vector cs=p_a/p for a=1,...k, ratio c=p/n</span>
+<span class="comment">%   OUTPUT: functional inverse x (of tilde_m) and its first derivative x_d</span>
+
+<span class="keyword">if</span> length(eig_C) ~= length(cs)
+    error(<span class="string">'Error: nb of (discrete) eigenvalues and nb of classes not match!'</span>)
+<span class="keyword">end</span>
+
+x = -1./tilde_m;
+x_d = 1./(tilde_m.^2);
+<span class="keyword">for</span> a=1:length(cs)
+    x = x + c*cs(a)*eig_C(a)./(1+eig_C(a)*tilde_m);
+    x_d = x_d - c*cs(a)*eig_C(a)^2./(1+eig_C(a)*tilde_m).^2;
+<span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Section 2.4.2: Eigenvector projections and subspace methods
+% This page contains an application example of estimating functionals of
+% random matrices $X$
+%
+% *Fully separable case* with $\nu = \frac13 (\delta_1 + \delta_3 + \delta_7)$ and $c = 1/10$
+
+%% Empirical eigenvalues of $\frac1n X X^T$ versus limiting spectrum
+close all; clear; clc
+
+coeff = 3;
+p = 100*coeff;
+n = 1000*coeff;
+c = p/n;
+
+eig_C = [1,3,7];
+cs = [1/3 1/3 1/3];
+
+C = diag([eig_C(1)*ones(p/3,1); eig_C(2)*ones(p/3,1); eig_C(3)*ones(p/3,1)]); %%% population covariance
+[U,eigs_C] = eig(C);
+eigs_C = diag(eigs_C);
+
+Z = randn(p,n);
+X = C^(1/2)*Z;
+
+SCM = X*(X')/n; %%% sample covariance matrix and its empirical spectral measure
+[hat_U,eigs_SCM] = eig(SCM);
+eigs_SCM = diag(eigs_SCM);
+edges=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.1,100);
+
+clear i
+y = 1e-5;
+zs = edges+y*1i;
+mu = zeros(length(zs),1);
+
+tilde_m=0;
+for j=1:length(zs)
+    z = zs(j);
+    
+    tilde_m_tmp=-1;
+    while abs(tilde_m-tilde_m_tmp)>1e-6
+        tilde_m_tmp=tilde_m;
+        tilde_m = 1/( -z + 1/n*sum(eigs_C./(1+tilde_m*eigs_C)) );
+    end
+    
+    m = tilde_m/c+(1-c)/(c*z);
+    mu(j)=imag(m)/pi;
+end
+
+figure %%% limiting versus empirical spectral measure of SCM
+hold on
+histogram(eigs_SCM,edges, 'Normalization', 'pdf');
+plot(edges,mu,'r', 'Linewidth',2);
+legend('Empirical eigenvalues', 'Limiting spectrum', 'FontSize', 15)
+
+%% Determine the support of $\mu$ with Theorem 2.9
+tol = 1e-3;
+search_min = -2;
+search_max = tol;
+search_domain = linspace(search_min, search_max, 5000); %%% search domain of tilde_m
+
+[~,x_d] = SCM_func_inv(search_domain, eig_C, cs, c);
+x_d_1 = x_d(1:end-1);
+x_d_2 = x_d(2:end);
+zero_deri_index =find(sign(x_d_1).*sign(x_d_2)<0);
+support_edges = SCM_func_inv(search_domain(zero_deri_index), eig_C, cs ,c);
+
+if length(support_edges) ~= 2*length(eig_C)
+    error('Error: nb of (discrete) eigenvalues and nb of suport edges not match!')
+end
+
+figure %%% compare estimated support with empirical eigenvalues
+hold on
+plot(eigs_SCM, zeros(size(eigs_SCM)), 'bx');
+for edge=support_edges
+    plot(edge*ones(10,1), linspace(-.1,.1,10),'r', 'Linewidth',2);
+end
+xlabel('$\Re[z]$', 'Interpreter', 'latex')
+ylabel('$\Im[z]$', 'Interpreter', 'latex')
+axis([0 max(eigs_SCM)+.5 -.5 .5]);
+
+%% Empirical eigenspace correlation with the proposed estimator
+
+emp_eig_corr = zeros(1,length(cs));
+
+index = 1;
+for a=1:length(cs)
+    U_a = U(:,index:index+p*cs(a)-1);
+    hat_U_a = hat_U(:,index:index+p*cs(a)-1);
+    emp_eig_corr(a) = trace(U_a*(U_a')*hat_U_a*(hat_U_a'))/p/cs(a);
+    
+    index = index+p*cs(a);
+end
+disp('Empirical eigenspace correlation')
+disp(emp_eig_corr)
+
+%% Estimation of eigenspace correlation with rectangular contour
+estim_eig_corr = zeros(1,length(cs));
+
+for a=1:length(cs)
+    popu_eig = eig_C(a);
+    
+    clear i
+    y_min = -1;
+    y_max = 1;
+    x_min = support_edges(2*a-1)-.1;
+    x_max = support_edges(2*a)+.1;
+    
+    zs1 = (x_max:-0.1:x_min) + y_max*1i;
+    zs2 = x_min + (y_max:-0.1:y_min)*1i;
+    zs3 = (x_min:0.1:x_max) + y_min*1i;
+    zs4 = x_max + (y_min:0.1:y_max)*1i;
+    
+    zs = [zs1, zs2, zs3, zs4]; %%% rectangular contour
+    %zs = [zs1, zs3];
+    
+    integrand = zeros(length(zs),1);
+    
+    tilde_m=0;
+    for j=1:length(zs)
+        z = zs(j);
+        
+        tilde_m_tmp=-1;
+        while abs(tilde_m-tilde_m_tmp)>1e-6
+            tilde_m_tmp=tilde_m;
+            tilde_m = 1/( -z + 1/n*sum(eigs_C./(1+tilde_m*eigs_C)) );
+        end
+        
+        integrand(j) = 1/z/(1+tilde_m*popu_eig);
+    end
+    estim_eig_corr(a) = real(trapz(zs,integrand)/(pi*2i));
+end
+
+disp('Eigenspace correlation estimated with contour integration')
+disp(estim_eig_corr)
+
+%% Estimation of eigenspace correlation with line integrals
+
+estim_eig_corr = zeros(1,length(cs));
+
+for a=1:length(cs)
+    
+    xs = linspace(support_edges(2*a-1),support_edges(2*a), 500);
+    popu_eig = eig_C(a);
+    integrand = zeros(length(xs),1);
+    
+    tilde_m=0;
+    for j=1:length(xs)
+        clear i
+        x = xs(j);
+        y = 1e-5;
+        z = x+y*1i;
+        
+        tilde_m_tmp=-1;
+        while abs(tilde_m-tilde_m_tmp)>1e-6
+            tilde_m_tmp=tilde_m;
+            tilde_m = 1/( -z + 1/n*sum(eigs_C./(1+tilde_m*eigs_C)) );
+        end
+        
+        integrand(j) = popu_eig*imag(tilde_m)/( 1 + 2*popu_eig*real(tilde_m) + popu_eig^2*abs(tilde_m)^2 )/pi/x;
+    end
+    estim_eig_corr(a) = trapz(xs,integrand);
+end
+disp('Eigenspace correlation estimated with line integral')
+disp(estim_eig_corr)
+
+
+%% FUNCTIONS
+function [x,x_d] = SCM_func_inv(tilde_m, eig_C, cs, c)
+%SCM_func_inv functional inverse of Stieltjes transform of large sample
+%covariance model
+%   INPUT: Stieltjes transform tilde_m, (k-discrete) eigenvalues of C (or
+%   nu), vector cs=p_a/p for a=1,...k, ratio c=p/n
+%   OUTPUT: functional inverse x (of tilde_m) and its first derivative x_d
+
+if length(eig_C) ~= length(cs)
+    error('Error: nb of (discrete) eigenvalues and nb of classes not match!')
+end
+
+x = -1./tilde_m;
+x_d = 1./(tilde_m.^2);
+for a=1:length(cs)
+    x = x + c*cs(a)*eig_C(a)./(1+eig_C(a)*tilde_m);
+    x_d = x_d - c*cs(a)*eig_C(a)^2./(1+eig_C(a)*tilde_m).^2;
+end
+
+end
+
+##### SOURCE END #####
+--></body></html>
