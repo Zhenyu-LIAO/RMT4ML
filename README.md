@@ -20,10 +20,10 @@ Below is the table of content of the book that links to corresponding [MATLAB](h
 	* Section 2.4 Preliminaries on statistical inference
 		* Section 2.4.1 [Linear eigenvalue statistics](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/2.4.1/html/linear_eig_stats.html)
 		* Section 2.4.2 [Eigenvector projections and subspace methods](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/2.4.2/html/eigenvec_proj.html)
-	* Section 2.5 Spiked model
-		* Section 2.5.1 [Isolated eigenvalues](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/2.2.2/MP_and_SC.html)
-		* Section 2.5.2 [Isolated eigenvector](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/2.2.2/MP_and_SC.html)
-		* Section 2.5.3 [Limiting fluctuations](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/2.2.2/MP_and_SC.html)
+	* Section 2.5 [Spiked model](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/2.5/html/spiked_models.html)
+		* Section 2.5.1 Isolated eigenvalues
+		* Section 2.5.2 Isolated eigenvector
+		* Section 2.5.3 Limiting fluctuations
 		* Section 2.5.4 Further discussions and other spiked models
 	* Section 2.6 Information-plus-noise, deformed Wigner, and other models
 
