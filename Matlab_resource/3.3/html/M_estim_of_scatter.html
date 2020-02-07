@@ -1,0 +1,465 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Section 3.3: M-estimator of scatter</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-02-07"><meta name="DC.source" content="M_estim_of_scatter.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Section 3.3: M-estimator of scatter</h1><!--introduction--><p>This page contains simulations in Section 3.3.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">M-estimator of scatter and the asymptotic equivalent (Theorem 3.4)</a></li><li><a href="#3">Fixed-point equation for M-estimator <img src="M_estim_of_scatter_eq18121563191542547938.png" alt="$\hat C$"> and the asymptotic equivalent <img src="M_estim_of_scatter_eq11663486039913039363.png" alt="$\hat S$"> per Theorem 3.4</a></li><li><a href="#4">Limiting spectral measure of <img src="M_estim_of_scatter_eq11663486039913039363.png" alt="$\hat S$"> (and thus of <img src="M_estim_of_scatter_eq18121563191542547938.png" alt="$\hat C$">) via Theorem 2.6</a></li><li><a href="#5">Robust Spiked Model in Remark 3.5</a></li></ul></div><h2 id="1">M-estimator of scatter and the asymptotic equivalent (Theorem 3.4)</h2><p>Generate a (Gaussian i.i.d.) random matrix <img src="M_estim_of_scatter_eq05013124788323701083.png" alt="$Z$"> of dimension <img src="M_estim_of_scatter_eq00624470566282429309.png" alt="$p \times n$"> and i.i.d. random Gamma(.5,2) vector tau Generate the associated data matrix <img src="M_estim_of_scatter_eq08634780296400087356.png" alt="$X = C^{\frac12} Z diag(\tau)$"></p><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+coeff = 5;
+p = 100*coeff;
+n = 500*coeff;
+c = p/n;
+
+eigs_C = [ones(p/4,1); 3*ones(p/4,1); 10*ones(p/2,1)];
+C = diag(eigs_C); <span class="comment">% population covariance</span>
+tau = gamrnd(.5,2,n,1);
+eigs_tilde_C = tau;
+
+Z = randn(p,n);
+X = C^(1/2)*Z*diag(sqrt(tau));
+</pre><p>Empirical eigenvalues of the sample covariance matrix $\frac1n X X^T versus the solution of fixed-point equation in Theorem 2.6</p><pre class="codeinput">SCM = X*(X')/n;
+eigs_SCM = eig(SCM);
+edges1=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.2,100);
+edges2=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.2,300);
+
+clear <span class="string">i</span> <span class="comment">% make sure i stands for the imaginary unit</span>
+y = 1e-5;
+zs = edges2+y*1i;
+mu = zeros(length(zs),1);
+
+delta = [0,0]; <span class="comment">% corresponds to [delta, delta_delta] in Theorem 2.6</span>
+<span class="keyword">for</span> j = 1:length(zs)
+    z = zs(j);
+
+    delta_tmp = [1,1];
+    <span class="comment">%watch_dog = 1; % to avoid possible numerical convergence issue</span>
+    <span class="keyword">while</span> max(abs(delta-delta_tmp))&gt;1e-6 <span class="comment">%&amp;&amp; watch_dog &lt; 50</span>
+        delta_tmp = delta;
+        delta(1) = -1/n/z*sum(eigs_C./( 1 + delta_tmp(2)*eigs_C ));
+        delta(2) = -1/n/z*sum(eigs_tilde_C./( 1 + delta_tmp(1)*eigs_tilde_C ));
+    <span class="keyword">end</span>
+
+    m = -1/p/z*sum(1./(1 + delta(2)*eigs_C) );
+    mu(j)=imag(m)/pi;
+<span class="keyword">end</span>
+
+figure(1)
+histogram(eigs_SCM,edges1, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+hold <span class="string">on</span>;
+plot(edges2,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
+legend(<span class="string">'Empirical eigenvalues of SCM'</span>, <span class="string">'Limiting spectral measure'</span>, <span class="string">'FontSize'</span>, 15)
+</pre><img vspace="5" hspace="5" src="M_estim_of_scatter_01.png" alt=""> <h2 id="3">Fixed-point equation for M-estimator <img src="M_estim_of_scatter_eq18121563191542547938.png" alt="$\hat C$"> and the asymptotic equivalent <img src="M_estim_of_scatter_eq11663486039913039363.png" alt="$\hat S$"> per Theorem 3.4</h2><pre class="codeinput">alpha = 0.2;
+u = @(x) (1+alpha)./(alpha+x);
+phi = @(x) x.*u(x);
+g = @(x) x./(1-c*phi(x));
+
+hat_C_tmp = eye(p);
+hat_C = eye(p)/2;
+<span class="keyword">while</span> norm(hat_C -  hat_C_tmp)/norm(hat_C)&gt;1e-3
+    hat_C_tmp = hat_C;
+    inv_hat_C_X = hat_C\X;
+    hat_C = X*diag(u(diag(X'*inv_hat_C_X/p)))*(X')/n;
+<span class="keyword">end</span>
+
+gamma = 1;
+gamma_tmp = 0;
+<span class="keyword">while</span> abs(gamma-gamma_tmp)&gt;1e-6
+    gamma_tmp = gamma;
+
+    syms <span class="string">x</span>
+    g_inv = finverse(g(x));
+    x = gamma*tau;
+    v = u(eval(g_inv));
+    gamma = 1/(sum( tau.*v./(1+c*gamma*tau.*v) )/n);
+<span class="keyword">end</span>
+
+hat_S = X*diag(v)*(X')/n;
+eigs_hat_S = eig(hat_S);
+
+eigs_hat_C = eig(hat_C);
+edges1=linspace(min(eigs_hat_C)-.1,max(eigs_hat_C)+.2,100);
+edges2=linspace(min(eigs_hat_C)-.1,max(eigs_hat_C)+.2,300);
+</pre><h2 id="4">Limiting spectral measure of <img src="M_estim_of_scatter_eq11663486039913039363.png" alt="$\hat S$"> (and thus of <img src="M_estim_of_scatter_eq18121563191542547938.png" alt="$\hat C$">) via Theorem 2.6</h2><pre class="codeinput">eigs_tilde_C = tau.*v;
+
+clear <span class="string">i</span> <span class="comment">% make sure i stands for the imaginary unit</span>
+y = 1e-5;
+zs = edges2+y*1i;
+mu = zeros(length(zs),1);
+
+delta = [0,0]; <span class="comment">% corresponds to [delta, delta_delta] in Theorem 2.6</span>
+<span class="keyword">for</span> j = 1:length(zs)
+    z = zs(j);
+
+    delta_tmp = [1,1];
+    <span class="comment">%watch_dog = 1; % to avoid possible numerical convergence issue</span>
+    <span class="keyword">while</span> max(abs(delta-delta_tmp))&gt;1e-6 <span class="comment">%&amp;&amp; watch_dog &lt; 50</span>
+        delta_tmp = delta;
+        delta(1) = -1/n/z*sum(eigs_C./( 1 + delta_tmp(2)*eigs_C ));
+        delta(2) = -1/n/z*sum(eigs_tilde_C./( 1 + delta_tmp(1)*eigs_tilde_C ));
+    <span class="keyword">end</span>
+
+    m = -1/p/z*sum(1./(1 + delta(2)*eigs_C) );
+    mu(j)=imag(m)/pi;
+<span class="keyword">end</span>
+
+figure
+histogram(eigs_hat_C,edges1, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+hold <span class="string">on</span>;
+plot(edges2,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
+legend(<span class="string">'Empirical eigenvalues of M-estimator $\hat C$'</span>, <span class="string">'Limiting spectral measure'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+
+
+figure
+histogram(eigs_hat_S,edges1, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+hold <span class="string">on</span>;
+plot(edges2,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
+legend(<span class="string">'Empirical eigenvalues of $\hat S$'</span>, <span class="string">'Limiting spectral measure'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+</pre><img vspace="5" hspace="5" src="M_estim_of_scatter_02.png" alt=""> <img vspace="5" hspace="5" src="M_estim_of_scatter_03.png" alt=""> <h2 id="5">Robust Spiked Model in Remark 3.5</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+coeff = 1;
+p = 100*coeff;
+n = 300*coeff;
+c = p/n;
+
+nu_student = 100; <span class="comment">%%% degrees of freedom nu of Student's t distribution</span>
+t = trnd(nu_student,n,1)/sqrt(nu_student/(nu_student-2));
+tau = t.^2;
+
+a = [-ones(p/2,1);ones(p/2,1)]/sqrt(p);
+s = randn(n,1)*.65;
+
+Z = randn(p,n);
+X = a*(s') + Z*diag(sqrt(tau));
+
+alpha = 0.2;
+u = @(x) (1+alpha)./(alpha+x);
+phi = @(x) x.*u(x);
+g = @(x) x./(1-c*phi(x));
+
+hat_C_tmp = eye(p);
+hat_C = eye(p)/2;
+<span class="keyword">while</span> norm(hat_C -  hat_C_tmp)/norm(hat_C)&gt;1e-3
+    hat_C_tmp = hat_C;
+    inv_hat_C_X = hat_C\X;
+    hat_C = X*diag(u(diag(X'*inv_hat_C_X/p)))*(X')/n;
+<span class="keyword">end</span>
+
+eigs_hat_C = eig(hat_C);
+edges1=linspace(min(eigs_hat_C)-.1,max(eigs_hat_C)+.2,100);
+edges2=linspace(min(eigs_hat_C)-.1,max(eigs_hat_C)+.2,300);
+
+gamma = 1;
+gamma_tmp = 0;
+<span class="keyword">while</span> abs(gamma-gamma_tmp)&gt;1e-6
+    gamma_tmp = gamma;
+
+    syms <span class="string">x</span>
+    g_inv = finverse(g(x));
+    x = gamma*tau;
+    v = u(eval(g_inv));
+    gamma = 1/(sum( tau.*v./(1+c*gamma*tau.*v) )/n);
+<span class="keyword">end</span>
+
+eigs_C = ones(p,1);
+eigs_tilde_C = tau.*v;
+
+clear <span class="string">i</span> <span class="comment">% make sure i stands for the imaginary unit</span>
+y = 1e-5;
+zs = edges2+y*1i;
+mu = zeros(length(zs),1);
+
+delta = [0,0];
+<span class="keyword">for</span> j = 1:length(zs)
+    z = zs(j);
+
+    delta_tmp = [1,1];
+    <span class="keyword">while</span> max(abs(delta-delta_tmp))&gt;1e-6
+        delta_tmp = delta;
+        delta(1) = -1/n/z*sum(eigs_C./( 1 + delta_tmp(2)*eigs_C ));
+        delta(2) = -1/n/z*sum(eigs_tilde_C./( 1 + delta_tmp(1)*eigs_tilde_C ));
+    <span class="keyword">end</span>
+
+    m = -1/p/z*sum(1./(1 + delta(2)*eigs_C) );
+    mu(j)=imag(m)/pi;
+<span class="keyword">end</span>
+
+S_plus = (1+alpha)/(1-c*(1+alpha))*(1+sqrt(c))^2/gamma;
+
+figure
+histogram(eigs_hat_C,edges1, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+hold <span class="string">on</span>;
+plot(edges2,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
+xline(S_plus);
+legend(<span class="string">'Empirical eigenvalues of $\hat C$'</span>, <span class="string">'Limiting spectral measure'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+</pre><img vspace="5" hspace="5" src="M_estim_of_scatter_04.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Section 3.3: M-estimator of scatter
+% This page contains simulations in Section 3.3.
+
+%% M-estimator of scatter and the asymptotic equivalent (Theorem 3.4)
+% Generate a (Gaussian i.i.d.) random matrix $Z$ of dimension $p \times n$
+% and i.i.d. random Gamma(.5,2) vector tau
+% Generate the associated data matrix $X = C^{\frac12} Z diag(\tau)$
+close all; clear; clc
+
+coeff = 5;
+p = 100*coeff;
+n = 500*coeff;
+c = p/n;
+
+eigs_C = [ones(p/4,1); 3*ones(p/4,1); 10*ones(p/2,1)];
+C = diag(eigs_C); % population covariance
+tau = gamrnd(.5,2,n,1);
+eigs_tilde_C = tau;
+
+Z = randn(p,n);
+X = C^(1/2)*Z*diag(sqrt(tau));
+%%
+% Empirical eigenvalues of the sample covariance matrix $\frac1n X X^T
+% versus the solution of fixed-point equation in Theorem 2.6
+SCM = X*(X')/n;
+eigs_SCM = eig(SCM);
+edges1=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.2,100);
+edges2=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.2,300);
+
+clear i % make sure i stands for the imaginary unit
+y = 1e-5;
+zs = edges2+y*1i;
+mu = zeros(length(zs),1);
+
+delta = [0,0]; % corresponds to [delta, delta_delta] in Theorem 2.6
+for j = 1:length(zs)
+    z = zs(j);
+    
+    delta_tmp = [1,1];
+    %watch_dog = 1; % to avoid possible numerical convergence issue
+    while max(abs(delta-delta_tmp))>1e-6 %&& watch_dog < 50
+        delta_tmp = delta;
+        delta(1) = -1/n/z*sum(eigs_C./( 1 + delta_tmp(2)*eigs_C ));
+        delta(2) = -1/n/z*sum(eigs_tilde_C./( 1 + delta_tmp(1)*eigs_tilde_C ));
+    end
+    
+    m = -1/p/z*sum(1./(1 + delta(2)*eigs_C) );
+    mu(j)=imag(m)/pi;
+end
+
+figure(1)
+histogram(eigs_SCM,edges1, 'Normalization', 'pdf');
+hold on;
+plot(edges2,mu,'r', 'Linewidth',2);
+legend('Empirical eigenvalues of SCM', 'Limiting spectral measure', 'FontSize', 15)
+
+%% Fixed-point equation for M-estimator $\hat C$ and the asymptotic equivalent $\hat S$ per Theorem 3.4
+alpha = 0.2;
+u = @(x) (1+alpha)./(alpha+x);
+phi = @(x) x.*u(x);
+g = @(x) x./(1-c*phi(x));
+
+hat_C_tmp = eye(p);
+hat_C = eye(p)/2;
+while norm(hat_C -  hat_C_tmp)/norm(hat_C)>1e-3
+    hat_C_tmp = hat_C;
+    inv_hat_C_X = hat_C\X;
+    hat_C = X*diag(u(diag(X'*inv_hat_C_X/p)))*(X')/n;
+end
+
+gamma = 1;
+gamma_tmp = 0;
+while abs(gamma-gamma_tmp)>1e-6
+    gamma_tmp = gamma;
+    
+    syms x
+    g_inv = finverse(g(x));
+    x = gamma*tau;
+    v = u(eval(g_inv));
+    gamma = 1/(sum( tau.*v./(1+c*gamma*tau.*v) )/n);
+end
+
+hat_S = X*diag(v)*(X')/n;
+eigs_hat_S = eig(hat_S);
+
+eigs_hat_C = eig(hat_C);
+edges1=linspace(min(eigs_hat_C)-.1,max(eigs_hat_C)+.2,100);
+edges2=linspace(min(eigs_hat_C)-.1,max(eigs_hat_C)+.2,300);
+
+%% Limiting spectral measure of $\hat S$ (and thus of $\hat C$) via Theorem 2.6
+eigs_tilde_C = tau.*v;
+
+clear i % make sure i stands for the imaginary unit
+y = 1e-5;
+zs = edges2+y*1i;
+mu = zeros(length(zs),1);
+
+delta = [0,0]; % corresponds to [delta, delta_delta] in Theorem 2.6
+for j = 1:length(zs)
+    z = zs(j);
+    
+    delta_tmp = [1,1];
+    %watch_dog = 1; % to avoid possible numerical convergence issue
+    while max(abs(delta-delta_tmp))>1e-6 %&& watch_dog < 50
+        delta_tmp = delta;
+        delta(1) = -1/n/z*sum(eigs_C./( 1 + delta_tmp(2)*eigs_C ));
+        delta(2) = -1/n/z*sum(eigs_tilde_C./( 1 + delta_tmp(1)*eigs_tilde_C ));
+    end
+    
+    m = -1/p/z*sum(1./(1 + delta(2)*eigs_C) );
+    mu(j)=imag(m)/pi;
+end
+
+figure
+histogram(eigs_hat_C,edges1, 'Normalization', 'pdf');
+hold on;
+plot(edges2,mu,'r', 'Linewidth',2);
+legend('Empirical eigenvalues of M-estimator $\hat C$', 'Limiting spectral measure', 'FontSize', 15, 'Interpreter', 'latex')
+
+
+figure
+histogram(eigs_hat_S,edges1, 'Normalization', 'pdf');
+hold on;
+plot(edges2,mu,'r', 'Linewidth',2);
+legend('Empirical eigenvalues of $\hat S$', 'Limiting spectral measure', 'FontSize', 15, 'Interpreter', 'latex')
+
+%% Robust Spiked Model in Remark 3.5
+close all; clear; clc
+
+coeff = 1;
+p = 100*coeff;
+n = 300*coeff;
+c = p/n;
+
+nu_student = 100; %%% degrees of freedom nu of Student's t distribution
+t = trnd(nu_student,n,1)/sqrt(nu_student/(nu_student-2));
+tau = t.^2;
+
+a = [-ones(p/2,1);ones(p/2,1)]/sqrt(p);
+s = randn(n,1)*.65;
+
+Z = randn(p,n);
+X = a*(s') + Z*diag(sqrt(tau));
+
+alpha = 0.2;
+u = @(x) (1+alpha)./(alpha+x);
+phi = @(x) x.*u(x);
+g = @(x) x./(1-c*phi(x));
+
+hat_C_tmp = eye(p);
+hat_C = eye(p)/2;
+while norm(hat_C -  hat_C_tmp)/norm(hat_C)>1e-3
+    hat_C_tmp = hat_C;
+    inv_hat_C_X = hat_C\X;
+    hat_C = X*diag(u(diag(X'*inv_hat_C_X/p)))*(X')/n;
+end
+
+eigs_hat_C = eig(hat_C);
+edges1=linspace(min(eigs_hat_C)-.1,max(eigs_hat_C)+.2,100);
+edges2=linspace(min(eigs_hat_C)-.1,max(eigs_hat_C)+.2,300);
+
+gamma = 1;
+gamma_tmp = 0;
+while abs(gamma-gamma_tmp)>1e-6
+    gamma_tmp = gamma;
+    
+    syms x
+    g_inv = finverse(g(x));
+    x = gamma*tau;
+    v = u(eval(g_inv));
+    gamma = 1/(sum( tau.*v./(1+c*gamma*tau.*v) )/n);
+end
+
+eigs_C = ones(p,1);
+eigs_tilde_C = tau.*v;
+
+clear i % make sure i stands for the imaginary unit
+y = 1e-5;
+zs = edges2+y*1i;
+mu = zeros(length(zs),1);
+
+delta = [0,0]; 
+for j = 1:length(zs)
+    z = zs(j);
+    
+    delta_tmp = [1,1];
+    while max(abs(delta-delta_tmp))>1e-6 
+        delta_tmp = delta;
+        delta(1) = -1/n/z*sum(eigs_C./( 1 + delta_tmp(2)*eigs_C ));
+        delta(2) = -1/n/z*sum(eigs_tilde_C./( 1 + delta_tmp(1)*eigs_tilde_C ));
+    end
+    
+    m = -1/p/z*sum(1./(1 + delta(2)*eigs_C) );
+    mu(j)=imag(m)/pi;
+end
+
+S_plus = (1+alpha)/(1-c*(1+alpha))*(1+sqrt(c))^2/gamma;
+
+figure
+histogram(eigs_hat_C,edges1, 'Normalization', 'pdf');
+hold on;
+plot(edges2,mu,'r', 'Linewidth',2);
+xline(S_plus);
+legend('Empirical eigenvalues of $\hat C$', 'Limiting spectral measure', 'FontSize', 15, 'Interpreter', 'latex')
+
+##### SOURCE END #####
+--></body></html>

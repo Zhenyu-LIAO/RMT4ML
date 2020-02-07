@@ -87,6 +87,47 @@ text(zero_m-1e-4, .5,'$\eta_i$', 'Interpreter', 'latex', 'FontSize',12)
 disp(eig_C)
 disp(sort(popu_eigs_estim(eigs_SCM,p,cs),'ascend'))
 
+%% Plot of estimation error as a function of the p/n ratio
+close all; clear; clc
+
+p = 128; % 256
+n = 512; % 1024
+c = p/n;
+
+delta_lambda_loop = .1:.1:1.6;
+
+nb_average_loop = 50;
+error_store = zeros(length(delta_lambda_loop),nb_average_loop);
+
+for delta_lambda_index = 1:length(delta_lambda_loop)
+    delta_lambda = delta_lambda_loop(delta_lambda_index);
+    
+    eig_C = [1, 1+ delta_lambda];
+    cs = [1/2, 1/2];
+    eigs_C = [eig_C(1)*ones(p/2,1); eig_C(2)*ones(p/2,1)];
+    C = diag(eigs_C); % population covariance
+    
+    for average_loop=1:nb_average_loop
+        Z = randn(p,n);
+        X = sqrtm(C)*Z;
+        SCM = X'*X/n;
+        eigs_SCM = eig(SCM);
+    
+        estim_eig = sort(popu_eigs_estim(eigs_SCM,p,cs),'ascend');
+        error_store(delta_lambda_index,average_loop) = norm(estim_eig - eig_C);
+    end
+end
+
+%%
+figure
+hold on
+plot(delta_lambda_loop,mean(error_store,2),'*');
+xlabel('$\Delta \lambda$', 'Interpreter', 'latex')
+
+clc
+sprintf('(%.1f,%f)',[delta_lambda_loop', mean(error_store,2)]')
+
+%% FUNCTIONS
 function popu_eig = popu_eigs_estim(eigs_SCM,p,cs)
 %popu_eigs_estim large n,p consitent estimator of the (k-discrecte)
 %population eigvalues of C (or nu)
