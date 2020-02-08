@@ -26,4 +26,12 @@ Below is the table of content of the book that links to corresponding [MATLAB](h
 		* Section 2.5.3 Limiting fluctuations
 		* Section 2.5.4 Further discussions and other spiked models
 	* Section 2.6 Information-plus-noise, deformed Wigner, and other models
+	* Section 2.7 Beyond vectors of independent entries: concentration of measure in RMT
+	* Section 2.8 Concluding remarks
+* Section 3 Statistical Inference in Linear Models
+	* Section 3.1 [Detection and estimation in information-plus-noise models](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/3.1/html/detect_and_estim_info_plus_noise.html)
+	* Section 3.2 [Covariance matrix distance estimation](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/3.2/html/cov_distance_estimation.html)
+	* Section 3.3 [M-estimator of scatter](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/3.3/html/M_estim_of_scatter.html)
+	* Section 3.4 Concluding remarks
+
 
