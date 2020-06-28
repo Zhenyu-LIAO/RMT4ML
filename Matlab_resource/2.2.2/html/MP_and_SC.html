@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 2.2.2: The Marcenko-Pastur and semi-circle laws</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-11-05"><meta name="DC.source" content="MP_and_SC.m"><style type="text/css">
+      --><title>Section 2.2.2: The Marcenko-Pastur and semi-circle laws</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-06-27"><meta name="DC.source" content="MP_and_SC.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,15 +66,16 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 2.2.2: The Marcenko-Pastur and semi-circle laws</h1><!--introduction--><p>This page contains simulations in Section 2.2.2.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">The Marcenko-Pastur law (Theorem 2.3&#65289;</a></li><li><a href="#3">The Wigner semi-circle law &#65288;Theorem 2.4)</a></li></ul></div><h2 id="1">The Marcenko-Pastur law (Theorem 2.3&#65289;</h2><p>Generate a (Gaussian) random matrix <img src="MP_and_SC_eq12362013959998143435.png" alt="$X$" style="width:10px;height:8px;"> of dimension <img src="MP_and_SC_eq00624470566282429309.png" alt="$p \times n$" style="width:26px;height:8px;">.</p><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 2.2.2: The Marcenko-Pastur and semi-circle laws</h1><!--introduction--><p>This page contains simulations in Section 2.2.2.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">The Marcenko-Pastur law (Theorem 2.3&#65289;</a></li><li><a href="#3">The Wigner semi-circle law&#65288;Theorem 2.4)</a></li></ul></div><h2 id="1">The Marcenko-Pastur law (Theorem 2.3&#65289;</h2><p>Generate a (Gaussian) random matrix <img src="MP_and_SC_eq12362013959998143435.png" alt="$X$"> of dimension <img src="MP_and_SC_eq00624470566282429309.png" alt="$p \times n$">.</p><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 5;
 p = 100*coeff;
-n = 1000*coeff;
+n = 10000*coeff;
 c = p/n;
 
+rng(928);
 X = randn(p,n);
-</pre><p>Empirical eigenvalues of <img src="MP_and_SC_eq04476533116490492850.png" alt="$\frac1n X X^T$" style="width:32px;height:14px;"> versus the Marcenko-Pastur law.</p><pre class="codeinput">SCM = X*(X')/n;
+</pre><p>Empirical eigenvalues of <img src="MP_and_SC_eq04476533116490492850.png" alt="$\frac1n X X^T$"> versus the Marcenko-Pastur law.</p><pre class="codeinput">SCM = X*(X')/n;
 a = (1-sqrt(c))^2;
 b = (1+sqrt(c))^2;
 edges=linspace(a-eps,b+eps,60);
@@ -85,13 +86,17 @@ hold <span class="string">on</span>;
 mu=sqrt( max(edges-a,0).*max(b-edges,0) )/2/pi/c./edges;
 plot(edges,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
 legend(<span class="string">'Empirical eigenvalues'</span>, <span class="string">'Marcenko-Pastur law'</span>, <span class="string">'FontSize'</span>, 15)
-</pre><img vspace="5" hspace="5" src="MP_and_SC_01.png" alt=""> <h2 id="3">The Wigner semi-circle law &#65288;Theorem 2.4)</h2><p>Generate a (Gaussian) symmetric random matrix <img src="MP_and_SC_eq12362013959998143435.png" alt="$X$" style="width:10px;height:8px;"> of size <img src="MP_and_SC_eq14662025674782596410.png" alt="$n \times n$" style="width:27px;height:6px;">.</p><pre class="codeinput">coeff = 5;
-n=100*coeff;
+axis([0.7 1.3 0 4.5]);
+</pre><img vspace="5" hspace="5" src="MP_and_SC_01.png" alt=""> <h2 id="3">The Wigner semi-circle law&#65288;Theorem 2.4)</h2><p>Generate a (Gaussian) symmetric random matrix <img src="MP_and_SC_eq12362013959998143435.png" alt="$X$"> of size <img src="MP_and_SC_eq14662025674782596410.png" alt="$n \times n$">.</p><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
+coeff = 5;
+n=200*coeff;
+
+rng(928);
 Z=randn(n);
 Z_U = triu(Z);
 X = triu(Z) + triu(Z)'-diag(diag(triu(Z)));
-</pre><p>Empirical eigenvalues of <img src="MP_and_SC_eq10357368482456357479.png" alt="$\frac{X}{\sqrt{n}}$" style="width:12px;height:16px;"> versus the semi-circle law.</p><pre class="codeinput">edges=linspace(-2-eps,2+eps,50);
+</pre><p>Empirical eigenvalues of <img src="MP_and_SC_eq10357368482456357479.png" alt="$\frac{X}{\sqrt{n}}$"> versus the semi-circle law.</p><pre class="codeinput">edges=linspace(-2-eps,2+eps,50);
 
 figure
 histogram(eig(X/sqrt(n)),edges,<span class="string">'Normalization'</span>,<span class="string">'pdf'</span>);
@@ -99,6 +104,7 @@ hold <span class="string">on</span>;
 mu = sqrt( max(4 - edges.^2,0) )/2/pi;
 plot(edges,mu,<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,2);
 legend(<span class="string">'Empirical eigenvalues'</span>, <span class="string">'Wigner semi-circle law'</span>, <span class="string">'FontSize'</span>, 15)
+axis([-2.5 2.5 0 0.5]);
 </pre><img vspace="5" hspace="5" src="MP_and_SC_02.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Section 2.2.2: The Marcenko-Pastur and semi-circle laws
@@ -110,9 +116,10 @@ close all; clear; clc
 
 coeff = 5; 
 p = 100*coeff;
-n = 1000*coeff;
+n = 10000*coeff;
 c = p/n;
 
+rng(928);
 X = randn(p,n);
 %%
 % Empirical eigenvalues of $\frac1n X X^T$ versus the Marcenko-Pastur law.
@@ -127,16 +134,20 @@ hold on;
 mu=sqrt( max(edges-a,0).*max(b-edges,0) )/2/pi/c./edges;
 plot(edges,mu,'r', 'Linewidth',2);
 legend('Empirical eigenvalues', 'Marcenko-Pastur law', 'FontSize', 15)
+axis([0.7 1.3 0 4.5]);
 
-%% The Wigner semi-circle law （Theorem 2.4)
+%% The Wigner semi-circle law（Theorem 2.4)
 % Generate a (Gaussian) symmetric random matrix $X$ of size $n \times n$.
+close all; clear; clc
 
 coeff = 5;
-n=100*coeff;
+n=200*coeff;
 
+rng(928);
 Z=randn(n);
 Z_U = triu(Z);
 X = triu(Z) + triu(Z)'-diag(diag(triu(Z)));
+
 %%
 % Empirical eigenvalues of $\frac{X}{\sqrt{n}}$ versus the semi-circle law.
 edges=linspace(-2-eps,2+eps,50);
@@ -147,6 +158,7 @@ hold on;
 mu = sqrt( max(4 - edges.^2,0) )/2/pi;
 plot(edges,mu,'r','LineWidth',2);
 legend('Empirical eigenvalues', 'Wigner semi-circle law', 'FontSize', 15)
+axis([-2.5 2.5 0 0.5]);
 
 ##### SOURCE END #####
 --></body></html>

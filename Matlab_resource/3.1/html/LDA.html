@@ -1,0 +1,528 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Section 3.1.2: Linear discriminant analysis (LDA)</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-04-19"><meta name="DC.source" content="LDA.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Section 3.1.2: Linear discriminant analysis (LDA)</h1><!--introduction--><p>This page contains simulations in Section 3.1.2</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Hypotheses testing between two Gaussian models: <img src="LDA_eq10009687358208409966.png" alt="$\mathcal N(\mu_0, C_0)$"> versus <img src="LDA_eq04133729760021769134.png" alt="$\mathcal N(\mu_1, C_1)$"></a></li><li><a href="#2">Sample covariance of <img src="LDA_eq15636846968047188835.png" alt="$k$">-class mixture models (Theorem 2.7)</a></li><li><a href="#3">FUNCTION</a></li></ul></div><h2 id="1">Hypotheses testing between two Gaussian models: <img src="LDA_eq10009687358208409966.png" alt="$\mathcal N(\mu_0, C_0)$"> versus <img src="LDA_eq04133729760021769134.png" alt="$\mathcal N(\mu_1, C_1)$"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+p = 100;
+n = 300;
+c = p/n;
+
+a = [ones(p/2,1); -ones(p/2,1)]; <span class="comment">%%% "determnistic" data structure</span>
+a = a/norm(a);
+sigma = 1;
+
+nb_average_loop = 1;
+f_alpha_loop = (1+sqrt(c))^2+linspace(-5,5,100)*n^(-2/3);
+emp_type_1_error = zeros(size(f_alpha_loop));
+theo_type_1_error = zeros(size(f_alpha_loop));
+
+
+<span class="keyword">for</span> i = 1:length(f_alpha_loop)
+    f_alpha = f_alpha_loop(i); <span class="comment">%%% decision thredhold</span>
+
+    T = @(X) norm(X*(X')/n)/( trace(X*(X')/n)/p);
+
+    tmp_error = 0;
+    <span class="keyword">for</span> average_loop = 1:nb_average_loop
+        s = randn(n,1); <span class="comment">%%% random signal</span>
+        X = sigma*randn(p,n);
+        tmp_error = tmp_error + (T(X)&lt; f_alpha);
+    <span class="keyword">end</span>
+    emp_type_1_error(i) = tmp_error/nb_average_loop;
+    [~,theo_type_1_error(i)] = tracy_widom_appx((f_alpha - (1+sqrt(c))^2)*(1+sqrt(c))^(-4/3)*c^(1/6)*n^(2/3), 1);
+<span class="keyword">end</span>
+
+figure
+hold <span class="string">on</span>
+plot(f_alpha_loop,emp_type_1_error)
+plot(f_alpha_loop,theo_type_1_error)
+
+
+close <span class="string">all</span>; clear; clc
+
+coeff = 4;
+p = 600*coeff;
+n = 1000*coeff;
+<span class="comment">%cs = [1/4 3/4];</span>
+cs = [1/2 1/2];
+k = 2;
+
+eigs_C = @(l) [ones(p/3,1); l*ones(p/3,1); l^2*ones(p/3,1)];
+C= @(l) diag(eigs_C(l));
+means = @(l) (-1)^l*[ones(p/2,1); -ones(p/2,1)]/sqrt(p);
+
+
+Z1 = randn(p,n*cs(1));
+Z2 = randn(p,n*cs(2));
+X = [sqrtm(C(1))*Z1, sqrtm(C(2))*Z2];
+SCM = X*(X')/n;
+</pre><h2 id="2">Sample covariance of <img src="LDA_eq15636846968047188835.png" alt="$k$">-class mixture models (Theorem 2.7)</h2><p>Generate a (Gaussian i.i.d.) random matrix <img src="LDA_eq05013124788323701083.png" alt="$Z$"> of dimension <img src="LDA_eq00624470566282429309.png" alt="$p \times n$"> Generate the associated data matrix <img src="LDA_eq11208063956702228074.png" alt="$X = [C_1^{\frac12}z_1, \ldots, C_k^{\frac12}z_i,\ldots]$"></p><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+coeff = 3;
+p = 200*coeff;
+n = 1000*coeff;
+c = p/n;
+k = 3; <span class="comment">% three classes in total</span>
+
+eigs_C = @(a) [ones(p/3,1); a*ones(p/3,1); a^2*ones(p/3,1)];
+C = @(a) diag(eigs_C(a));
+<span class="comment">% fell free to vary the setting of C_a, a=1,...,k</span>
+
+<span class="comment">%cs  = ones(k,1)/k; % the vector of c_a, a=1,...,k, proportion in each class</span>
+cs = [1/4 1/4 1/2];
+
+<span class="keyword">if</span> length(cs) ~= k
+    error(<span class="string">'Error: number of classes mismatches!'</span>)
+<span class="keyword">end</span>
+
+X=zeros(p,n);
+<span class="keyword">for</span> i=1:k
+    X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=sqrtm(C(i))*randn(p,cs(i)*n);
+<span class="keyword">end</span>
+
+<span class="comment">% Empirical eigenvalues of the mixture sample covariance matrix $\frac1n X X^T$</span>
+<span class="comment">% versus the solution of the system of equations in Theorem 2.7</span>
+SCM = X*(X')/n;
+eigs_SCM = eig(SCM);
+edges=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.1,60);
+
+clear <span class="string">i</span> <span class="comment">% make sure i stands for the imaginary unit</span>
+y = 1e-5;
+zs = edges+y*1i;
+mu = zeros(length(zs),1);
+
+tilde_g = ones(k,1); <span class="comment">% corresponds to [tilde_g_1, ..., tilde_g_k] in Theorem 2.6</span>
+<span class="keyword">for</span> j = 1:length(zs)
+    z = zs(j);
+
+    tilde_g_tmp = zeros(k,1);
+    <span class="comment">%watch_dog = 1; % to avoid possible numerical convergence issue</span>
+    <span class="keyword">while</span> max(abs(tilde_g-tilde_g_tmp))&gt;1e-6 <span class="comment">%&amp;&amp; watch_dog&lt;50</span>
+        tilde_g_tmp = tilde_g;
+
+        eigs_C_sum = zeros(p,1);
+        <span class="keyword">for</span> b = 1:k
+            eigs_C_sum = eigs_C_sum + cs(b)*tilde_g(b)*eigs_C(b);
+        <span class="keyword">end</span>
+
+        g = ones(k,1);
+        <span class="keyword">for</span> a = 1:k
+            g(a) = -1/n/z*sum( eigs_C(a)./(1 + eigs_C_sum) );
+            tilde_g(a) = -1/z/(1+g(a));
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+    eigs_C_sum = zeros(p,1);
+    <span class="keyword">for</span> b = 1:k
+        eigs_C_sum = eigs_C_sum + cs(b)*tilde_g_tmp(b)*eigs_C(b);
+    <span class="keyword">end</span>
+    m = -1/p/z*sum(1./(1 + eigs_C_sum) );
+    mu(j)=imag(m)/pi;
+<span class="keyword">end</span>
+
+figure
+histogram(eigs_SCM,edges, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+hold <span class="string">on</span>;
+plot(edges,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
+legend(<span class="string">'Empirical eigenvalues'</span>, <span class="string">'Theorem 2.7'</span>, <span class="string">'FontSize'</span>, 15)
+
+
+z = -.1;
+
+Q_c = inv( SCM - z*eye(p) );
+U = [means(1), means(2), sqrtm(C(1))*Z1*ones(n*cs(1),1)/(n*cs(1)), sqrtm(C(2))*Z2*ones(n*cs(2),1)/(n*cs(2))];
+
+Delta = zeros(4,4);
+Delta(3,3) = cs(1);
+Delta(4,4) = cs(1);
+Q = inv( SCM - U*Delta*(U') - z*eye(p) );
+
+
+tilde_g = ones(k,1);
+tilde_g_tmp = zeros(k,1);
+<span class="comment">%%watch_dog = 1;</span>
+<span class="keyword">while</span> min(abs(tilde_g-tilde_g_tmp))&gt;1e-6 <span class="comment">%%&amp;&amp; watch_dog&lt;50</span>
+    tilde_g_tmp = tilde_g;
+
+    eigs_C_sum = zeros(p,1);
+    <span class="keyword">for</span> b = 1:k
+        eigs_C_sum = eigs_C_sum + cs(b)*tilde_g(b)*eigs_C(b);
+    <span class="keyword">end</span>
+
+    g = ones(k,1);
+    <span class="keyword">for</span> a = 1:k
+        g(a) = -1/n/z*sum( eigs_C(a)./(1 + eigs_C_sum) );
+        tilde_g(a) = -1/z/(1+g(a));
+    <span class="keyword">end</span>
+    <span class="comment">%%watch_dog = watch_dog + 1;</span>
+<span class="keyword">end</span>
+
+
+eigs_C_sum = zeros(p,p);
+<span class="keyword">for</span> b = 1:k
+    eigs_C_sum = eigs_C_sum + cs(b)*tilde_g(b)*C(b);
+<span class="keyword">end</span>
+
+bar_Q_c = -inv( eigs_C_sum + eye(p) )/z;
+
+gamma = -z;
+
+T1 = [1 -1 -1 -1]*(U')*Q*U*[1; -1; 1; -1]/2
+T2 = [-1 1 -1 -1]*(U')*Q*U*[1; -1; 1; -1]/2
+
+disp(<span class="string">'Romain'</span>)
+( (means(1) - means(2))'*bar_Q_c*(means(1) - means(2)) -(1-gamma*tilde_g(1))^2/(cs(1))^2 + (1-gamma*tilde_g(2))^2/(cs(2))^2 )/2
+( -(means(1) - means(2))'*bar_Q_c*(means(1) - means(2)) -(1-gamma*tilde_g(1))^2/(cs(1))^2 + (1-gamma*tilde_g(2))^2/(cs(2))^2 )/2
+
+disp(<span class="string">'Mine'</span>)
+( (means(1) - means(2))'*bar_Q_c*(means(1) - means(2)) -(1-gamma*tilde_g(1))/(cs(1)*gamma*tilde_g(1)) + (1-gamma*tilde_g(2))/(cs(2)*gamma*tilde_g(2)) )/2
+( -(means(1) - means(2))'*bar_Q_c*(means(1) - means(2)) -(1-gamma*tilde_g(1))/(cs(1)*gamma*tilde_g(1)) + (1-gamma*tilde_g(2))/(cs(2)*gamma*tilde_g(2)) )/2
+<span class="comment">%</span>
+<span class="comment">% U'*Q*U</span>
+<span class="comment">%</span>
+<span class="comment">% A = [ means(1)'*bar_Q*means(1), means(1)'*bar_Q*means(2); means(2)'*bar_Q*means(1), means(2)'*bar_Q*means(2) ]</span>
+<span class="comment">% B = [ (1 + z*tilde_g(1))/(cs(1)), 0; 0, (1 +z*tilde_g(2))/(cs(2)) ]</span>
+<span class="comment">%</span>
+</pre><pre class="codeoutput error">Undefined function 'means' for input arguments of type 'double'.
+
+Error in LDA (line 139)
+U = [means(1), means(2), sqrtm(C(1))*Z1*ones(n*cs(1),1)/(n*cs(1)), sqrtm(C(2))*Z2*ones(n*cs(2),1)/(n*cs(2))];
+</pre><h2 id="3">FUNCTION</h2><pre class="codeinput"><span class="keyword">function</span> [pdftwappx, cdftwappx] = tracy_widom_appx(x, i)
+<span class="comment">%</span>
+<span class="comment">% [pdftwappx, cdftwappx]=tracywidom_appx(x, i)</span>
+<span class="comment">%</span>
+<span class="comment">% SHIFTED GAMMA APPROXIMATION FOR THE TRACY-WIDOM LAWS, by M. Chiani, 2014</span>
+<span class="comment">% code publicly available https://www.mathworks.com/matlabcentral/fileexchange/44711-approximation-for-the-tracy-widom-laws</span>
+<span class="comment">%</span>
+<span class="comment">% TW ~ Gamma[k,theta]-alpha</span>
+<span class="comment">%</span>
+<span class="comment">% [pdf,cdf]=tracywidom_appx(x,i) for i=1,2,4 gives TW1, TW2, TW4</span>
+<span class="comment">%</span>
+
+kappx = [46.44604884387787, 79.6594870666346, 0, 146.0206131050228];   <span class="comment">%  K, THETA, ALPHA</span>
+thetaappx = [0.18605402228279347, 0.10103655775856243, 0, 0.05954454047933292];
+alphaappx = [9.848007781128567, 9.819607173436484, 0, 11.00161520109004];
+
+cdftwappx = cdfgamma(x+alphaappx(i), thetaappx(i), kappx(i));
+
+pdftwappx = pdfgamma(x+alphaappx(i), thetaappx(i), kappx(i));
+
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> pdf=pdfgamma(x, ta, ka)
+<span class="keyword">if</span>(x &gt; 0)
+    pdf=1/(gamma(ka)*ta^ka) * x.^(ka - 1) .* exp(-x/ta);
+<span class="keyword">else</span>
+    pdf=0 ;
+<span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> cdf=cdfgamma(x, ta, ka)
+<span class="keyword">if</span>(x &gt; 0)
+    cdf=gammainc(x/ta,ka);
+<span class="keyword">else</span>
+    cdf=0;
+<span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Section 3.1.2: Linear discriminant analysis (LDA)
+% This page contains simulations in Section 3.1.2
+
+%% Hypotheses testing between two Gaussian models: $\mathcal N(\mu_0, C_0)$ versus $\mathcal N(\mu_1, C_1)$
+
+close all; clear; clc
+
+p = 100;
+n = 300;
+c = p/n;
+
+a = [ones(p/2,1); -ones(p/2,1)]; %%% "determnistic" data structure
+a = a/norm(a);
+sigma = 1;
+
+nb_average_loop = 1;
+f_alpha_loop = (1+sqrt(c))^2+linspace(-5,5,100)*n^(-2/3);
+emp_type_1_error = zeros(size(f_alpha_loop));
+theo_type_1_error = zeros(size(f_alpha_loop));
+
+
+for i = 1:length(f_alpha_loop)
+    f_alpha = f_alpha_loop(i); %%% decision thredhold
+    
+    T = @(X) norm(X*(X')/n)/( trace(X*(X')/n)/p);
+    
+    tmp_error = 0;
+    for average_loop = 1:nb_average_loop
+        s = randn(n,1); %%% random signal
+        X = sigma*randn(p,n);
+        tmp_error = tmp_error + (T(X)< f_alpha);
+    end
+    emp_type_1_error(i) = tmp_error/nb_average_loop;
+    [~,theo_type_1_error(i)] = tracy_widom_appx((f_alpha - (1+sqrt(c))^2)*(1+sqrt(c))^(-4/3)*c^(1/6)*n^(2/3), 1);
+end
+
+figure
+hold on
+plot(f_alpha_loop,emp_type_1_error)
+plot(f_alpha_loop,theo_type_1_error)
+
+
+close all; clear; clc
+
+coeff = 4;
+p = 600*coeff;
+n = 1000*coeff;
+%cs = [1/4 3/4];
+cs = [1/2 1/2];
+k = 2;
+
+eigs_C = @(l) [ones(p/3,1); l*ones(p/3,1); l^2*ones(p/3,1)];
+C= @(l) diag(eigs_C(l));
+means = @(l) (-1)^l*[ones(p/2,1); -ones(p/2,1)]/sqrt(p);
+
+
+Z1 = randn(p,n*cs(1));
+Z2 = randn(p,n*cs(2));
+X = [sqrtm(C(1))*Z1, sqrtm(C(2))*Z2];
+SCM = X*(X')/n;
+
+%% Sample covariance of $k$-class mixture models (Theorem 2.7)
+% Generate a (Gaussian i.i.d.) random matrix $Z$ of dimension $p \times n$
+% Generate the associated data matrix $X = [C_1^{\frac12}z_1, \ldots, C_k^{\frac12}z_i,\ldots]$
+close all; clear; clc
+
+coeff = 3;
+p = 200*coeff;
+n = 1000*coeff;
+c = p/n;
+k = 3; % three classes in total
+
+eigs_C = @(a) [ones(p/3,1); a*ones(p/3,1); a^2*ones(p/3,1)];
+C = @(a) diag(eigs_C(a));
+% fell free to vary the setting of C_a, a=1,...,k
+
+%cs  = ones(k,1)/k; % the vector of c_a, a=1,...,k, proportion in each class
+cs = [1/4 1/4 1/2];
+
+if length(cs) ~= k
+    error('Error: number of classes mismatches!')
+end
+
+X=zeros(p,n);
+for i=1:k
+    X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=sqrtm(C(i))*randn(p,cs(i)*n);
+end
+
+% Empirical eigenvalues of the mixture sample covariance matrix $\frac1n X X^T$
+% versus the solution of the system of equations in Theorem 2.7
+SCM = X*(X')/n;
+eigs_SCM = eig(SCM);
+edges=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.1,60);
+
+clear i % make sure i stands for the imaginary unit
+y = 1e-5;
+zs = edges+y*1i;
+mu = zeros(length(zs),1);
+
+tilde_g = ones(k,1); % corresponds to [tilde_g_1, ..., tilde_g_k] in Theorem 2.6
+for j = 1:length(zs)
+    z = zs(j);
+    
+    tilde_g_tmp = zeros(k,1);
+    %watch_dog = 1; % to avoid possible numerical convergence issue
+    while max(abs(tilde_g-tilde_g_tmp))>1e-6 %&& watch_dog<50
+        tilde_g_tmp = tilde_g;
+        
+        eigs_C_sum = zeros(p,1);
+        for b = 1:k
+            eigs_C_sum = eigs_C_sum + cs(b)*tilde_g(b)*eigs_C(b);
+        end
+        
+        g = ones(k,1);
+        for a = 1:k
+            g(a) = -1/n/z*sum( eigs_C(a)./(1 + eigs_C_sum) );
+            tilde_g(a) = -1/z/(1+g(a));
+        end
+    end
+    
+    eigs_C_sum = zeros(p,1);
+    for b = 1:k
+        eigs_C_sum = eigs_C_sum + cs(b)*tilde_g_tmp(b)*eigs_C(b);
+    end
+    m = -1/p/z*sum(1./(1 + eigs_C_sum) );
+    mu(j)=imag(m)/pi;
+end
+
+figure
+histogram(eigs_SCM,edges, 'Normalization', 'pdf');
+hold on;
+plot(edges,mu,'r', 'Linewidth',2);
+legend('Empirical eigenvalues', 'Theorem 2.7', 'FontSize', 15)
+
+
+z = -.1;
+
+Q_c = inv( SCM - z*eye(p) );
+U = [means(1), means(2), sqrtm(C(1))*Z1*ones(n*cs(1),1)/(n*cs(1)), sqrtm(C(2))*Z2*ones(n*cs(2),1)/(n*cs(2))];
+
+Delta = zeros(4,4);
+Delta(3,3) = cs(1);
+Delta(4,4) = cs(1);
+Q = inv( SCM - U*Delta*(U') - z*eye(p) );
+
+
+tilde_g = ones(k,1);
+tilde_g_tmp = zeros(k,1);
+%%watch_dog = 1;
+while min(abs(tilde_g-tilde_g_tmp))>1e-6 %%&& watch_dog<50
+    tilde_g_tmp = tilde_g;
+    
+    eigs_C_sum = zeros(p,1);
+    for b = 1:k
+        eigs_C_sum = eigs_C_sum + cs(b)*tilde_g(b)*eigs_C(b);
+    end
+    
+    g = ones(k,1);
+    for a = 1:k
+        g(a) = -1/n/z*sum( eigs_C(a)./(1 + eigs_C_sum) );
+        tilde_g(a) = -1/z/(1+g(a));
+    end
+    %%watch_dog = watch_dog + 1;
+end
+
+
+eigs_C_sum = zeros(p,p);
+for b = 1:k
+    eigs_C_sum = eigs_C_sum + cs(b)*tilde_g(b)*C(b);
+end
+
+bar_Q_c = -inv( eigs_C_sum + eye(p) )/z;
+
+gamma = -z;
+
+T1 = [1 -1 -1 -1]*(U')*Q*U*[1; -1; 1; -1]/2
+T2 = [-1 1 -1 -1]*(U')*Q*U*[1; -1; 1; -1]/2
+
+disp('Romain')
+( (means(1) - means(2))'*bar_Q_c*(means(1) - means(2)) -(1-gamma*tilde_g(1))^2/(cs(1))^2 + (1-gamma*tilde_g(2))^2/(cs(2))^2 )/2
+( -(means(1) - means(2))'*bar_Q_c*(means(1) - means(2)) -(1-gamma*tilde_g(1))^2/(cs(1))^2 + (1-gamma*tilde_g(2))^2/(cs(2))^2 )/2
+
+disp('Mine')
+( (means(1) - means(2))'*bar_Q_c*(means(1) - means(2)) -(1-gamma*tilde_g(1))/(cs(1)*gamma*tilde_g(1)) + (1-gamma*tilde_g(2))/(cs(2)*gamma*tilde_g(2)) )/2
+( -(means(1) - means(2))'*bar_Q_c*(means(1) - means(2)) -(1-gamma*tilde_g(1))/(cs(1)*gamma*tilde_g(1)) + (1-gamma*tilde_g(2))/(cs(2)*gamma*tilde_g(2)) )/2
+%
+% U'*Q*U
+%
+% A = [ means(1)'*bar_Q*means(1), means(1)'*bar_Q*means(2); means(2)'*bar_Q*means(1), means(2)'*bar_Q*means(2) ]
+% B = [ (1 + z*tilde_g(1))/(cs(1)), 0; 0, (1 +z*tilde_g(2))/(cs(2)) ]
+%
+
+%% FUNCTION
+function [pdftwappx, cdftwappx] = tracy_widom_appx(x, i)
+%
+% [pdftwappx, cdftwappx]=tracywidom_appx(x, i)
+%
+% SHIFTED GAMMA APPROXIMATION FOR THE TRACY-WIDOM LAWS, by M. Chiani, 2014
+% code publicly available https://www.mathworks.com/matlabcentral/fileexchange/44711-approximation-for-the-tracy-widom-laws
+%
+% TW ~ Gamma[k,theta]-alpha
+%
+% [pdf,cdf]=tracywidom_appx(x,i) for i=1,2,4 gives TW1, TW2, TW4
+%
+
+kappx = [46.44604884387787, 79.6594870666346, 0, 146.0206131050228];   %  K, THETA, ALPHA
+thetaappx = [0.18605402228279347, 0.10103655775856243, 0, 0.05954454047933292];
+alphaappx = [9.848007781128567, 9.819607173436484, 0, 11.00161520109004];
+
+cdftwappx = cdfgamma(x+alphaappx(i), thetaappx(i), kappx(i));
+
+pdftwappx = pdfgamma(x+alphaappx(i), thetaappx(i), kappx(i));
+
+end
+
+function pdf=pdfgamma(x, ta, ka)
+if(x > 0)
+    pdf=1/(gamma(ka)*ta^ka) * x.^(ka - 1) .* exp(-x/ta);
+else
+    pdf=0 ;
+end
+end
+
+function cdf=cdfgamma(x, ta, ka)
+if(x > 0)
+    cdf=gammainc(x/ta,ka);
+else
+    cdf=0;
+end
+
+end
+
+##### SOURCE END #####
+--></body></html>

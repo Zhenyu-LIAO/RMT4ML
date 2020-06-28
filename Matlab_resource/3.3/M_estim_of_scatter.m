@@ -7,7 +7,7 @@
 % Generate the associated data matrix $X = C^{\frac12} Z diag(\tau)$
 close all; clear; clc
 
-coeff = 5;
+coeff = 2;
 p = 100*coeff;
 n = 500*coeff;
 c = p/n;
