@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 2.4.2: Eigenvector projections and subspace methods</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-11-22"><meta name="DC.source" content="eigenvec_proj.m"><style type="text/css">
+      --><title>Section 2.4.2: Eigenvector projections and subspace methods</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-06-28"><meta name="DC.source" content="eigenvec_proj.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 2.4.2: Eigenvector projections and subspace methods</h1><!--introduction--><p>This page contains an application example of estimating functionals of random matrices <img src="eigenvec_proj_eq12362013959998143435.png" alt="$X$" style="width:10px;height:8px;"></p><p><b>Fully separable case</b> with <img src="eigenvec_proj_eq05819522707354563341.png" alt="$\nu = \frac13 (\delta_1 + \delta_3 + \delta_7)$" style="width:89px;height:14px;"> and <img src="eigenvec_proj_eq12910918360393135672.png" alt="$c = 1/10$" style="width:41px;height:11px;"></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Empirical eigenvalues of <img src="eigenvec_proj_eq04476533116490492850.png" alt="$\frac1n X X^T$" style="width:32px;height:14px;"> versus limiting spectrum</a></li><li><a href="#2">Determine the support of <img src="eigenvec_proj_eq05371638286043275527.png" alt="$\mu$" style="width:7px;height:8px;"> with Theorem 2.9</a></li><li><a href="#3">Empirical eigenspace correlation with the proposed estimator</a></li><li><a href="#4">Estimation of eigenspace correlation with rectangular contour</a></li><li><a href="#5">Estimation of eigenspace correlation with line integrals</a></li><li><a href="#6">FUNCTIONS</a></li></ul></div><h2 id="1">Empirical eigenvalues of <img src="eigenvec_proj_eq04476533116490492850.png" alt="$\frac1n X X^T$" style="width:32px;height:14px;"> versus limiting spectrum</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 2.4.2: Eigenvector projections and subspace methods</h1><!--introduction--><p>This page contains an application example of estimating functionals of random matrices <img src="eigenvec_proj_eq12362013959998143435.png" alt="$X$">. <b>Fully separable case</b> with <img src="eigenvec_proj_eq05819522707354563341.png" alt="$\nu = \frac13 (\delta_1 + \delta_3 + \delta_7)$"> and <img src="eigenvec_proj_eq12910918360393135672.png" alt="$c = 1/10$"></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Empirical eigenvalues of <img src="eigenvec_proj_eq04476533116490492850.png" alt="$\frac1n X X^T$"> versus limiting spectrum</a></li><li><a href="#2">Determine the support of <img src="eigenvec_proj_eq05371638286043275527.png" alt="$\mu$"> via Theorem 2.9</a></li><li><a href="#3">Empirical eigenspace correlation with the proposed estimator</a></li><li><a href="#4">Estimation of eigenspace correlation with rectangular contour</a></li><li><a href="#5">Estimation of eigenspace correlation with line integrals</a></li><li><a href="#6">Application: "spiked" model eigenvalue correlation</a></li></ul></div><h2 id="1">Empirical eigenvalues of <img src="eigenvec_proj_eq04476533116490492850.png" alt="$\frac1n X X^T$"> versus limiting spectrum</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 3;
 p = 100*coeff;
@@ -80,8 +80,9 @@ C = diag([eig_C(1)*ones(p/3,1); eig_C(2)*ones(p/3,1); eig_C(3)*ones(p/3,1)]); <s
 [U,eigs_C] = eig(C);
 eigs_C = diag(eigs_C);
 
+rng(928);
 Z = randn(p,n);
-X = C^(1/2)*Z;
+X = sqrtm(C)*Z;
 
 SCM = X*(X')/n; <span class="comment">%%% sample covariance matrix and its empirical spectral measure</span>
 [hat_U,eigs_SCM] = eig(SCM);
@@ -107,14 +108,15 @@ tilde_m=0;
     mu(j)=imag(m)/pi;
 <span class="keyword">end</span>
 
-figure <span class="comment">%%% limiting versus empirical spectral measure of SCM</span>
+figure(1) <span class="comment">%%% limiting versus empirical spectral measure of SCM</span>
+subplot(2,1,1);
 hold <span class="string">on</span>
-histogram(eigs_SCM,edges, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+histogram(eigs_SCM, 60, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
 plot(edges,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
 legend(<span class="string">'Empirical eigenvalues'</span>, <span class="string">'Limiting spectrum'</span>, <span class="string">'FontSize'</span>, 15)
-</pre><img vspace="5" hspace="5" src="eigenvec_proj_01.png" alt=""> <h2 id="2">Determine the support of <img src="eigenvec_proj_eq05371638286043275527.png" alt="$\mu$" style="width:7px;height:8px;"> with Theorem 2.9</h2><pre class="codeinput">tol = 1e-3;
+</pre><img vspace="5" hspace="5" src="eigenvec_proj_01.png" alt=""> <h2 id="2">Determine the support of <img src="eigenvec_proj_eq05371638286043275527.png" alt="$\mu$"> via Theorem 2.9</h2><pre class="codeinput">Tol = 1e-3;
 search_min = -2;
-search_max = tol;
+search_max = Tol;
 search_domain = linspace(search_min, search_max, 5000); <span class="comment">%%% search domain of tilde_m</span>
 
 [~,x_d] = SCM_func_inv(search_domain, eig_C, cs, c);
@@ -127,7 +129,8 @@ support_edges = SCM_func_inv(search_domain(zero_deri_index), eig_C, cs ,c);
     error(<span class="string">'Error: nb of (discrete) eigenvalues and nb of suport edges not match!'</span>)
 <span class="keyword">end</span>
 
-figure <span class="comment">%%% compare estimated support with empirical eigenvalues</span>
+figure(1) <span class="comment">%%% compare estimated support with empirical eigenvalues</span>
+subplot(2,1,2);
 hold <span class="string">on</span>
 plot(eigs_SCM, zeros(size(eigs_SCM)), <span class="string">'bx'</span>);
 <span class="keyword">for</span> edge=support_edges
@@ -140,16 +143,16 @@ axis([0 max(eigs_SCM)+.5 -.5 .5]);
 
 index = 1;
 <span class="keyword">for</span> a=1:length(cs)
-    U_a = U(:,index:index+p*cs(a)-1);
-    hat_U_a = hat_U(:,index:index+p*cs(a)-1);
-    emp_eig_corr(a) = trace(U_a*(U_a')*hat_U_a*(hat_U_a'))/p/cs(a);
+    U_spike = U(:,index:index+p*cs(a)-1);
+    hat_U_spike = hat_U(:,index:index+p*cs(a)-1);
+    emp_eig_corr(a) = trace(U_spike*(U_spike')*hat_U_spike*(hat_U_spike'))/p/cs(a);
 
     index = index+p*cs(a);
 <span class="keyword">end</span>
-disp(<span class="string">'Empirical eigenspace correlation'</span>)
+disp(<span class="string">'Empirical eigenspace correlation:'</span>)
 disp(emp_eig_corr)
-</pre><pre class="codeoutput">Empirical eigenspace correlation
-    0.9658    0.9279    0.9486
+</pre><pre class="codeoutput">Empirical eigenspace correlation:
+    0.9652    0.9279    0.9492
 
 </pre><h2 id="4">Estimation of eigenspace correlation with rectangular contour</h2><pre class="codeinput">estim_eig_corr = zeros(1,length(cs));
 
@@ -187,9 +190,9 @@ disp(emp_eig_corr)
     estim_eig_corr(a) = real(trapz(zs,integrand)/(pi*2i));
 <span class="keyword">end</span>
 
-disp(<span class="string">'Eigenspace correlation estimated with contour integration'</span>)
+disp(<span class="string">'Eigenspace correlation estimated with contour integration (2.29):'</span>)
 disp(estim_eig_corr)
-</pre><pre class="codeoutput">Eigenspace correlation estimated with contour integration
+</pre><pre class="codeoutput">Eigenspace correlation estimated with contour integration (2.29):
     0.9655    0.9278    0.9484
 
 </pre><h2 id="5">Estimation of eigenspace correlation with line integrals</h2><pre class="codeinput">estim_eig_corr = zeros(1,length(cs));
@@ -217,12 +220,92 @@ disp(estim_eig_corr)
     <span class="keyword">end</span>
     estim_eig_corr(a) = trapz(xs,integrand);
 <span class="keyword">end</span>
-disp(<span class="string">'Eigenspace correlation estimated with line integral'</span>)
+disp(<span class="string">'Eigenspace correlation estimated with line integral (2.30):'</span>)
 disp(estim_eig_corr)
-</pre><pre class="codeoutput">Eigenspace correlation estimated with line integral
+</pre><pre class="codeoutput">Eigenspace correlation estimated with line integral (2.30):
     0.9659    0.9281    0.9485
 
-</pre><h2 id="6">FUNCTIONS</h2><pre class="codeinput"><span class="keyword">function</span> [x,x_d] = SCM_func_inv(tilde_m, eig_C, cs, c)
+</pre><h2 id="6">Application: "spiked" model eigenvalue correlation</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc
+
+m_loop = 1:15;
+p_over_m = 16;
+n = 1024;
+c_loop = p_over_m*m_loop/n;
+
+emp_eig_corr = zeros(length(m_loop),1);
+estim_eig_corr = zeros(length(m_loop),1);
+
+rng(928);
+<span class="keyword">for</span> m_index=1:length(m_loop)
+    m = m_loop(m_index);
+    p = p_over_m*m;
+    c = p/n;
+
+    Z = randn(p,n);
+
+    eig_C = [1,2];
+    cs = [(p_over_m-1)/p_over_m, 1/p_over_m];
+    C = diag([eig_C(1)*ones((p_over_m-1)*m,1); eig_C(2)*ones(m,1)]); <span class="comment">%%% population covariance</span>
+    [U,eigs_C] = eig(C);
+    eigs_C = diag(eigs_C);
+
+    X = sqrtm(C)*Z;
+
+    SCM = X*(X')/n; <span class="comment">%%% sample covariance matrix and its empirical spectral measure</span>
+    [hat_U,eigs_SCM] = eig(SCM);
+    eigs_SCM = diag(eigs_SCM);
+    edges=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.1,20);
+
+    Tol = 1e-3;
+    search_min = -3;
+    search_max = Tol;
+    search_domain = linspace(search_min, search_max, 5000); <span class="comment">%%% search domain of tilde_m</span>
+
+    [~,x_d] = SCM_func_inv(search_domain, eig_C, cs, c);
+    x_d_1 = x_d(1:end-1);
+    x_d_2 = x_d(2:end);
+    zero_deri_index =find(sign(x_d_1).*sign(x_d_2)&lt;0);
+    support_edges = SCM_func_inv(search_domain(zero_deri_index), eig_C, cs ,c);
+
+    <span class="comment">% empirical evaluation of the "spike" eigenspace correlation</span>
+    U_spike = U(:,p-m+1:p);
+    hat_U_spike = hat_U(:,p-m+1:p);
+    emp_eig_corr(m_index) = trace(U_spike*(U_spike')*hat_U_spike*(hat_U_spike'))/m;
+
+    <span class="comment">% theory</span>
+    xs = linspace(support_edges(3),support_edges(4), 500);
+    popu_eig = eig_C(2);
+    integrand = zeros(length(xs),1);
+
+    tilde_m=0;
+    <span class="keyword">for</span> j=1:length(xs)
+        clear <span class="string">i</span>
+        x = xs(j);
+        y = 1e-5;
+        z = x+y*1i;
+
+        tilde_m_tmp=-1;
+        <span class="keyword">while</span> abs(tilde_m-tilde_m_tmp)&gt;1e-6
+            tilde_m_tmp=tilde_m;
+            tilde_m = 1/( -z + 1/n*sum(eigs_C./(1+tilde_m*eigs_C)) );
+        <span class="keyword">end</span>
+
+        integrand(j) = popu_eig*imag(tilde_m)/( 1 + 2*popu_eig*real(tilde_m) + popu_eig^2*abs(tilde_m)^2 )/pi/x;
+    <span class="keyword">end</span>
+    estim_eig_corr(m_index) = trapz(xs,integrand);
+<span class="keyword">end</span>
+
+figure
+hold <span class="string">on</span>
+plot(c_loop,emp_eig_corr,<span class="string">'bx'</span>)
+plot(c_loop,estim_eig_corr,<span class="string">'r--'</span>)
+plot(c_loop,(1-c_loop/4)./(1+c_loop/2),<span class="string">'k'</span>)
+xline(c_loop(1),<span class="string">'k--'</span>);
+xlabel(<span class="string">'$p/n$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+ylabel(<span class="string">'Eigenspace correlation'</span>)
+legend(<span class="string">'Empirical spike eigenspace corr'</span>, <span class="string">'Asymptotics by (2.30)'</span>, <span class="string">'Asymptotics by Theo 2.13'</span>, <span class="string">'FontSize'</span>, 15)
+
+<span class="keyword">function</span> [x,x_d] = SCM_func_inv(tilde_m, eig_C, cs, c)
 <span class="comment">%SCM_func_inv functional inverse of Stieltjes transform of large sample</span>
 <span class="comment">%covariance model</span>
 <span class="comment">%   INPUT: Stieltjes transform tilde_m, (k-discrete) eigenvalues of C (or</span>
@@ -241,15 +324,14 @@ x_d = 1./(tilde_m.^2);
 <span class="keyword">end</span>
 
 <span class="keyword">end</span>
-</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="eigenvec_proj_03.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Section 2.4.2: Eigenvector projections and subspace methods
 % This page contains an application example of estimating functionals of
-% random matrices $X$
-%
-% *Fully separable case* with $\nu = \frac13 (\delta_1 + \delta_3 + \delta_7)$ and $c = 1/10$
+% random matrices $X$. *Fully separable case* with $\nu = \frac13 (\delta_1 + \delta_3 + \delta_7)$ and $c = 1/10$
 
 %% Empirical eigenvalues of $\frac1n X X^T$ versus limiting spectrum
+%
 close all; clear; clc
 
 coeff = 3;
@@ -264,8 +346,9 @@ C = diag([eig_C(1)*ones(p/3,1); eig_C(2)*ones(p/3,1); eig_C(3)*ones(p/3,1)]); %%
 [U,eigs_C] = eig(C);
 eigs_C = diag(eigs_C);
 
+rng(928);
 Z = randn(p,n);
-X = C^(1/2)*Z;
+X = sqrtm(C)*Z;
 
 SCM = X*(X')/n; %%% sample covariance matrix and its empirical spectral measure
 [hat_U,eigs_SCM] = eig(SCM);
@@ -291,16 +374,18 @@ for j=1:length(zs)
     mu(j)=imag(m)/pi;
 end
 
-figure %%% limiting versus empirical spectral measure of SCM
+figure(1) %%% limiting versus empirical spectral measure of SCM
+subplot(2,1,1);
 hold on
-histogram(eigs_SCM,edges, 'Normalization', 'pdf');
+histogram(eigs_SCM, 60, 'Normalization', 'pdf');
 plot(edges,mu,'r', 'Linewidth',2);
 legend('Empirical eigenvalues', 'Limiting spectrum', 'FontSize', 15)
 
-%% Determine the support of $\mu$ with Theorem 2.9
-tol = 1e-3;
+%% Determine the support of $\mu$ via Theorem 2.9
+%
+Tol = 1e-3;
 search_min = -2;
-search_max = tol;
+search_max = Tol;
 search_domain = linspace(search_min, search_max, 5000); %%% search domain of tilde_m
 
 [~,x_d] = SCM_func_inv(search_domain, eig_C, cs, c);
@@ -313,7 +398,8 @@ if length(support_edges) ~= 2*length(eig_C)
     error('Error: nb of (discrete) eigenvalues and nb of suport edges not match!')
 end
 
-figure %%% compare estimated support with empirical eigenvalues
+figure(1) %%% compare estimated support with empirical eigenvalues
+subplot(2,1,2);
 hold on
 plot(eigs_SCM, zeros(size(eigs_SCM)), 'bx');
 for edge=support_edges
@@ -324,21 +410,22 @@ ylabel('$\Im[z]$', 'Interpreter', 'latex')
 axis([0 max(eigs_SCM)+.5 -.5 .5]);
 
 %% Empirical eigenspace correlation with the proposed estimator
-
+%
 emp_eig_corr = zeros(1,length(cs));
 
 index = 1;
 for a=1:length(cs)
-    U_a = U(:,index:index+p*cs(a)-1);
-    hat_U_a = hat_U(:,index:index+p*cs(a)-1);
-    emp_eig_corr(a) = trace(U_a*(U_a')*hat_U_a*(hat_U_a'))/p/cs(a);
+    U_spike = U(:,index:index+p*cs(a)-1);
+    hat_U_spike = hat_U(:,index:index+p*cs(a)-1);
+    emp_eig_corr(a) = trace(U_spike*(U_spike')*hat_U_spike*(hat_U_spike'))/p/cs(a);
     
     index = index+p*cs(a);
 end
-disp('Empirical eigenspace correlation')
+disp('Empirical eigenspace correlation:')
 disp(emp_eig_corr)
 
 %% Estimation of eigenspace correlation with rectangular contour
+%
 estim_eig_corr = zeros(1,length(cs));
 
 for a=1:length(cs)
@@ -375,11 +462,11 @@ for a=1:length(cs)
     estim_eig_corr(a) = real(trapz(zs,integrand)/(pi*2i));
 end
 
-disp('Eigenspace correlation estimated with contour integration')
+disp('Eigenspace correlation estimated with contour integration (2.29):')
 disp(estim_eig_corr)
 
 %% Estimation of eigenspace correlation with line integrals
-
+%
 estim_eig_corr = zeros(1,length(cs));
 
 for a=1:length(cs)
@@ -405,11 +492,91 @@ for a=1:length(cs)
     end
     estim_eig_corr(a) = trapz(xs,integrand);
 end
-disp('Eigenspace correlation estimated with line integral')
+disp('Eigenspace correlation estimated with line integral (2.30):')
 disp(estim_eig_corr)
 
+%% Application: "spiked" model eigenvalue correlation
+%
+clear; close all; clc
 
-%% FUNCTIONS
+m_loop = 1:15;
+p_over_m = 16;
+n = 1024;
+c_loop = p_over_m*m_loop/n;
+
+emp_eig_corr = zeros(length(m_loop),1);
+estim_eig_corr = zeros(length(m_loop),1);
+
+rng(928);
+for m_index=1:length(m_loop)
+    m = m_loop(m_index);
+    p = p_over_m*m;
+    c = p/n;
+    
+    Z = randn(p,n);
+    
+    eig_C = [1,2];
+    cs = [(p_over_m-1)/p_over_m, 1/p_over_m];
+    C = diag([eig_C(1)*ones((p_over_m-1)*m,1); eig_C(2)*ones(m,1)]); %%% population covariance
+    [U,eigs_C] = eig(C);
+    eigs_C = diag(eigs_C);
+  
+    X = sqrtm(C)*Z;
+    
+    SCM = X*(X')/n; %%% sample covariance matrix and its empirical spectral measure
+    [hat_U,eigs_SCM] = eig(SCM);
+    eigs_SCM = diag(eigs_SCM);
+    edges=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.1,20);
+        
+    Tol = 1e-3;
+    search_min = -3;
+    search_max = Tol;
+    search_domain = linspace(search_min, search_max, 5000); %%% search domain of tilde_m
+    
+    [~,x_d] = SCM_func_inv(search_domain, eig_C, cs, c);
+    x_d_1 = x_d(1:end-1);
+    x_d_2 = x_d(2:end);
+    zero_deri_index =find(sign(x_d_1).*sign(x_d_2)<0);
+    support_edges = SCM_func_inv(search_domain(zero_deri_index), eig_C, cs ,c);
+    
+    % empirical evaluation of the "spike" eigenspace correlation
+    U_spike = U(:,p-m+1:p);
+    hat_U_spike = hat_U(:,p-m+1:p);
+    emp_eig_corr(m_index) = trace(U_spike*(U_spike')*hat_U_spike*(hat_U_spike'))/m;
+    
+    % theory
+    xs = linspace(support_edges(3),support_edges(4), 500);
+    popu_eig = eig_C(2);
+    integrand = zeros(length(xs),1);
+    
+    tilde_m=0;
+    for j=1:length(xs)
+        clear i
+        x = xs(j);
+        y = 1e-5;
+        z = x+y*1i;
+        
+        tilde_m_tmp=-1;
+        while abs(tilde_m-tilde_m_tmp)>1e-6
+            tilde_m_tmp=tilde_m;
+            tilde_m = 1/( -z + 1/n*sum(eigs_C./(1+tilde_m*eigs_C)) );
+        end
+        
+        integrand(j) = popu_eig*imag(tilde_m)/( 1 + 2*popu_eig*real(tilde_m) + popu_eig^2*abs(tilde_m)^2 )/pi/x;
+    end
+    estim_eig_corr(m_index) = trapz(xs,integrand);
+end
+
+figure
+hold on
+plot(c_loop,emp_eig_corr,'bx')
+plot(c_loop,estim_eig_corr,'rREPLACE_WITH_DASH_DASH')
+plot(c_loop,(1-c_loop/4)./(1+c_loop/2),'k')
+xline(c_loop(1),'kREPLACE_WITH_DASH_DASH');
+xlabel('$p/n$', 'Interpreter', 'latex')
+ylabel('Eigenspace correlation')
+legend('Empirical spike eigenspace corr', 'Asymptotics by (2.30)', 'Asymptotics by Theo 2.13', 'FontSize', 15)
+
 function [x,x_d] = SCM_func_inv(tilde_m, eig_C, cs, c)
 %SCM_func_inv functional inverse of Stieltjes transform of large sample
 %covariance model

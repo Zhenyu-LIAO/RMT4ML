@@ -1,10 +1,9 @@
 %% Section 2.4.2: Eigenvector projections and subspace methods
 % This page contains an application example of estimating functionals of
-% random matrices $X$
-%
-% *Fully separable case* with $\nu = \frac13 (\delta_1 + \delta_3 + \delta_7)$ and $c = 1/10$
+% random matrices $X$. *Fully separable case* with $\nu = \frac13 (\delta_1 + \delta_3 + \delta_7)$ and $c = 1/10$
 
 %% Empirical eigenvalues of $\frac1n X X^T$ versus limiting spectrum
+%
 close all; clear; clc
 
 coeff = 3;
@@ -19,6 +18,7 @@ C = diag([eig_C(1)*ones(p/3,1); eig_C(2)*ones(p/3,1); eig_C(3)*ones(p/3,1)]); %%
 [U,eigs_C] = eig(C);
 eigs_C = diag(eigs_C);
 
+rng(928);
 Z = randn(p,n);
 X = sqrtm(C)*Z;
 
@@ -46,16 +46,18 @@ for j=1:length(zs)
     mu(j)=imag(m)/pi;
 end
 
-figure %%% limiting versus empirical spectral measure of SCM
+figure(1) %%% limiting versus empirical spectral measure of SCM
+subplot(2,1,1);
 hold on
-histogram(eigs_SCM,edges, 'Normalization', 'pdf');
+histogram(eigs_SCM, 60, 'Normalization', 'pdf');
 plot(edges,mu,'r', 'Linewidth',2);
 legend('Empirical eigenvalues', 'Limiting spectrum', 'FontSize', 15)
 
 %% Determine the support of $\mu$ via Theorem 2.9
-tol = 1e-3;
+%
+Tol = 1e-3;
 search_min = -2;
-search_max = tol;
+search_max = Tol;
 search_domain = linspace(search_min, search_max, 5000); %%% search domain of tilde_m
 
 [~,x_d] = SCM_func_inv(search_domain, eig_C, cs, c);
@@ -68,7 +70,8 @@ if length(support_edges) ~= 2*length(eig_C)
     error('Error: nb of (discrete) eigenvalues and nb of suport edges not match!')
 end
 
-figure %%% compare estimated support with empirical eigenvalues
+figure(1) %%% compare estimated support with empirical eigenvalues
+subplot(2,1,2);
 hold on
 plot(eigs_SCM, zeros(size(eigs_SCM)), 'bx');
 for edge=support_edges
@@ -79,7 +82,7 @@ ylabel('$\Im[z]$', 'Interpreter', 'latex')
 axis([0 max(eigs_SCM)+.5 -.5 .5]);
 
 %% Empirical eigenspace correlation with the proposed estimator
-
+%
 emp_eig_corr = zeros(1,length(cs));
 
 index = 1;
@@ -90,10 +93,11 @@ for a=1:length(cs)
     
     index = index+p*cs(a);
 end
-disp('Empirical eigenspace correlation')
+disp('Empirical eigenspace correlation:')
 disp(emp_eig_corr)
 
 %% Estimation of eigenspace correlation with rectangular contour
+%
 estim_eig_corr = zeros(1,length(cs));
 
 for a=1:length(cs)
@@ -130,11 +134,11 @@ for a=1:length(cs)
     estim_eig_corr(a) = real(trapz(zs,integrand)/(pi*2i));
 end
 
-disp('Eigenspace correlation estimated with contour integration')
+disp('Eigenspace correlation estimated with contour integration (2.29):')
 disp(estim_eig_corr)
 
 %% Estimation of eigenspace correlation with line integrals
-
+%
 estim_eig_corr = zeros(1,length(cs));
 
 for a=1:length(cs)
@@ -160,10 +164,11 @@ for a=1:length(cs)
     end
     estim_eig_corr(a) = trapz(xs,integrand);
 end
-disp('Eigenspace correlation estimated with line integral')
+disp('Eigenspace correlation estimated with line integral (2.30):')
 disp(estim_eig_corr)
 
 %% Application: "spiked" model eigenvalue correlation
+%
 clear; close all; clc
 
 m_loop = 1:15;
@@ -174,6 +179,7 @@ c_loop = p_over_m*m_loop/n;
 emp_eig_corr = zeros(length(m_loop),1);
 estim_eig_corr = zeros(length(m_loop),1);
 
+rng(928);
 for m_index=1:length(m_loop)
     m = m_loop(m_index);
     p = p_over_m*m;
@@ -194,9 +200,9 @@ for m_index=1:length(m_loop)
     eigs_SCM = diag(eigs_SCM);
     edges=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.1,20);
         
-    tol = 1e-3;
+    Tol = 1e-3;
     search_min = -3;
-    search_max = tol;
+    search_max = Tol;
     search_domain = linspace(search_min, search_max, 5000); %%% search domain of tilde_m
     
     [~,x_d] = SCM_func_inv(search_domain, eig_C, cs, c);
@@ -210,7 +216,7 @@ for m_index=1:length(m_loop)
     hat_U_spike = hat_U(:,p-m+1:p);
     emp_eig_corr(m_index) = trace(U_spike*(U_spike')*hat_U_spike*(hat_U_spike'))/m;
     
-    % theoretical assessment
+    % theory
     xs = linspace(support_edges(3),support_edges(4), 500);
     popu_eig = eig_C(2);
     integrand = zeros(length(xs),1);
@@ -238,10 +244,11 @@ hold on
 plot(c_loop,emp_eig_corr,'bx')
 plot(c_loop,estim_eig_corr,'r--')
 plot(c_loop,(1-c_loop/4)./(1+c_loop/2),'k')
-xlabel('$c$', 'Interpreter', 'latex')
-legend('Empirical spike eigenspace corr', 'Limiting spike eigenspace corr', 'Prediction by simple spiked model', 'FontSize', 15)
+xline(c_loop(1),'k--');
+xlabel('$p/n$', 'Interpreter', 'latex')
+ylabel('Eigenspace correlation')
+legend('Empirical spike eigenspace corr', 'Asymptotics by (2.30)', 'Asymptotics by Theo 2.13', 'FontSize', 15)
 
-%% FUNCTIONS
 function [x,x_d] = SCM_func_inv(tilde_m, eig_C, cs, c)
 %SCM_func_inv functional inverse of Stieltjes transform of large sample
 %covariance model

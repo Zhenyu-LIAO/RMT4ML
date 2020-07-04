@@ -1,9 +1,8 @@
 %% Section 2.3: Advanced spectrum considerations for sample covariances
 % This page contains simulations in Section 2.3.
 
-%% Section 2.3.1 Limiting spectrum
-% Theorem 2.9 (Silverstin and Choi, 1995):
-% study of the support of (the limiting spectrum of) sample covariance matrix $\frac1n C^{\frac12} Z Z^T C ^{\frac12}$
+%% Section 2.3.1 Limiting spectrum (part 1): Theorem 2.9
+% Study of the support of (the limiting spectrum of) sample covariance matrix $\frac1n C^{\frac12} Z Z^T C ^{\frac12}$
 % as well as its connection to the functional inverse $x(\tilde m)$
 close all; clear; clc
 
@@ -74,10 +73,9 @@ ylabel('$x(\tilde m)$', 'Interpreter', 'latex');
 legend([p1 p2 p3], {'$x(\tilde m)$', '$-\frac1{\tilde m} \in supp(\nu)$', 'empirical eigenvalues of SCM'},...
     'Interpreter', 'latex', 'Location', 'northwest', 'FontSize', 15);
 
-%% Section 2.3.1 Limiting spectrum (continuation)
-% Variable change: relating $supp(\nu)$ and $supp(\mu)$
+%% Section 2.3.1 Limiting spectrum (part 2): variable change to relate $supp(\nu)$ and $supp(\mu)$
 %
-% study of the function $\gamma(\cdot)$ that maps $z(\tilde m)$ to $-\frac1{\tilde m}$
+% Study of the function $\gamma(\cdot)$ that maps $z(\tilde m)$ to $-\frac1{\tilde m}$
 % and in particular, the exclusion region that cannot be reached by $\gamma$
 close all; clear; clc
 
@@ -147,8 +145,7 @@ xlabel('$\Re[-1/\tilde m(z)]$', 'Interpreter', 'latex')
 ylabel('$\Im[-1/\tilde m(z)]$', 'Interpreter', 'latex')
 legend('Typical contour $\Gamma_\nu$ (of $-1/\tilde m(z)$)', 'Support of $\nu$' , 'Interpreter', 'latex')
 
-%% Section 2.3.2 "No eigenvalue outside the support"
-% Theorem 2.10 (Bai and Silverstin, 1998):
+%% Section 2.3.2 "No eigenvalue outside the support" (Theorem 2.10)
 % Study the behavior of SCM eigenvalues that possibly "escapes" from the
 % limiting support $\mu$
 close all; clear; clc

@@ -36,7 +36,6 @@ n=200*coeff;
 
 rng(928);
 Z=randn(n);
-Z_U = triu(Z);
 X = triu(Z) + triu(Z)'-diag(diag(triu(Z)));
 
 %%

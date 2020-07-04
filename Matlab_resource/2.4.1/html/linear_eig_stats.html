@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 2.4.1: Linear eigenvalue statistics</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-11-20"><meta name="DC.source" content="linear_eig_stats.m"><style type="text/css">
+      --><title>Section 2.4.1: Linear eigenvalue statistics</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-06-28"><meta name="DC.source" content="linear_eig_stats.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,23 +66,24 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 2.4.1: Linear eigenvalue statistics</h1><!--introduction--><p>This page contains an application example of Theorem 2.11: estimating population eigenvalues.</p><p><b>Fully separable case</b> with <img src="linear_eig_stats_eq05819522707354563341.png" alt="$\nu = \frac13 (\delta_1 + \delta_3 + \delta_7)$" style="width:89px;height:14px;"> and <img src="linear_eig_stats_eq10582317541369790566.png" alt="$c = 1/5$" style="width:36px;height:11px;"></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Empirical eigenvalues of <img src="linear_eig_stats_eq14356080477867627452.png" alt="$\frac1n X^T X$" style="width:32px;height:14px;"> versus limiting spectrum</a></li><li><a href="#2">Visualization of the behavior Stieltjes transform <img src="linear_eig_stats_eq09654712730130240680.png" alt="$m(x)$" style="width:24px;height:11px;"> around eigvanlue <img src="linear_eig_stats_eq10987481705112842768.png" alt="$\lambda_i$" style="width:9px;height:10px;"> of <img src="linear_eig_stats_eq14356080477867627452.png" alt="$\frac1n X^T X$" style="width:32px;height:14px;"></a></li><li><a href="#3">Compare population eigenvalue with the proposed estimator</a></li></ul></div><h2 id="1">Empirical eigenvalues of <img src="linear_eig_stats_eq14356080477867627452.png" alt="$\frac1n X^T X$" style="width:32px;height:14px;"> versus limiting spectrum</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 2.4.1: Linear eigenvalue statistics</h1><!--introduction--><p>This page contains an application example of Theorem 2.11: estimating population eigenvalues. <b>Fully separable case</b> with <img src="linear_eig_stats_eq05819522707354563341.png" alt="$\nu = \frac13 (\delta_1 + \delta_3 + \delta_7)$"> and <img src="linear_eig_stats_eq10582317541369790566.png" alt="$c = 1/5$"></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Empirical eigenvalues of <img src="linear_eig_stats_eq14356080477867627452.png" alt="$\frac1n X^T X$"> versus limiting spectrum</a></li><li><a href="#2">Visualization of local behavior of Stieltjes transform <img src="linear_eig_stats_eq09654712730130240680.png" alt="$m(x)$"> around eigvanlue <img src="linear_eig_stats_eq10987481705112842768.png" alt="$\lambda_i$"> of <img src="linear_eig_stats_eq14356080477867627452.png" alt="$\frac1n X^T X$"></a></li><li><a href="#3">Population eigenvalue versus the proposed large dimensional estimator</a></li><li><a href="#4">Eigenvalue estimation error as a function of population eigenvalue distance</a></li></ul></div><h2 id="1">Empirical eigenvalues of <img src="linear_eig_stats_eq14356080477867627452.png" alt="$\frac1n X^T X$"> versus limiting spectrum</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 3;
 p = 200*coeff;
 n = 1000*coeff;
-c = p/n;
 
-eigs_C = [1,3,7];
-eigs_C_vec = [eigs_C(1)*ones(p/3,1); eigs_C(2)*ones(p/3,1); eigs_C(3)*ones(p/3,1)];
-C = diag(eigs_C_vec); <span class="comment">% population covariance</span>
+eig_C = [1,3,7];
+cs = [1/3 1/3 1/3];
+eigs_C = [eig_C(1)*ones(p/3,1); eig_C(2)*ones(p/3,1); eig_C(3)*ones(p/3,1)];
+C = diag(eigs_C); <span class="comment">% population covariance</span>
 
+rng(928);
 Z = randn(p,n);
 X = C^(1/2)*Z;
 
 SCM = X'*X/n;
 eigs_SCM = eig(SCM);
-edges=linspace(.1,max(eigs_SCM)+.1,100);
+edges=linspace(.1,max(eigs_SCM)+.1,150);
 
 clear <span class="string">i</span>
 y = 1e-5;
@@ -96,53 +97,99 @@ tilde_m=0;
     tilde_m_tmp=-1;
     <span class="keyword">while</span> abs(tilde_m-tilde_m_tmp)&gt;1e-6
         tilde_m_tmp=tilde_m;
-        tilde_m = 1/( -z + 1/n*sum(eigs_C_vec./(1+tilde_m*eigs_C_vec)) );
+        tilde_m = 1/( -z + 1/n*sum(eigs_C./(1+tilde_m*eigs_C)) );
     <span class="keyword">end</span>
 
     mu(j)=imag(tilde_m)/pi;
 <span class="keyword">end</span>
 
-figure <span class="comment">%%% limiting versus empirical spectral measure of SCM</span>
+figure(1) <span class="comment">%%% limiting versus empirical spectral measure of SCM</span>
 hold <span class="string">on</span>
-histogram(eigs_SCM,edges, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+histogram(eigs_SCM, 60, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
 plot(edges,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
 axis([.1 max(edges)+.5 0 .11]);
 legend(<span class="string">'Empirical eigenvalues of $\frac1n X^T X$'</span>, <span class="string">'Limiting spectrum $\mu$'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
-</pre><img vspace="5" hspace="5" src="linear_eig_stats_01.png" alt=""> <h2 id="2">Visualization of the behavior Stieltjes transform <img src="linear_eig_stats_eq09654712730130240680.png" alt="$m(x)$" style="width:24px;height:11px;"> around eigvanlue <img src="linear_eig_stats_eq10987481705112842768.png" alt="$\lambda_i$" style="width:9px;height:10px;"> of <img src="linear_eig_stats_eq14356080477867627452.png" alt="$\frac1n X^T X$" style="width:32px;height:14px;"></h2><pre class="codeinput">m = @(x) sum(1./(eigs_SCM-x))/n;
-tol1 = 5e-4;
+</pre><img vspace="5" hspace="5" src="linear_eig_stats_01.png" alt=""> <h2 id="2">Visualization of local behavior of Stieltjes transform <img src="linear_eig_stats_eq09654712730130240680.png" alt="$m(x)$"> around eigvanlue <img src="linear_eig_stats_eq10987481705112842768.png" alt="$\lambda_i$"> of <img src="linear_eig_stats_eq14356080477867627452.png" alt="$\frac1n X^T X$"></h2><pre class="codeinput">m = @(x) sum(1./(eigs_SCM-x))/n;
+Tol1 = 5e-4;
 index_eigs_SCM = n-p+51;
-zoom_eigs_SCM = linspace(eigs_SCM(index_eigs_SCM)-tol1,eigs_SCM(index_eigs_SCM+1)+tol1,1000);
+zoom_eigs_SCM = linspace(eigs_SCM(index_eigs_SCM)-Tol1,eigs_SCM(index_eigs_SCM+1)+Tol1,1000);
 
-tol2 = 3e-5;
-zoom_eigs_SCM(zoom_eigs_SCM&lt;=eigs_SCM(index_eigs_SCM)+tol2 &amp; zoom_eigs_SCM&gt;=eigs_SCM(index_eigs_SCM)-tol2)=NaN;
-zoom_eigs_SCM(zoom_eigs_SCM&lt;=eigs_SCM(index_eigs_SCM+1)+tol2 &amp; zoom_eigs_SCM&gt;=eigs_SCM(index_eigs_SCM+1)-tol2)=NaN;
+Tol2 = 3e-5;
+zoom_eigs_SCM(zoom_eigs_SCM&lt;=eigs_SCM(index_eigs_SCM)+Tol2 &amp; zoom_eigs_SCM&gt;=eigs_SCM(index_eigs_SCM)-Tol2)=NaN;
+zoom_eigs_SCM(zoom_eigs_SCM&lt;=eigs_SCM(index_eigs_SCM+1)+Tol2 &amp; zoom_eigs_SCM&gt;=eigs_SCM(index_eigs_SCM+1)-Tol2)=NaN;
 
 <span class="comment">% numerical evaluation of zeros of m</span>
 zeros_m = real(eig(diag(eigs_SCM) - sqrt(eigs_SCM)*sqrt(eigs_SCM')/n));
 zero_m = zeros_m(zeros_m&lt;eigs_SCM(index_eigs_SCM+1) &amp; zeros_m&gt;eigs_SCM(index_eigs_SCM));
 
-figure
+figure(2)
 hold <span class="string">on</span>
 plot(zoom_eigs_SCM, m(zoom_eigs_SCM));
 xline(eigs_SCM(index_eigs_SCM),<span class="string">'--k'</span>);
 xline(eigs_SCM(index_eigs_SCM+1),<span class="string">'--k'</span>);
 yline(0,<span class="string">'--k'</span>);
-axis([eigs_SCM(index_eigs_SCM)-tol1 eigs_SCM(index_eigs_SCM+1)+tol1 -8 8])
-xlabel(<span class="string">'x'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+axis([eigs_SCM(index_eigs_SCM)-Tol1 eigs_SCM(index_eigs_SCM+1)+Tol1 -8 8])
+xlabel(<span class="string">'$x$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 ylabel(<span class="string">'$m_{\frac1n X^T X}(x)$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 
-plot(eigs_SCM(index_eigs_SCM),0,<span class="string">'xb'</span>);
-text(eigs_SCM(index_eigs_SCM)+1e-5,.5,<span class="string">'$\lambda_i(\frac1n X^T X)$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>,12)
-plot(eigs_SCM(index_eigs_SCM+1),0,<span class="string">'xb'</span>);
-text(eigs_SCM(index_eigs_SCM+1)+1e-5,.5,<span class="string">'$\lambda_{i+1}(\frac1n X^T X)$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>,12)
-plot(zero_m, 0,<span class="string">'*r'</span>);
+plot(eigs_SCM(index_eigs_SCM),0,<span class="string">'bo'</span>);
+text(eigs_SCM(index_eigs_SCM)+1e-5,.5,<span class="string">'$\lambda_i$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>,12)
+plot(eigs_SCM(index_eigs_SCM+1),0,<span class="string">'bo'</span>);
+text(eigs_SCM(index_eigs_SCM+1)+1e-5,.5,<span class="string">'$\lambda_{i+1}$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>,12)
+plot(zero_m, 0,<span class="string">'rx'</span>);
+set(gca,<span class="string">'xtick'</span>,[])
 text(zero_m-1e-4, .5,<span class="string">'$\eta_i$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>,12)
-</pre><img vspace="5" hspace="5" src="linear_eig_stats_02.png" alt=""> <h2 id="3">Compare population eigenvalue with the proposed estimator</h2><pre class="codeinput">cs = [1/3 1/3 1/3];
-disp(eigs_C)
-disp(sort(popu_eig_estimator(eigs_SCM,p,cs),<span class="string">'ascend'</span>))
+</pre><img vspace="5" hspace="5" src="linear_eig_stats_02.png" alt=""> <h2 id="3">Population eigenvalue versus the proposed large dimensional estimator</h2><pre class="codeinput">disp(eig_C)
+disp(sort(popu_eigs_estim(eigs_SCM,p,cs),<span class="string">'ascend'</span>))
+</pre><pre class="codeoutput">     1     3     7
+
+    1.0000    3.0000    6.9794
+
+</pre><h2 id="4">Eigenvalue estimation error as a function of population eigenvalue distance</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+coeff = 1;
+p = 256*coeff;
+n = 1024*coeff;
+c = p/n;
+
+delta_lambda_loop = .1:.1:1.6;
+
+nb_average_loop = 10;
+error_store = zeros(length(delta_lambda_loop),nb_average_loop);
+rng(928);
+
+<span class="keyword">for</span> delta_lambda_index = 1:length(delta_lambda_loop)
+    delta_lambda = delta_lambda_loop(delta_lambda_index);
+
+    eig_C = [1, 1+ delta_lambda];
+    cs = [1/2, 1/2];
+    eigs_C = [eig_C(1)*ones(p/2,1); eig_C(2)*ones(p/2,1)];
+    C = diag(eigs_C); <span class="comment">% population covariance</span>
+
+    <span class="keyword">for</span> average_loop=1:nb_average_loop
+        Z = randn(p,n);
+        X = sqrtm(C)*Z;
+        SCM = X'*X/n;
+        eigs_SCM = eig(SCM);
+
+        estim_eig = sort(popu_eigs_estim(eigs_SCM,p,cs),<span class="string">'ascend'</span>);
+        error_store(delta_lambda_index,average_loop) = norm(estim_eig - eig_C);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+figure
+hold <span class="string">on</span>
+errorbar(delta_lambda_loop, mean(error_store,2), 2*std(error_store,0,2))
+xlabel(<span class="string">'$\Delta \lambda$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+ylabel(<span class="string">'Eigenvalue estimation error'</span>)
 
 
-<span class="keyword">function</span> popu_eig = popu_eig_estimator(eigs_SCM,p,cs)
+<span class="keyword">function</span> popu_eig = popu_eigs_estim(eigs_SCM,p,cs)
+<span class="comment">%popu_eigs_estim large n,p consitent estimator of the (k-discrecte)</span>
+<span class="comment">%population eigvalues of C (or nu)</span>
+<span class="comment">%   INPUT: eigenvalues of SCM X'*X/n eigs_SCM (of dimension n*n), data</span>
+<span class="comment">%   dimension p and cs the vector of p_a/p, for a=1,...k</span>
+<span class="comment">%   OUTPUT: vector of estimated k population eigenvalues</span>
+
     popu_eig = zeros(size(cs));
     n = length(eigs_SCM);
     zeros_m = sort(real(eig(diag(eigs_SCM) - sqrt(eigs_SCM)*sqrt(eigs_SCM')/n)),<span class="string">'descend'</span>);
@@ -155,17 +202,11 @@ disp(sort(popu_eig_estimator(eigs_SCM,p,cs),<span class="string">'ascend'</span>
         index = index+p*cs(a);
     <span class="keyword">end</span>
 <span class="keyword">end</span>
-</pre><pre class="codeoutput">     1     3     7
-
-    1.0010    3.0048    6.9945
-
-</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="linear_eig_stats_03.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Section 2.4.1: Linear eigenvalue statistics
 % This page contains an application example of Theorem 2.11: estimating
-% population eigenvalues.
-%
-% *Fully separable case* with $\nu = \frac13 (\delta_1 + \delta_3 + \delta_7)$ and $c = 1/5$
+% population eigenvalues. *Fully separable case* with $\nu = \frac13 (\delta_1 + \delta_3 + \delta_7)$ and $c = 1/5$
 
 %% Empirical eigenvalues of $\frac1n X^T X$ versus limiting spectrum
 %
@@ -174,18 +215,19 @@ close all; clear; clc
 coeff = 3;
 p = 200*coeff;
 n = 1000*coeff;
-c = p/n;
 
-eigs_C = [1,3,7];
-eigs_C_vec = [eigs_C(1)*ones(p/3,1); eigs_C(2)*ones(p/3,1); eigs_C(3)*ones(p/3,1)];
-C = diag(eigs_C_vec); % population covariance
+eig_C = [1,3,7];
+cs = [1/3 1/3 1/3];
+eigs_C = [eig_C(1)*ones(p/3,1); eig_C(2)*ones(p/3,1); eig_C(3)*ones(p/3,1)];
+C = diag(eigs_C); % population covariance
 
+rng(928);
 Z = randn(p,n);
 X = C^(1/2)*Z;
 
 SCM = X'*X/n; 
 eigs_SCM = eig(SCM);
-edges=linspace(.1,max(eigs_SCM)+.1,100);
+edges=linspace(.1,max(eigs_SCM)+.1,150);
 
 clear i 
 y = 1e-5;
@@ -199,59 +241,103 @@ for j=1:length(zs)
     tilde_m_tmp=-1;
     while abs(tilde_m-tilde_m_tmp)>1e-6
         tilde_m_tmp=tilde_m;
-        tilde_m = 1/( -z + 1/n*sum(eigs_C_vec./(1+tilde_m*eigs_C_vec)) );
+        tilde_m = 1/( -z + 1/n*sum(eigs_C./(1+tilde_m*eigs_C)) );
     end
    
     mu(j)=imag(tilde_m)/pi;
 end
 
-figure %%% limiting versus empirical spectral measure of SCM
+figure(1) %%% limiting versus empirical spectral measure of SCM
 hold on
-histogram(eigs_SCM,edges, 'Normalization', 'pdf');
+histogram(eigs_SCM, 60, 'Normalization', 'pdf');
 plot(edges,mu,'r', 'Linewidth',2);
 axis([.1 max(edges)+.5 0 .11]);
 legend('Empirical eigenvalues of $\frac1n X^T X$', 'Limiting spectrum $\mu$', 'FontSize', 15, 'Interpreter', 'latex')
 
-%% Visualization of the behavior Stieltjes transform $m(x)$ around eigvanlue $\lambda_i$ of $\frac1n X^T X$
+%% Visualization of local behavior of Stieltjes transform $m(x)$ around eigvanlue $\lambda_i$ of $\frac1n X^T X$
 %
 m = @(x) sum(1./(eigs_SCM-x))/n;
-tol1 = 5e-4;
+Tol1 = 5e-4;
 index_eigs_SCM = n-p+51;
-zoom_eigs_SCM = linspace(eigs_SCM(index_eigs_SCM)-tol1,eigs_SCM(index_eigs_SCM+1)+tol1,1000);
+zoom_eigs_SCM = linspace(eigs_SCM(index_eigs_SCM)-Tol1,eigs_SCM(index_eigs_SCM+1)+Tol1,1000);
 
-tol2 = 3e-5;
-zoom_eigs_SCM(zoom_eigs_SCM<=eigs_SCM(index_eigs_SCM)+tol2 & zoom_eigs_SCM>=eigs_SCM(index_eigs_SCM)-tol2)=NaN;
-zoom_eigs_SCM(zoom_eigs_SCM<=eigs_SCM(index_eigs_SCM+1)+tol2 & zoom_eigs_SCM>=eigs_SCM(index_eigs_SCM+1)-tol2)=NaN;
+Tol2 = 3e-5;
+zoom_eigs_SCM(zoom_eigs_SCM<=eigs_SCM(index_eigs_SCM)+Tol2 & zoom_eigs_SCM>=eigs_SCM(index_eigs_SCM)-Tol2)=NaN;
+zoom_eigs_SCM(zoom_eigs_SCM<=eigs_SCM(index_eigs_SCM+1)+Tol2 & zoom_eigs_SCM>=eigs_SCM(index_eigs_SCM+1)-Tol2)=NaN;
 
 % numerical evaluation of zeros of m
 zeros_m = real(eig(diag(eigs_SCM) - sqrt(eigs_SCM)*sqrt(eigs_SCM')/n));
 zero_m = zeros_m(zeros_m<eigs_SCM(index_eigs_SCM+1) & zeros_m>eigs_SCM(index_eigs_SCM));
 
-figure
+figure(2)
 hold on
 plot(zoom_eigs_SCM, m(zoom_eigs_SCM));
 xline(eigs_SCM(index_eigs_SCM),'REPLACE_WITH_DASH_DASHk');
 xline(eigs_SCM(index_eigs_SCM+1),'REPLACE_WITH_DASH_DASHk');
 yline(0,'REPLACE_WITH_DASH_DASHk');
-axis([eigs_SCM(index_eigs_SCM)-tol1 eigs_SCM(index_eigs_SCM+1)+tol1 -8 8])
-xlabel('x', 'Interpreter', 'latex')
+axis([eigs_SCM(index_eigs_SCM)-Tol1 eigs_SCM(index_eigs_SCM+1)+Tol1 -8 8])
+xlabel('$x$', 'Interpreter', 'latex')
 ylabel('$m_{\frac1n X^T X}(x)$', 'Interpreter', 'latex')
 
-plot(eigs_SCM(index_eigs_SCM),0,'xb');
-text(eigs_SCM(index_eigs_SCM)+1e-5,.5,'$\lambda_i(\frac1n X^T X)$', 'Interpreter', 'latex', 'FontSize',12)
-plot(eigs_SCM(index_eigs_SCM+1),0,'xb');
-text(eigs_SCM(index_eigs_SCM+1)+1e-5,.5,'$\lambda_{i+1}(\frac1n X^T X)$', 'Interpreter', 'latex', 'FontSize',12)
-plot(zero_m, 0,'*r');
+plot(eigs_SCM(index_eigs_SCM),0,'bo');
+text(eigs_SCM(index_eigs_SCM)+1e-5,.5,'$\lambda_i$', 'Interpreter', 'latex', 'FontSize',12)
+plot(eigs_SCM(index_eigs_SCM+1),0,'bo');
+text(eigs_SCM(index_eigs_SCM+1)+1e-5,.5,'$\lambda_{i+1}$', 'Interpreter', 'latex', 'FontSize',12)
+plot(zero_m, 0,'rx');
+set(gca,'xtick',[])
 text(zero_m-1e-4, .5,'$\eta_i$', 'Interpreter', 'latex', 'FontSize',12)
 
-%% Compare population eigenvalue with the proposed estimator
+%% Population eigenvalue versus the proposed large dimensional estimator
+disp(eig_C)
+disp(sort(popu_eigs_estim(eigs_SCM,p,cs),'ascend'))
+
+%% Eigenvalue estimation error as a function of population eigenvalue distance
 %
-cs = [1/3 1/3 1/3];
-disp(eigs_C)
-disp(sort(popu_eig_estimator(eigs_SCM,p,cs),'ascend'))
+close all; clear; clc
+coeff = 1;
+p = 256*coeff;
+n = 1024*coeff;
+c = p/n;
+
+delta_lambda_loop = .1:.1:1.6;
+
+nb_average_loop = 10;
+error_store = zeros(length(delta_lambda_loop),nb_average_loop);
+rng(928);
+
+for delta_lambda_index = 1:length(delta_lambda_loop)
+    delta_lambda = delta_lambda_loop(delta_lambda_index);
+    
+    eig_C = [1, 1+ delta_lambda];
+    cs = [1/2, 1/2];
+    eigs_C = [eig_C(1)*ones(p/2,1); eig_C(2)*ones(p/2,1)];
+    C = diag(eigs_C); % population covariance
+    
+    for average_loop=1:nb_average_loop
+        Z = randn(p,n);
+        X = sqrtm(C)*Z;
+        SCM = X'*X/n;
+        eigs_SCM = eig(SCM);
+    
+        estim_eig = sort(popu_eigs_estim(eigs_SCM,p,cs),'ascend');
+        error_store(delta_lambda_index,average_loop) = norm(estim_eig - eig_C);
+    end
+end
+
+figure
+hold on
+errorbar(delta_lambda_loop, mean(error_store,2), 2*std(error_store,0,2))
+xlabel('$\Delta \lambda$', 'Interpreter', 'latex')
+ylabel('Eigenvalue estimation error')
 
 
-function popu_eig = popu_eig_estimator(eigs_SCM,p,cs)
+function popu_eig = popu_eigs_estim(eigs_SCM,p,cs)
+%popu_eigs_estim large n,p consitent estimator of the (k-discrecte)
+%population eigvalues of C (or nu)
+%   INPUT: eigenvalues of SCM X'*X/n eigs_SCM (of dimension n*n), data
+%   dimension p and cs the vector of p_a/p, for a=1,...k
+%   OUTPUT: vector of estimated k population eigenvalues
+
     popu_eig = zeros(size(cs));
     n = length(eigs_SCM);
     zeros_m = sort(real(eig(diag(eigs_SCM) - sqrt(eigs_SCM)*sqrt(eigs_SCM')/n)),'descend');
