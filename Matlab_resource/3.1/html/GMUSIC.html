@@ -1,0 +1,195 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Section 3.1.3: Subspace methods: the G-MUSIC algorithm</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-07-05"><meta name="DC.source" content="GMUSIC.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Section 3.1.3: Subspace methods: the G-MUSIC algorithm</h1><!--introduction--><p>This page contains simulations in Section 3.1.3: estimation of the "direction of arrival" of signal from noisy observation</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Basic settings</a></li><li><a href="#2">MUSIC versus G-MUSIC</a></li></ul></div><h2 id="1">Basic settings</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+p = 30;
+n = 150;
+c = p/n;
+
+theta_true = [-10, 35, 37]./180*pi;
+k = length(theta_true);
+sigma2 = .1;
+P = eye(k);
+a = @(theta) exp(-pi*1i*sin(theta)*(0:p-1)')/sqrt(p);
+A = [a(theta_true(1)), a(theta_true(2)), a(theta_true(3))];
+
+theta_range = linspace(-45,45,500)./180*pi;
+
+store_output = zeros(length(theta_range),2); <span class="comment">% [MUSIC, G-MUSIC]</span>
+
+rng(991);
+
+S = sqrtm(P)*randn(k,n);
+W = complex(randn(p,n), randn(p,n));
+X = A*S + sqrt(sigma2/2)*W;
+SCM = X*(X')/n;
+[U,eigs_SCM] = eig(SCM,<span class="string">'vector'</span>);
+[eigs_SCM, index] = sort(eigs_SCM,<span class="string">'descend'</span>);
+U = U(:, index);
+U_S = U(:,1:k);
+</pre><h2 id="2">MUSIC versus G-MUSIC</h2><pre class="codeinput"><span class="keyword">for</span> j = 1:length(theta_range)
+    theta = theta_range(j);
+
+    <span class="comment">%MUSIC</span>
+    store_output(j,1) = mag2db(real(1 - a(theta)'*U_S*(U_S')*a(theta)));
+
+    <span class="comment">%G-MUSIC with different estimators for sigma2</span>
+    sigma2_estim = eigs_SCM(k+1)/(1+sqrt(c))^2;
+    <span class="comment">%sigma2_estim = sigma2;</span>
+    tmp = 0;
+    D = zeros(k,k);
+    <span class="keyword">for</span> l = 1:k
+        lambda = eigs_SCM(l)/sigma2_estim;
+        <span class="keyword">if</span> lambda&gt;=(1+sqrt(c))^2
+            ell_estim = (lambda-(1+c))/2 + sqrt( (lambda-(1+c))^2 - 4*c)/2;
+            D(l,l) = (ell_estim^2+c*ell_estim)/(ell_estim^2-c);
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+    store_output(j,2) = mag2db(real((1 - a(theta)'*U_S*D*(U_S')*a(theta))));
+<span class="keyword">end</span>
+
+figure
+hold <span class="string">on</span>
+plot(theta_range*180/pi,store_output(:,1),<span class="string">'b'</span>);
+plot(theta_range*180/pi,store_output(:,2),<span class="string">'r--'</span>);
+xline(-10,<span class="string">'--'</span>);
+xline(35,<span class="string">'--'</span>);
+xline(37,<span class="string">'--'</span>);
+legend(<span class="string">'MUSIC'</span>, <span class="string">'G-MUSIC'</span>, <span class="string">'Location'</span>,<span class="string">'southwest'</span>, <span class="string">'FontSize'</span>,15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+xlabel(<span class="string">'$\theta$ [in deg]'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+ylabel(<span class="string">'$1-\hat \eta(\theta)$ [in dB]'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+</pre><img vspace="5" hspace="5" src="GMUSIC_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Section 3.1.3: Subspace methods: the G-MUSIC algorithm
+% This page contains simulations in Section 3.1.3: estimation of the "direction of arrival" of signal from noisy observation
+
+%% Basic settings
+close all; clear; clc
+
+p = 30;
+n = 150;
+c = p/n;
+
+theta_true = [-10, 35, 37]./180*pi;
+k = length(theta_true);
+sigma2 = .1;
+P = eye(k);
+a = @(theta) exp(-pi*1i*sin(theta)*(0:p-1)')/sqrt(p);
+A = [a(theta_true(1)), a(theta_true(2)), a(theta_true(3))];
+
+theta_range = linspace(-45,45,500)./180*pi;
+
+store_output = zeros(length(theta_range),2); % [MUSIC, G-MUSIC]
+
+rng(991);
+
+S = sqrtm(P)*randn(k,n);
+W = complex(randn(p,n), randn(p,n));
+X = A*S + sqrt(sigma2/2)*W;
+SCM = X*(X')/n;
+[U,eigs_SCM] = eig(SCM,'vector');
+[eigs_SCM, index] = sort(eigs_SCM,'descend');
+U = U(:, index);
+U_S = U(:,1:k);
+
+%%% MUSIC versus G-MUSIC
+for j = 1:length(theta_range)
+    theta = theta_range(j);
+    
+    %MUSIC
+    store_output(j,1) = mag2db(real(1 - a(theta)'*U_S*(U_S')*a(theta)));
+    
+    %G-MUSIC with different estimators for sigma2
+    sigma2_estim = eigs_SCM(k+1)/(1+sqrt(c))^2;
+    %sigma2_estim = sigma2;
+    tmp = 0;
+    D = zeros(k,k);
+    for l = 1:k
+        lambda = eigs_SCM(l)/sigma2_estim;
+        if lambda>=(1+sqrt(c))^2
+            ell_estim = (lambda-(1+c))/2 + sqrt( (lambda-(1+c))^2 - 4*c)/2;
+            D(l,l) = (ell_estim^2+c*ell_estim)/(ell_estim^2-c);
+        end
+    end
+    store_output(j,2) = mag2db(real((1 - a(theta)'*U_S*D*(U_S')*a(theta))));
+end
+
+figure
+hold on
+plot(theta_range*180/pi,store_output(:,1),'b');
+plot(theta_range*180/pi,store_output(:,2),'rREPLACE_WITH_DASH_DASH');
+xline(-10,'REPLACE_WITH_DASH_DASH');
+xline(35,'REPLACE_WITH_DASH_DASH');
+xline(37,'REPLACE_WITH_DASH_DASH');
+legend('MUSIC', 'G-MUSIC', 'Location','southwest', 'FontSize',15, 'Interpreter', 'latex')
+xlabel('$\theta$ [in deg]', 'Interpreter', 'latex')
+ylabel('$1-\hat \eta(\theta)$ [in dB]', 'Interpreter', 'latex')
+
+##### SOURCE END #####
+--></body></html>

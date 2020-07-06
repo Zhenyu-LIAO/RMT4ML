@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 3.1: Detection and estimation in information-plus-noise models</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-02-07"><meta name="DC.source" content="detect_and_estim_info_plus_noise.m"><style type="text/css">
+      --><title>Section 3.1.1: GLRT asymptotics</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-07-04"><meta name="DC.source" content="GLRT.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,31 +66,31 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 3.1: Detection and estimation in information-plus-noise models</h1><!--introduction--><p>This page contains simulations in Section 3.1</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Section 3.1.1: GLRT asymptotics</a></li><li><a href="#2">FUNCTION</a></li></ul></div><h2 id="1">Section 3.1.1: GLRT asymptotics</h2><p>Detection of the presence of statistical information from white noise</p><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 3.1.1: GLRT asymptotics</h1><!--introduction--><p>This page contains simulations in Section 3.1.1</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Detection of the presence of statistical information from white noise</a></li><li><a href="#2">FUNCTION</a></li></ul></div><h2 id="1">Detection of the presence of statistical information from white noise</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
-p = 100;
-n = 300;
+coeff = 2;
+p = 128*coeff;
+n = 512*coeff;
 c = p/n;
 
 a = [ones(p/2,1); -ones(p/2,1)]; <span class="comment">%%% "determnistic" data structure</span>
 a = a/norm(a);
-sigma = 1;
+sigma2 = 1;
 
-nb_average_loop = 5000;
-f_alpha_loop = (1+sqrt(c))^2+linspace(-5,5,100)*n^(-2/3);
+nb_average_loop = 500;
+f_alpha_loop = (1+sqrt(c))^2+linspace(-5,5,50)*n^(-2/3);
 emp_type_1_error = zeros(size(f_alpha_loop));
 theo_type_1_error = zeros(size(f_alpha_loop));
 
-
+rng(928);
+T = @(X) norm(X*(X')/n)/( trace(X*(X')/n)/p);
 <span class="keyword">for</span> i = 1:length(f_alpha_loop)
     f_alpha = f_alpha_loop(i); <span class="comment">%%% decision thredhold</span>
 
-    T = @(X) norm(X*(X')/n)/( trace(X*(X')/n)/p);
-
     tmp_error = 0;
     <span class="keyword">for</span> average_loop = 1:nb_average_loop
-        s = randn(n,1); <span class="comment">%%% random signal</span>
-        X = sigma*randn(p,n);
+        <span class="comment">%s = randn(n,1); %%% random signal</span>
+        X = sqrt(sigma2)*randn(p,n);
         tmp_error = tmp_error + (T(X)&lt; f_alpha);
     <span class="keyword">end</span>
     emp_type_1_error(i) = tmp_error/nb_average_loop;
@@ -99,8 +99,11 @@ theo_type_1_error = zeros(size(f_alpha_loop));
 
 figure
 hold <span class="string">on</span>
-plot(f_alpha_loop,emp_type_1_error)
+plot(f_alpha_loop,emp_type_1_error,<span class="string">'x'</span>)
 plot(f_alpha_loop,theo_type_1_error)
+xline((1+sqrt(c))^2,<span class="string">'--'</span>);
+xlabel(<span class="string">'Decision threshold $f(\alpha)$'</span>, <span class="string">'Interpreter'</span>,<span class="string">'latex'</span>)
+ylabel(<span class="string">'False alarm rate'</span>, <span class="string">'Interpreter'</span>,<span class="string">'latex'</span>)
 </pre><h2 id="2">FUNCTION</h2><pre class="codeinput"><span class="keyword">function</span> [pdftwappx, cdftwappx] = tracy_widom_appx(x, i)
 <span class="comment">%</span>
 <span class="comment">% [pdftwappx, cdftwappx]=tracywidom_appx(x, i)</span>
@@ -139,38 +142,37 @@ pdftwappx = pdfgamma(x+alphaappx(i), thetaappx(i), kappx(i));
 <span class="keyword">end</span>
 
 <span class="keyword">end</span>
-</pre><img vspace="5" hspace="5" src="detect_and_estim_info_plus_noise_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="GLRT_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% Section 3.1: Detection and estimation in information-plus-noise models
-% This page contains simulations in Section 3.1
-%
 %% Section 3.1.1: GLRT asymptotics
-% Detection of the presence of statistical information from white noise
+% This page contains simulations in Section 3.1.1
+
+%% Detection of the presence of statistical information from white noise
 close all; clear; clc
 
-p = 100;
-n = 300;
+coeff = 2;
+p = 128*coeff;
+n = 512*coeff;
 c = p/n;
 
 a = [ones(p/2,1); -ones(p/2,1)]; %%% "determnistic" data structure
 a = a/norm(a);
-sigma = 1;
+sigma2 = 1;
 
-nb_average_loop = 5000;
-f_alpha_loop = (1+sqrt(c))^2+linspace(-5,5,100)*n^(-2/3);
+nb_average_loop = 500;
+f_alpha_loop = (1+sqrt(c))^2+linspace(-5,5,50)*n^(-2/3);
 emp_type_1_error = zeros(size(f_alpha_loop));
 theo_type_1_error = zeros(size(f_alpha_loop));
 
-
+rng(928);
+T = @(X) norm(X*(X')/n)/( trace(X*(X')/n)/p);
 for i = 1:length(f_alpha_loop)
     f_alpha = f_alpha_loop(i); %%% decision thredhold
     
-    T = @(X) norm(X*(X')/n)/( trace(X*(X')/n)/p);
-    
     tmp_error = 0;
     for average_loop = 1:nb_average_loop
-        s = randn(n,1); %%% random signal
-        X = sigma*randn(p,n);
+        %s = randn(n,1); %%% random signal
+        X = sqrt(sigma2)*randn(p,n);
         tmp_error = tmp_error + (T(X)< f_alpha);
     end
     emp_type_1_error(i) = tmp_error/nb_average_loop;
@@ -179,8 +181,11 @@ end
 
 figure
 hold on
-plot(f_alpha_loop,emp_type_1_error)
+plot(f_alpha_loop,emp_type_1_error,'x')
 plot(f_alpha_loop,theo_type_1_error)
+xline((1+sqrt(c))^2,'REPLACE_WITH_DASH_DASH');
+xlabel('Decision threshold $f(\alpha)$', 'Interpreter','latex')
+ylabel('False alarm rate', 'Interpreter','latex')
 
 %% FUNCTION
 function [pdftwappx, cdftwappx] = tracy_widom_appx(x, i)

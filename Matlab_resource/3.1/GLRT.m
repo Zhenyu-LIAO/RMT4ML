@@ -4,29 +4,29 @@
 %% Detection of the presence of statistical information from white noise
 close all; clear; clc
 
-p = 100;
-n = 300;
+coeff = 2;
+p = 128*coeff;
+n = 512*coeff;
 c = p/n;
 
 a = [ones(p/2,1); -ones(p/2,1)]; %%% "determnistic" data structure
 a = a/norm(a);
-sigma = 1;
+sigma2 = 1;
 
-nb_average_loop = 5000;
-f_alpha_loop = (1+sqrt(c))^2+linspace(-5,5,100)*n^(-2/3);
+nb_average_loop = 500;
+f_alpha_loop = (1+sqrt(c))^2+linspace(-5,5,50)*n^(-2/3);
 emp_type_1_error = zeros(size(f_alpha_loop));
 theo_type_1_error = zeros(size(f_alpha_loop));
 
-
+rng(928);
+T = @(X) norm(X*(X')/n)/( trace(X*(X')/n)/p);
 for i = 1:length(f_alpha_loop)
     f_alpha = f_alpha_loop(i); %%% decision thredhold
     
-    T = @(X) norm(X*(X')/n)/( trace(X*(X')/n)/p);
-    
     tmp_error = 0;
     for average_loop = 1:nb_average_loop
-        s = randn(n,1); %%% random signal
-        X = sigma*randn(p,n);
+        %s = randn(n,1); %%% random signal
+        X = sqrt(sigma2)*randn(p,n);
         tmp_error = tmp_error + (T(X)< f_alpha);
     end
     emp_type_1_error(i) = tmp_error/nb_average_loop;
@@ -35,8 +35,11 @@ end
 
 figure
 hold on
-plot(f_alpha_loop,emp_type_1_error)
+plot(f_alpha_loop,emp_type_1_error,'x')
 plot(f_alpha_loop,theo_type_1_error)
+xline((1+sqrt(c))^2,'--');
+xlabel('Decision threshold $f(\alpha)$', 'Interpreter','latex')
+ylabel('False alarm rate', 'Interpreter','latex')
 
 %% FUNCTION
 function [pdftwappx, cdftwappx] = tracy_widom_appx(x, i)

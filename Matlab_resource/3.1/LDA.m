@@ -1,24 +1,23 @@
 %% Section 3.1.2: Linear discriminant analysis (LDA)
-% This page contains simulations in Section 3.1.2
+% This page contains simulations in Section 3.1.2:
 % Hypotheses testing between two Gaussian models: $\mathcal N(\mu_0, C_0)$ versus $\mathcal N(\mu_1, C_1)$
 
 %% Basic setting
 close all; clear; clc
 
 testcase = 'kannada-MNIST'; % Among 'GMM', 'MNIST' and 'fashion-MNIST', 'kannada-MNIST'
-testcase_option = 'mixed'; % Among 'mean', 'cov', 'orth' and 'mixed'
+testcase_option = 'mixed'; % when testcase = 'GMM', among 'mean', 'cov', 'orth' and 'mixed'
 
 coeff = 1;
 n = 2048*coeff;
 n_test = 128*coeff;
-cs = [1/2 1/2];
-%cs = [1/4 3/4];
+cs = [1/2 1/2]; 
 k = length(cs);
+rng(928);
 
 switch testcase
     case 'GMM'
         p = 512*coeff; 
-        
         switch testcase_option % l = 0 or 1
             case 'means'
                 means = @(l) [zeros(l+1,1);1;zeros(p-l-2,1)]*3;
@@ -31,8 +30,9 @@ switch testcase
                 means = @(l) zeros(p,1);
                 covs = @(l) toeplitz((4*l/10).^(0:(p-1)));
             case 'mixed'
-                means = @(l) [zeros(l+1,1);1;zeros(p-l-2,1)]*5;
-                covs  = @(l) eye(p)*(1+l/sqrt(p)*20);
+                means = @(l) [zeros(l+1,1);1;zeros(p-l-2,1)]*3;
+                covs = @(l) toeplitz((4*l/10).^(0:(p-1)));
+                %covs  = @(l) eye(p)*(1+l/sqrt(p)*20);
                 %covs = @(l) toeplitz((4*l/10).^(0:(p-1)))*(1+l/sqrt(p)*4);
         end
         
@@ -86,10 +86,10 @@ switch testcase % real-world data pre-processing
         covs = @(l) 1/length(selected_data{l+1})*(selected_data{l+1}*selected_data{l+1}')-means(l)*means(l)';
 end
 
-%% Empirical evaluations
-gamma = 1; % regularization parameter
+%% Empirical evaluation of LDA
+gamma = .1; % regularization parameter
 
-nb_loop = 20;
+nb_loop = 30;
 T_store = zeros(n_test,nb_loop);
 accuracy_store = zeros(nb_loop,1);
 for data_loop = 1:nb_loop
@@ -107,8 +107,8 @@ for data_loop = 1:nb_loop
             W=zeros(p,n);
             W_test=zeros(p,n_test);
             for i=1:k
-                W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=sqrt(covs(i-1))*randn(p,cs(i)*n);
-                W_test(:,sum(cs(1:(i-1)))*n_test+1:sum(cs(1:i))*n_test)=sqrt(covs(i-1))*randn(p,cs(i)*n_test);
+                W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=sqrtm(covs(i-1))*randn(p,cs(i)*n);
+                W_test(:,sum(cs(1:(i-1)))*n_test+1:sum(cs(1:i))*n_test)=sqrtm(covs(i-1))*randn(p,cs(i)*n_test);
             end
             
             X=zeros(p,n);
@@ -135,15 +135,14 @@ for data_loop = 1:nb_loop
     T_store(:,data_loop) = T(X_test); 
     
     accuracy_store(data_loop) = sum(T(X_test(:,1:cs(1)*n_test))>0)/(n_test*cs(1))/2+sum(T(X_test(:,cs(1)*n_test+1:end))<0)/(n_test*cs(2))/2;
-    data_loop
 end
 
 T_store0 = T_store(1:cs(1)*n_test,:);
 T_store1 = T_store(cs(1)*n_test+1:end,:);
 
-disp(['Accuracy:', num2str(mean(accuracy_store))]);
+disp(['Classif accuracy:', num2str(mean(accuracy_store))]);
 
-%% Theoretical predictions
+%% Theoretical predictions of LDA decision (soft) output
 eigs_C = @(l) eig(covs(l));
 
 z = - gamma;
@@ -161,7 +160,7 @@ while min(abs(tilde_g-tilde_g_tmp))>1e-6 %%&& watch_dog<50
         g(a) = -1/z*sum( eigs_C(a-1)./(1 + eigs_C_sum) )/n;
         tilde_g(a) = -1/z/(1+g(a));
     end
-    %watch_dog = watch_dog + 1
+    
 end
 bar_Q = -1/z*inv( eye(p) + cs(1)*tilde_g(1)*covs(0) + cs(2)*tilde_g(2)*covs(1) );
 
@@ -183,32 +182,4 @@ histogram(T_store0(:),30,'Normalization','pdf');
 histogram(T_store1(:),30,'Normalization','pdf');
 plot(edges,normpdf(edges, theo_mean(0), sqrt(theo_var(0))),'--b');
 plot(edges,normpdf(edges, theo_mean(1), sqrt(theo_var(1))),'--r');
-
-%%
-clc
-hat_C0 = X_train0*P(0)*(X_train0')/(n-2) + gamma*eye(p);
-hat_C1 = X_train1*P(1)*(X_train1')/(n-2) + gamma*eye(p);
-
-x = X_test(:,1);
-(x - hat_mu0)'*inv(hat_C0)*(x-hat_mu0)/sqrt(p)
-log(det(hat_C0)/det(hat_C1))
-%%
-
-clc
-
-xs1 = linspace(min(T_store0(:))-.5, max(T_store0(:))+.5,50);
-step1 = xs1(2) - xs1(1);
-xs2 = linspace(min(T_store1(:))-.5, max(T_store1(:))+.5,50);
-step2 = xs2(2) - xs2(1);
-
-xs1 = xs1 + step1/2;
-xs2 = xs2 + step2/2;
-
-histo0 = histc(T_store0(:),xs1);
-histo1 = histc(T_store1(:),xs2);
-
-
-sprintf('(%f,%f)',[xs1',histo0/step1/nb_loop/(cs(1)*n_test)]')
-sprintf('(%f,%f)',[xs2',histo1/step2/nb_loop/(cs(2)*n_test)]')
-sprintf('(%f,%f)',[xs1',normpdf(xs1, theo_mean(0), sqrt(theo_var(0)))']')
-sprintf('(%f,%f)',[xs2',normpdf(xs2, theo_mean(1), sqrt(theo_var(1)))']')
+legend('empirical $T(x\sim \mathcal H_0)$', 'empirical $T(x\sim \mathcal H_1)$', 'theory $T(x\sim \mathcal H_0)$', 'theory $T(x\sim \mathcal H_1)$', 'Interpreter','latex', 'FontSize', 15)
