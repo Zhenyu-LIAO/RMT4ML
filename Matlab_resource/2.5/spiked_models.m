@@ -108,6 +108,7 @@ for loop=1:nb_loop %%% empirical evaluation
     eig_SCM_max(loop)= eigs(X*(X')/n, 1);
 end
 
+clc
 edges=linspace(-5,5,100);
 factor = c^(-1/6)*(1+sqrt(c))^(4/3);
 

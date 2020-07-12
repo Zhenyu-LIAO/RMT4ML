@@ -117,7 +117,6 @@ k = 3; % three classes in total
 
 eigs_C = @(a) [ones(p/3,1); a*ones(p/3,1); a^2*ones(p/3,1)];
 C = @(a) diag(eigs_C(a));
-% fell free to vary the setting of C_a, a=1,...,k
 
 %cs  = ones(k,1)/k; % the vector of c_a, a=1,...,k, proportion in each class
 cs = [1/4 1/4 1/2];
@@ -136,7 +135,7 @@ end
 % versus the solution of the system of equations in Theorem 2.7
 SCM = X*(X')/n;
 eigs_SCM = eig(SCM);
-edges_mu=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.1,60);
+edges_mu=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.1,100);
 
 clear i % make sure i stands for the imaginary unit
 y = 1e-5;
@@ -173,7 +172,7 @@ for j = 1:length(zs)
 end
 
 figure
-histogram(eigs_SCM,edges_mu, 'Normalization', 'pdf');
+histogram(eigs_SCM, 40, 'Normalization', 'pdf');
 hold on;
 plot(edges_mu,mu,'r', 'Linewidth',2);
 legend('Empirical eigenvalues', 'Theorem 2.7', 'FontSize', 15)

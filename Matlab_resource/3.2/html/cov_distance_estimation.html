@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 3.2: Covariance distance estimation</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-02-07"><meta name="DC.source" content="cov_distance_estimation.m"><style type="text/css">
+      --><title>Section 3.2: Covariance distance estimation</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-07-07"><meta name="DC.source" content="cov_distance_estimation.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 3.2: Covariance distance estimation</h1><!--introduction--><p>This page contains simulations in Section 3.2</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Classical versus random matrix improved covariance distance estimator</a></li><li><a href="#3">FUNCTIONS</a></li><li><a href="#4">Large p-estimate</a></li><li><a href="#5">additional kappa term in negative side</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 3.2: Covariance distance estimation</h1><!--introduction--><p>This page contains simulations in Section 3.2: estimation of various distance between covariance matrices in large dimension</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Visualization of behavior of <img src="cov_distance_estimation_eq17534740922011065178.png" alt="$x \mapsto x m_\mu(x)$"></a></li><li><a href="#2">Classical versus random matrix improved covariance distance estimator</a></li><li><a href="#3">FUNCTIONS</a></li></ul></div><h2 id="1">Visualization of behavior of <img src="cov_distance_estimation_eq17534740922011065178.png" alt="$x \mapsto x m_\mu(x)$"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 3;
 p = 100*coeff;
@@ -76,6 +76,7 @@ n2 = 900*coeff;
 c1 = p/n1;
 c2 = p/n2;
 
+rng(928);
 Z1 = randn(p,n1);
 Z2 = randn(p,n2);
 
@@ -137,25 +138,36 @@ xline(eta,<span class="string">':k'</span>);
 xline(zeta,<span class="string">':k'</span>);
 </pre><img vspace="5" hspace="5" src="cov_distance_estimation_01.png" alt=""> <h2 id="2">Classical versus random matrix improved covariance distance estimator</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
-p = 64;
+p_loop = 2.^(1:9);
 n1 = 1024;
 n2 = 2048;
 
-C1 = toeplitz(0.2.^(0:p-1));
-C2 = toeplitz(0.4.^(0:p-1));
+rng(928);
+nb_average_loop = 30;
+store_output = zeros(length(p_loop),3); <span class="comment">% [population distance, RMT estimator, classical estimator]</span>
 
-disp(<span class="string">'True distance:'</span>)
-f = @(z) log(z).^2; <span class="comment">% Fisher distance</span>
-disp( mean(f(eig(C1\C2))) )
+<span class="keyword">for</span> i = 1:length(p_loop)
+    p = p_loop(i);
 
-X1 = sqrtm(C1)*randn(p,n1);
-X2 = sqrtm(C2)*randn(p,n2);
+    C1 = toeplitz(0.2.^(0:p-1));
+    C2 = toeplitz(0.4.^(0:p-1));
 
-[RMTDistEst,ClassDistEst] = RMTCovDistEst(X1,X2,<span class="string">'Fisher'</span>)
-</pre><pre class="codeoutput">True distance:
-    0.1042
+    f = @(z) log(z).^2; <span class="comment">% Fisher distance</span>
 
-</pre><h2 id="3">FUNCTIONS</h2><pre class="codeinput"><span class="keyword">function</span> [RMTDistEst,ClassDistEst] = RMTCovDistEst(X1,X2,distance)
+    tmp = zeros(3,1);
+    <span class="keyword">for</span> j = 1:nb_average_loop
+        X1 = sqrtm(C1)*randn(p,n1);
+        X2 = sqrtm(C2)*randn(p,n2);
+
+        [RMTDistEst,ClassDistEst] = RMTCovDistEst(X1,X2,<span class="string">'Fisher'</span>);
+        tmp = tmp + [mean(f(eig(C1\C2))); RMTDistEst; ClassDistEst]/nb_average_loop;
+    <span class="keyword">end</span>
+    store_output(i,:) = tmp;
+<span class="keyword">end</span>
+
+disp(<span class="string">'Performance of different estimators:'</span>)
+disp([p_loop', store_output])
+</pre><h2 id="3">FUNCTIONS</h2><p>Code from https://github.com/maliktiomoko/RMTEstimCovDist</p><pre class="codeinput"><span class="keyword">function</span> [RMTDistEst,ClassDistEst] = RMTCovDistEst(X1,X2,distance)
 <span class="comment">%RMTCovDistEst: random matrix-based improved estimators of distances</span>
 <span class="comment">%between covariances</span>
 <span class="comment">%INPUT: X1 (input data of covriance C1), X2 (input data of covriance C2),</span>
@@ -207,12 +219,16 @@ p=size(X2,1);
                         N(i,j)=log(lambda(i)/lambda(j))/(lambda(i)-lambda(j));
                     <span class="keyword">end</span>
                 <span class="keyword">end</span>
-</pre><h2 id="4">Large p-estimate</h2><pre class="codeinput">                RMTDistEst=2*(c1+c2-c1*c2)/(c1*c2)*( (eta-zeta)'*M*(eta-lambda)+(eta-lambda)'*(log((1-c1)*lambda)./lambda) )<span class="keyword">...</span>
+
+                <span class="comment">% Large p-estimate</span>
+
+                RMTDistEst=2*(c1+c2-c1*c2)/(c1*c2)*( (eta-zeta)'*M*(eta-lambda)+(eta-lambda)'*(log((1-c1)*lambda)./lambda) )<span class="keyword">...</span>
                     -2/p*(eta-zeta)'*N*ones(p,1)+1/p*sum(log((1-c1)*lambda).^2)<span class="keyword">...</span>
                     -2*(1-c2)/c2*( 1/2*log( (1-c1)*(1-c2) )^2+(eta-zeta)'*(log((1-c1)*lambda)./lambda) );
                 ClassDistEst=mean(f(lambda));
         <span class="keyword">case</span> <span class="string">'log(1+st)'</span>
-</pre><h2 id="5">additional kappa term in negative side</h2><pre class="codeinput">            s=1;
+            <span class="comment">% additional kappa term in negative side</span>
+            s=1;
                 kappa_p=0;
                 kappa_m=-1/(s*(1-c1));
                 <span class="keyword">if</span> c2&gt;1
@@ -308,22 +324,24 @@ RMTDistEst=(1/p)*trace(hatC1+hatC2)-2*esty;
 <span class="comment">%Classical estimate</span>
 ClassDistEst=(1/p)*(trace(hatC1)+trace(hatC2)-2*trace((hatC1^(1/2)*hatC2*hatC1^(1/2))^(1/2)));
 <span class="keyword">end</span>
-</pre><pre class="codeoutput">
-RMTDistEst =
-
-    0.1066
-
-
-ClassDistEst =
-
-    0.2023
+</pre><pre class="codeoutput">Performance of different estimators:
+    2.0000    0.0533    0.0524    0.0568
+    4.0000    0.0796    0.0840    0.0913
+    8.0000    0.0927    0.0917    0.1048
+   16.0000    0.0992    0.1007    0.1253
+   32.0000    0.1025    0.1029    0.1509
+   64.0000    0.1042    0.1049    0.2009
+  128.0000    0.1050    0.1044    0.3023
+  256.0000    0.1054    0.1057    0.5341
+  512.0000    0.1056    0.1086    1.1556
 
 </pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Section 3.2: Covariance distance estimation
-% This page contains simulations in Section 3.2
-%
-%% 
+% This page contains simulations in Section 3.2: estimation of various
+% distance between covariance matrices in large dimension
+
+%% Visualization of behavior of $x \mapsto x m_\mu(x)$
 close all; clear; clc
 
 coeff = 3;
@@ -334,6 +352,7 @@ n2 = 900*coeff;
 c1 = p/n1;
 c2 = p/n2;
 
+rng(928);
 Z1 = randn(p,n1);
 Z2 = randn(p,n2);
 
@@ -397,24 +416,38 @@ xline(zeta,':k');
 %% Classical versus random matrix improved covariance distance estimator
 close all; clear; clc
 
-p = 64;
+p_loop = 2.^(1:9);
 n1 = 1024;
 n2 = 2048;
 
-C1 = toeplitz(0.2.^(0:p-1));
-C2 = toeplitz(0.4.^(0:p-1));
+rng(928);
+nb_average_loop = 30;
+store_output = zeros(length(p_loop),3); % [population distance, RMT estimator, classical estimator]
 
-disp('True distance:')
-f = @(z) log(z).^2; % Fisher distance
-disp( mean(f(eig(C1\C2))) )
+for i = 1:length(p_loop)
+    p = p_loop(i);
+    
+    C1 = toeplitz(0.2.^(0:p-1));
+    C2 = toeplitz(0.4.^(0:p-1));
 
-X1 = sqrtm(C1)*randn(p,n1);
-X2 = sqrtm(C2)*randn(p,n2);
+    f = @(z) log(z).^2; % Fisher distance
+    
+    tmp = zeros(3,1);
+    for j = 1:nb_average_loop
+        X1 = sqrtm(C1)*randn(p,n1);
+        X2 = sqrtm(C2)*randn(p,n2);
 
-[RMTDistEst,ClassDistEst] = RMTCovDistEst(X1,X2,'Fisher')
-        
+        [RMTDistEst,ClassDistEst] = RMTCovDistEst(X1,X2,'Fisher');
+        tmp = tmp + [mean(f(eig(C1\C2))); RMTDistEst; ClassDistEst]/nb_average_loop;
+    end
+    store_output(i,:) = tmp;
+end        
+
+disp('Performance of different estimators:')
+disp([p_loop', store_output])
 
 %% FUNCTIONS
+% Code from https://github.com/maliktiomoko/RMTEstimCovDist
 function [RMTDistEst,ClassDistEst] = RMTCovDistEst(X1,X2,distance)
 %RMTCovDistEst: random matrix-based improved estimators of distances
 %between covariances
@@ -468,14 +501,14 @@ end
                     end
                 end     
 
-                %%% Large p-estimate
+                % Large p-estimate
                 
                 RMTDistEst=2*(c1+c2-c1*c2)/(c1*c2)*( (eta-zeta)'*M*(eta-lambda)+(eta-lambda)'*(log((1-c1)*lambda)./lambda) )...
                     -2/p*(eta-zeta)'*N*ones(p,1)+1/p*sum(log((1-c1)*lambda).^2)...
                     -2*(1-c2)/c2*( 1/2*log( (1-c1)*(1-c2) )^2+(eta-zeta)'*(log((1-c1)*lambda)./lambda) );               
                 ClassDistEst=mean(f(lambda));
         case 'log(1+st)'  
-            %%% additional kappa term in negative side
+            % additional kappa term in negative side
             s=1;
                 kappa_p=0;
                 kappa_m=-1/(s*(1-c1));

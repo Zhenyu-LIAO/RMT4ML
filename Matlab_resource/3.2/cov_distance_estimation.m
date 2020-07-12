@@ -1,7 +1,8 @@
 %% Section 3.2: Covariance distance estimation
-% This page contains simulations in Section 3.2
-%
-%% 
+% This page contains simulations in Section 3.2: estimation of various
+% distance between covariance matrices in large dimension
+
+%% Visualization of behavior of $x \mapsto x m_\mu(x)$
 close all; clear; clc
 
 coeff = 3;
@@ -12,6 +13,7 @@ n2 = 900*coeff;
 c1 = p/n1;
 c2 = p/n2;
 
+rng(928);
 Z1 = randn(p,n1);
 Z2 = randn(p,n2);
 
@@ -75,24 +77,38 @@ xline(zeta,':k');
 %% Classical versus random matrix improved covariance distance estimator
 close all; clear; clc
 
-p = 64;
+p_loop = 2.^(1:9);
 n1 = 1024;
 n2 = 2048;
 
-C1 = toeplitz(0.2.^(0:p-1));
-C2 = toeplitz(0.4.^(0:p-1));
+rng(928);
+nb_average_loop = 30;
+store_output = zeros(length(p_loop),3); % [population distance, RMT estimator, classical estimator]
 
-disp('True distance:')
-f = @(z) log(z).^2; % Fisher distance
-disp( mean(f(eig(C1\C2))) )
+for i = 1:length(p_loop)
+    p = p_loop(i);
+    
+    C1 = toeplitz(0.2.^(0:p-1));
+    C2 = toeplitz(0.4.^(0:p-1));
 
-X1 = sqrtm(C1)*randn(p,n1);
-X2 = sqrtm(C2)*randn(p,n2);
+    f = @(z) log(z).^2; % Fisher distance
+    
+    tmp = zeros(3,1);
+    for j = 1:nb_average_loop
+        X1 = sqrtm(C1)*randn(p,n1);
+        X2 = sqrtm(C2)*randn(p,n2);
 
-[RMTDistEst,ClassDistEst] = RMTCovDistEst(X1,X2,'Fisher')
-        
+        [RMTDistEst,ClassDistEst] = RMTCovDistEst(X1,X2,'Fisher');
+        tmp = tmp + [mean(f(eig(C1\C2))); RMTDistEst; ClassDistEst]/nb_average_loop;
+    end
+    store_output(i,:) = tmp;
+end        
+
+disp('Performance of different estimators:')
+disp([p_loop', store_output])
 
 %% FUNCTIONS
+% Code from https://github.com/maliktiomoko/RMTEstimCovDist
 function [RMTDistEst,ClassDistEst] = RMTCovDistEst(X1,X2,distance)
 %RMTCovDistEst: random matrix-based improved estimators of distances
 %between covariances
@@ -146,14 +162,14 @@ end
                     end
                 end     
 
-                %%% Large p-estimate
+                % Large p-estimate
                 
                 RMTDistEst=2*(c1+c2-c1*c2)/(c1*c2)*( (eta-zeta)'*M*(eta-lambda)+(eta-lambda)'*(log((1-c1)*lambda)./lambda) )...
                     -2/p*(eta-zeta)'*N*ones(p,1)+1/p*sum(log((1-c1)*lambda).^2)...
                     -2*(1-c2)/c2*( 1/2*log( (1-c1)*(1-c2) )^2+(eta-zeta)'*(log((1-c1)*lambda)./lambda) );               
                 ClassDistEst=mean(f(lambda));
         case 'log(1+st)'  
-            %%% additional kappa term in negative side
+            % additional kappa term in negative side
             s=1;
                 kappa_p=0;
                 kappa_m=-1/(s*(1-c1));
