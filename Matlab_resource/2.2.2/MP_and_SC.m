@@ -20,7 +20,7 @@ b = (1+sqrt(c))^2;
 edges=linspace(a-eps,b+eps,60);
 
 figure
-histogram(eig(SCM),edges, 'Normalization', 'pdf');
+histogram(eig(SCM),30, 'Normalization', 'pdf');
 hold on;
 mu=sqrt( max(edges-a,0).*max(b-edges,0) )/2/pi/c./edges;
 plot(edges,mu,'r', 'Linewidth',2);
@@ -43,7 +43,7 @@ X = triu(Z) + triu(Z)'-diag(diag(triu(Z)));
 edges=linspace(-2-eps,2+eps,50);
 
 figure
-histogram(eig(X/sqrt(n)),edges,'Normalization','pdf');
+histogram(eig(X/sqrt(n)),30,'Normalization','pdf');
 hold on;
 mu = sqrt( max(4 - edges.^2,0) )/2/pi;
 plot(edges,mu,'r','LineWidth',2);

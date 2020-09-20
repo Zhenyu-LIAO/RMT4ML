@@ -42,7 +42,7 @@ axis([0 max(eigs_SCM)+.5 0 1]);
 close all; clear; clc
 
 coeff_loop = [1 2 4];
-popu_spike_loop = linspace(0,4,50);
+popu_spike_loop = linspace(0,4,30);
 nb_average_loop = 100;
 eigvec_alignment = zeros(length(coeff_loop), length(popu_spike_loop), nb_average_loop);
 
@@ -72,7 +72,6 @@ end
 
 theo_alignment = (1-c*popu_spike_loop.^(-2))./(1+c*popu_spike_loop.^(-1));
 theo_alignment(popu_spike_loop<sqrt(c))=0;
-
 
 figure
 hold on;

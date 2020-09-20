@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 2.5: Spiked models</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-06-28"><meta name="DC.source" content="spiked_models.m"><style type="text/css">
+      --><title>Section 2.5: Spiked models</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-09-05"><meta name="DC.source" content="spiked_models.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +52,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -101,7 +102,7 @@ axis([0 max(eigs_SCM)+.5 0 1]);
 </pre><img vspace="5" hspace="5" src="spiked_models_01.png" alt=""> <h2 id="2">Theorem 2.13: alignment of isolated eigenvectors</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff_loop = [1 2 4];
-popu_spike_loop = linspace(0,4,50);
+popu_spike_loop = linspace(0,4,30);
 nb_average_loop = 100;
 eigvec_alignment = zeros(length(coeff_loop), length(popu_spike_loop), nb_average_loop);
 
@@ -131,7 +132,6 @@ rng(928);
 
 theo_alignment = (1-c*popu_spike_loop.^(-2))./(1+c*popu_spike_loop.^(-1));
 theo_alignment(popu_spike_loop&lt;sqrt(c))=0;
-
 
 figure
 hold <span class="string">on</span>;
@@ -164,6 +164,7 @@ rng(928);
     eig_SCM_max(loop)= eigs(X*(X')/n, 1);
 <span class="keyword">end</span>
 
+clc
 edges=linspace(-5,5,100);
 factor = c^(-1/6)*(1+sqrt(c))^(4/3);
 
@@ -220,7 +221,7 @@ pdftwappx = pdfgamma(x+alphaappx(i), thetaappx(i), kappx(i));
 <span class="keyword">end</span>
 
 <span class="keyword">end</span>
-</pre><img vspace="5" hspace="5" src="spiked_models_03.png" alt=""> <img vspace="5" hspace="5" src="spiked_models_04.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="spiked_models_03.png" alt=""> <img vspace="5" hspace="5" src="spiked_models_04.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Section 2.5: Spiked models
 % This page contains simulations in Section 2.5
@@ -266,7 +267,7 @@ axis([0 max(eigs_SCM)+.5 0 1]);
 close all; clear; clc
 
 coeff_loop = [1 2 4];
-popu_spike_loop = linspace(0,4,50);
+popu_spike_loop = linspace(0,4,30);
 nb_average_loop = 100;
 eigvec_alignment = zeros(length(coeff_loop), length(popu_spike_loop), nb_average_loop);
 
@@ -296,7 +297,6 @@ end
 
 theo_alignment = (1-c*popu_spike_loop.^(-2))./(1+c*popu_spike_loop.^(-1));
 theo_alignment(popu_spike_loop<sqrt(c))=0;
-
 
 figure
 hold on;
@@ -332,6 +332,7 @@ for loop=1:nb_loop %%% empirical evaluation
     eig_SCM_max(loop)= eigs(X*(X')/n, 1);
 end
 
+clc
 edges=linspace(-5,5,100);
 factor = c^(-1/6)*(1+sqrt(c))^(4/3);
 
