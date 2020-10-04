@@ -40,7 +40,7 @@ Below is the table of content of the book that links to corresponding [MATLAB](h
 	* Section 3.4 Concluding remarks
 	* Section 3.5 Practical course material: 
 		* [The Wasserstein distance estimation](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/3.5/html/Wasserstein_dist.html)
-		* [Robust portfolio optimization via Tyler esti- mator](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/3.5/html/robust_portfolio.html)
+		* [Robust portfolio optimization via Tyler estimator](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/3.5/html/robust_portfolio.html)
 * Chapter 4 Kernel Methods
 	* Section 4.1 Basic setting
 	* Section 4.2 [Distance and inner-product random kernel matrices](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/4.2/html/dist_kernel.html)

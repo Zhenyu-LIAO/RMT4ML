@@ -1,0 +1,592 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Section 5.1.1: Regression with random neural networks</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-09-27"><meta name="DC.source" content="random_NN.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Section 5.1.1: Regression with random neural networks</h1><!--introduction--><p>This page contains simulations in Section 5.1.1.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Training and test performance of random weights neural networks</a></li><li><a href="#2">Double descent test curve</a></li></ul></div><h2 id="1">Training and test performance of random weights neural networks</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+testcase=<span class="string">'fashion'</span>;
+sigma_fun = <span class="string">'ReLU'</span>;  <span class="comment">% among 'ReLU', 'sign', 'posit', 'erf', 'poly2', 'cos','sin','abs', 'exp'</span>
+
+n = 1024;
+n_test = 512;
+N = 512;
+cs = [1/2 1/2];
+k = length(cs);
+
+<span class="keyword">switch</span> testcase
+    <span class="keyword">case</span> <span class="string">'MNIST'</span>
+        selected_labels=[7 9]; <span class="comment">% mean [0 1], [5 6]</span>
+        init_data = loadMNISTImages(<span class="string">'../../datasets/MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../../datasets/MNIST/train-labels-idx1-ubyte'</span>);
+    <span class="keyword">case</span> <span class="string">'fashion'</span>
+        selected_labels=[1 2];
+        init_data = loadMNISTImages(<span class="string">'../../datasets/fashion-MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../../datasets/fashion-MNIST/train-labels-idx1-ubyte'</span>);
+    <span class="keyword">case</span> <span class="string">'Kuzushiji'</span>
+        selected_labels=[3 4];
+        init_data = loadMNISTImages(<span class="string">'../../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte'</span>);
+    <span class="keyword">case</span> <span class="string">'kannada'</span>
+        selected_labels=[4 8];
+        init_data = loadMNISTImages(<span class="string">'../../datasets/kannada-MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../../datasets/kannada-MNIST/train-labels-idx1-ubyte'</span>);
+<span class="keyword">end</span>
+
+[labels,idx_init_labels]=sort(init_labels,<span class="string">'ascend'</span>);
+images=init_data(:,idx_init_labels);
+init_n=length(images(1,:));
+
+p=length(images(:,1));
+
+mean_images=mean(images,2);
+norm2_images=0;
+<span class="keyword">for</span> i=1:init_n
+    norm2_images=norm2_images+1/init_n*norm(images(:,i)-mean_images)^2;
+<span class="keyword">end</span>
+images=(images-mean_images*ones(1,size(images,2)))/sqrt(norm2_images)*sqrt(p);
+
+
+selected_images=[];
+MNIST = cell(length(selected_labels),1);
+j=1;
+<span class="keyword">for</span> i=selected_labels
+    selected_images=[selected_images images(:,labels==i)];
+    MNIST{j}=images(:,labels==i);
+    j=j+1;
+<span class="keyword">end</span>
+
+mean_selected_images=mean(selected_images,2);
+norm2_selected_images=mean(sum(abs(selected_images-mean_selected_images*ones(1,length(selected_images))).^2));
+
+<span class="keyword">for</span> j=1:length(selected_labels)
+    MNIST{j}=(MNIST{j}-mean_selected_images*ones(1,size(MNIST{j},2)))/sqrt(norm2_selected_images)*sqrt(p);
+<span class="keyword">end</span>
+
+X=zeros(p,n);
+X_test=zeros(p,n_test);
+y=zeros(n,1);
+y_test=zeros(n_test,1);
+
+<span class="keyword">for</span> i=1:k <span class="comment">% random data picking</span>
+    data = MNIST{i}(:,randperm(size(MNIST{i},2)));
+    X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=data(:,1:n*cs(i));
+    X_test(:,sum(cs(1:(i-1)))*n_test+1:sum(cs(1:i))*n_test)=data(:,n+1:n+n_test*cs(i));
+
+    y(sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n) = (-1)^i*ones(cs(i)*n,1);
+    y_test(sum(cs(1:(i-1)))*n_test+1:sum(cs(1:i))*n_test) = (-1)^i*ones(cs(i)*n_test,1);
+<span class="keyword">end</span>
+
+X = X/sqrt(p);
+X_test = X_test/sqrt(p);
+
+<span class="keyword">switch</span> sigma_fun
+    <span class="keyword">case</span> <span class="string">'t'</span>
+        sig = @(t) t;
+        K_xy = @(x,y) x'*y;
+
+    <span class="keyword">case</span> <span class="string">'poly2'</span>
+        poly2A = -1/2; poly2B = 0; poly2C = 1;
+        m4 = 3; m3 = 0; m2 = 1;
+        sig = @(t) poly2A*t.^2+poly2B*t+poly2C;
+        K_xy = @(x,y) poly2A^2*(m2^2*(2*(x'*y).^2+(x.^2)'*ones(size(x,1))*(y.^2))+(m4-3*m2^2)*(x.^2)'*(y.^2))+poly2B^2*(m2*(x'*y))+poly2A*poly2B*m3*((x.^2)'*y+x'*(y.^2))+poly2A*poly2C*m2*(diag(x'*x)*ones(1,size(y,2))+ones(size(x,2),1)*diag(y'*y)')+poly2C^2;
+
+    <span class="keyword">case</span> <span class="string">'ReLU'</span>
+        sig = @(t) max(t,0);
+        angle_xy = @(x,y) diag(1./sqrt(diag(x'*x)))*(x'*y)*diag(1./sqrt(diag(y'*y)));
+        K_xy = @(x,y) sqrt(diag(x'*x))*sqrt(diag(y'*y))'/(2*pi).*(angle_xy(x,y).*acos(-angle_xy(x,y))+sqrt(1-angle_xy(x,y).^2));
+
+    <span class="keyword">case</span> <span class="string">'sign'</span>
+        sig = @(t) sign(t);
+        K_xy = @(x,y) 2/pi*asin(diag(1./sqrt(diag(x'*x)))*(x'*y)*diag(1./sqrt(diag(y'*y))));
+
+    <span class="keyword">case</span> <span class="string">'posit'</span>
+        sig = @(t) (sign(t)+1)/2;
+        K_xy = @(x,y) 1/2-1/(2*pi)*acos(diag(1./sqrt(diag(x'*x)))*(x'*y)*diag(1./sqrt(diag(y'*y))));
+
+    <span class="keyword">case</span> <span class="string">'erf'</span>
+        sig = @(t) erf(t);
+        K_xy = @(x,y) 2/pi*asin(diag(1./sqrt(1+2*diag(x'*x)))*(2*x'*y)*diag(1./sqrt(1+2*diag(y'*y))));
+
+    <span class="keyword">case</span> <span class="string">'cos'</span>
+        sig = @(t) cos(t);
+        K_xy = @(x,y) diag(exp(-diag(x'*x/2)))*cosh(x'*y)*diag(exp(-diag(y'*y/2)'));
+
+    <span class="keyword">case</span> <span class="string">'sin'</span>
+        sig = @(t) sin(t);
+        K_xy = @(x,y) diag(exp(-diag(x'*x/2)))*sinh(x'*y)*diag(exp(-diag(y'*y/2)'));
+
+    <span class="keyword">case</span> <span class="string">'abs'</span>
+        sig = @(t) abs(t);
+        angle_xy = @(x,y) diag(1./sqrt(diag(x'*x)))*(x'*y)*diag(1./sqrt(diag(y'*y)));
+        K_xy = @(x,y) 2*sqrt(diag(x'*x))*sqrt(diag(y'*y))'/pi.*(angle_xy(x,y).*(acos(-angle_xy(x,y))-pi/2)+sqrt(1-angle_xy(x,y).^2));
+
+    <span class="keyword">case</span> <span class="string">'exp'</span>
+        sig = @(t) exp(-t.^2/2);
+        K_xy = @(x,y) 1./sqrt( 1 + (x.^2)'*ones(size(x,1))*(y.^2) + diag(x'*x)*ones(1,size(y,2))+ones(size(x,2),1)*diag(y'*y)' - (x'*y).^2);
+<span class="keyword">end</span>
+
+K_X = real(K_xy(X,X));
+[U_K_X,L_K_X]=svd(K_X);
+U_K_X = real(U_K_X);
+eig_K_X = diag(L_K_X);
+Up_K_X = U_K_X'*K_X;
+
+U_K_y = U_K_X'*y;
+
+K_XXtest = real(K_xy(X,X_test));
+U_K_XXtest = U_K_X'*K_XXtest;
+D_U_K_XXtest_2 = diag(U_K_XXtest*U_K_XXtest');
+
+K_Xtest = K_xy(X_test,X_test);
+D_K_Xtest = real(diag(K_Xtest));
+
+
+gammas=10.^(-5:.25:4);
+
+bar_E_train = zeros(length(gammas),1);
+bar_E_test = zeros(length(gammas),1);
+
+iter_gamma=1;
+delta = 0;
+<span class="keyword">for</span> gamma=gammas
+
+    delta_tmp=1;
+    <span class="keyword">while</span> abs(delta-delta_tmp)&gt;1e-6
+        delta_tmp=delta;
+        delta = 1/n*sum(eig_K_X./(N/n*eig_K_X/(1+delta)+gamma));
+    <span class="keyword">end</span>
+
+    eig_bar_K = eig_K_X*(N/n/(1+delta));
+    eig_bar_Q = 1./(eig_bar_K+gamma);
+
+    bar_E_train(iter_gamma) = gamma^2*sum(abs(U_K_y).^2.*eig_bar_Q.^2.*(1/N*sum(eig_bar_K.*eig_bar_Q.^2)/(1-1/N*sum(eig_bar_K.^2.*eig_bar_Q.^2))*eig_bar_K+1))/n;
+    bar_E_test(iter_gamma) = 1/n_test*sum( (y_test - (N/n/(1+delta))*U_K_XXtest'*(eig_bar_Q.*U_K_y)).^2 ) + 1/N*sum(abs(U_K_y).^2.*(eig_bar_Q.^2.*eig_bar_K))/(1-1/N*sum(eig_bar_K.^2.*eig_bar_Q.^2))*(1/n_test*(N/n/(1+delta))*sum(D_K_Xtest)-gamma/n_test*sum(eig_bar_Q.^2.*( (N/n/(1+delta))^2*D_U_K_XXtest_2 ))-1/n_test*sum(eig_bar_Q.*( (N/n/(1+delta))^2*D_U_K_XXtest_2 )));
+
+    iter_gamma=iter_gamma+1;
+<span class="keyword">end</span>
+
+loops=30;
+
+E_train = zeros(length(gammas),loops);
+E_test = zeros(length(gammas),loops);
+
+<span class="keyword">for</span> loop=1:loops
+
+    W = randn(N,p);
+    Sigma = sig(W*X);
+    Sigma_test = sig(W*X_test);
+
+    iter_gamma=1;
+    <span class="keyword">for</span> gamma=gammas
+
+        inv_tQ_r = (Sigma'*Sigma/n+gamma*eye(n))\y;
+        beta = Sigma/n*inv_tQ_r;
+
+        E_train(iter_gamma,loop)=norm(y-Sigma'*beta)^2/n;
+        E_test(iter_gamma,loop)=norm(y_test-Sigma_test'*beta)^2/n_test;
+
+        iter_gamma=iter_gamma+1;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+figure;
+loglog(gammas,bar_E_train,<span class="string">'b'</span>);
+hold <span class="string">on</span>;
+loglog(gammas,bar_E_test,<span class="string">'r--'</span>);
+loglog(gammas,mean(E_train,2),<span class="string">'ob'</span>);
+loglog(gammas,mean(E_test,2),<span class="string">'xr'</span>);
+legend(<span class="string">'$\bar E_{train}$'</span>, <span class="string">'$\bar E_{test}$'</span>, <span class="string">'$E_{train}$'</span>, <span class="string">'$E_{test}$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 14)
+xlabel(<span class="string">'$\gamma$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+ylabel(<span class="string">'MSE'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+axis( [min(gammas), max(gammas), min(mean(E_train,2)), 1] )
+</pre><img vspace="5" hspace="5" src="random_NN_01.png" alt=""> <h2 id="2">Double descent test curve</h2><p>Empirical versus theoretical training and test error as a function of N/n</p><pre class="codeinput">Ns = floor(n*(0:0.05:3.5));
+gamma = 1e-7;
+
+bar_E_train = zeros(length(Ns),1);
+bar_E_test = zeros(length(Ns),1);
+
+loops=30;
+E_train = zeros(length(Ns),loops);
+E_test = zeros(length(Ns),loops);
+
+iter_N=1;
+
+<span class="keyword">for</span> N=Ns
+
+    delta = 0;delta_tmp=1; <span class="comment">% theoretical</span>
+    <span class="keyword">while</span> abs(delta-delta_tmp)&gt;1e-6
+        delta_tmp=delta;
+        delta = 1/n*sum(eig_K_X./(N/n*eig_K_X/(1+delta)+gamma));
+    <span class="keyword">end</span>
+
+    eig_bar_K = eig_K_X*(N/n/(1+delta));
+    eig_bar_Q = 1./(eig_bar_K+gamma);
+
+    <span class="keyword">if</span> N==0
+        bar_E_train(iter_N) = 1;
+        bar_E_test(iter_N) = 1;
+    <span class="keyword">else</span>
+        bar_E_train(iter_N) = gamma^2*sum(abs(U_K_y).^2.*eig_bar_Q.^2.*(1/N*sum(eig_bar_K.*eig_bar_Q.^2)/(1-1/N*sum(eig_bar_K.^2.*eig_bar_Q.^2))*eig_bar_K+1))/n;
+    <span class="keyword">end</span>
+    bar_E_test(iter_N) = 1/n_test*sum( (y_test - (N/n/(1+delta))*U_K_XXtest'*(eig_bar_Q.*U_K_y)).^2 ) + 1/N*sum(abs(U_K_y).^2.*(eig_bar_Q.^2.*eig_bar_K))/(1-1/N*sum(eig_bar_K.^2.*eig_bar_Q.^2))*(1/n_test*(N/n/(1+delta))*sum(D_K_Xtest)-gamma/n_test*sum(eig_bar_Q.^2.*( (N/n/(1+delta))^2*D_U_K_XXtest_2 ))-1/n_test*sum(eig_bar_Q.*( (N/n/(1+delta))^2*D_U_K_XXtest_2 )));
+
+    <span class="keyword">for</span> loop=1:loops <span class="comment">% empirical</span>
+
+        W = randn(N,p);
+
+        Sigma = sig(W*X);
+        Sigma_test = sig(W*X_test);
+
+        inv_tQ_r = (Sigma'*Sigma/n+gamma*eye(n))\y;
+        beta = Sigma/n*inv_tQ_r;
+
+        E_train(iter_N,loop)=norm(y-Sigma'*beta)^2/n;
+        E_test(iter_N,loop)=norm(y_test-Sigma_test'*beta)^2/n_test;
+
+    <span class="keyword">end</span>
+    iter_N=iter_N+1;
+<span class="keyword">end</span>
+
+figure
+hold <span class="string">on</span>
+plot(Ns/n,bar_E_train,<span class="string">'r'</span>)
+plot(Ns/n,bar_E_test,<span class="string">'--r'</span>)
+plot(Ns/n,mean(E_train,2),<span class="string">'ob'</span>)
+plot(Ns/n,mean(E_test,2),<span class="string">'xb'</span>)
+xlabel(<span class="string">'$N/n$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+ylabel(<span class="string">'MSE'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+legend(<span class="string">'$\bar E_{train}$'</span>, <span class="string">'$\bar E_{test}$'</span>, <span class="string">'$E_{train}$'</span>, <span class="string">'$E_{test}$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 14)
+axis( [ min(Ns/n), max(Ns/n), 0, .5] )
+</pre><img vspace="5" hspace="5" src="random_NN_02.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Section 5.1.1: Regression with random neural networks
+% This page contains simulations in Section 5.1.1.
+
+%% Training and test performance of random weights neural networks
+close all; clear; clc
+
+testcase='fashion'; 
+sigma_fun = 'ReLU';  % among 'ReLU', 'sign', 'posit', 'erf', 'poly2', 'cos','sin','abs', 'exp'
+
+n = 1024;
+n_test = 512;
+N = 512;
+cs = [1/2 1/2];
+k = length(cs);
+
+switch testcase
+    case 'MNIST'
+        selected_labels=[7 9]; % mean [0 1], [5 6]
+        init_data = loadMNISTImages('../../datasets/MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../../datasets/MNIST/train-labels-idx1-ubyte');
+    case 'fashion'
+        selected_labels=[1 2];
+        init_data = loadMNISTImages('../../datasets/fashion-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../../datasets/fashion-MNIST/train-labels-idx1-ubyte');
+    case 'Kuzushiji'
+        selected_labels=[3 4];
+        init_data = loadMNISTImages('../../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte');
+    case 'kannada'
+        selected_labels=[4 8];
+        init_data = loadMNISTImages('../../datasets/kannada-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../../datasets/kannada-MNIST/train-labels-idx1-ubyte');
+end
+
+[labels,idx_init_labels]=sort(init_labels,'ascend');
+images=init_data(:,idx_init_labels);
+init_n=length(images(1,:));
+
+p=length(images(:,1));
+
+mean_images=mean(images,2);
+norm2_images=0;
+for i=1:init_n
+    norm2_images=norm2_images+1/init_n*norm(images(:,i)-mean_images)^2;
+end
+images=(images-mean_images*ones(1,size(images,2)))/sqrt(norm2_images)*sqrt(p);
+
+
+selected_images=[];
+MNIST = cell(length(selected_labels),1);
+j=1;
+for i=selected_labels
+    selected_images=[selected_images images(:,labels==i)];
+    MNIST{j}=images(:,labels==i);
+    j=j+1;
+end
+
+mean_selected_images=mean(selected_images,2);
+norm2_selected_images=mean(sum(abs(selected_images-mean_selected_images*ones(1,length(selected_images))).^2));
+
+for j=1:length(selected_labels)
+    MNIST{j}=(MNIST{j}-mean_selected_images*ones(1,size(MNIST{j},2)))/sqrt(norm2_selected_images)*sqrt(p);
+end
+
+X=zeros(p,n);
+X_test=zeros(p,n_test);
+y=zeros(n,1);
+y_test=zeros(n_test,1);
+
+for i=1:k % random data picking
+    data = MNIST{i}(:,randperm(size(MNIST{i},2)));
+    X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=data(:,1:n*cs(i));
+    X_test(:,sum(cs(1:(i-1)))*n_test+1:sum(cs(1:i))*n_test)=data(:,n+1:n+n_test*cs(i));
+    
+    y(sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n) = (-1)^i*ones(cs(i)*n,1);
+    y_test(sum(cs(1:(i-1)))*n_test+1:sum(cs(1:i))*n_test) = (-1)^i*ones(cs(i)*n_test,1);
+end
+
+X = X/sqrt(p); 
+X_test = X_test/sqrt(p);
+
+switch sigma_fun
+    case 't'
+        sig = @(t) t;
+        K_xy = @(x,y) x'*y;
+        
+    case 'poly2'
+        poly2A = -1/2; poly2B = 0; poly2C = 1;
+        m4 = 3; m3 = 0; m2 = 1;
+        sig = @(t) poly2A*t.^2+poly2B*t+poly2C;
+        K_xy = @(x,y) poly2A^2*(m2^2*(2*(x'*y).^2+(x.^2)'*ones(size(x,1))*(y.^2))+(m4-3*m2^2)*(x.^2)'*(y.^2))+poly2B^2*(m2*(x'*y))+poly2A*poly2B*m3*((x.^2)'*y+x'*(y.^2))+poly2A*poly2C*m2*(diag(x'*x)*ones(1,size(y,2))+ones(size(x,2),1)*diag(y'*y)')+poly2C^2;
+        
+    case 'ReLU'
+        sig = @(t) max(t,0);
+        angle_xy = @(x,y) diag(1./sqrt(diag(x'*x)))*(x'*y)*diag(1./sqrt(diag(y'*y)));
+        K_xy = @(x,y) sqrt(diag(x'*x))*sqrt(diag(y'*y))'/(2*pi).*(angle_xy(x,y).*acos(-angle_xy(x,y))+sqrt(1-angle_xy(x,y).^2));
+        
+    case 'sign'
+        sig = @(t) sign(t);
+        K_xy = @(x,y) 2/pi*asin(diag(1./sqrt(diag(x'*x)))*(x'*y)*diag(1./sqrt(diag(y'*y))));
+        
+    case 'posit'
+        sig = @(t) (sign(t)+1)/2;
+        K_xy = @(x,y) 1/2-1/(2*pi)*acos(diag(1./sqrt(diag(x'*x)))*(x'*y)*diag(1./sqrt(diag(y'*y))));
+        
+    case 'erf'
+        sig = @(t) erf(t);
+        K_xy = @(x,y) 2/pi*asin(diag(1./sqrt(1+2*diag(x'*x)))*(2*x'*y)*diag(1./sqrt(1+2*diag(y'*y))));
+        
+    case 'cos'
+        sig = @(t) cos(t);
+        K_xy = @(x,y) diag(exp(-diag(x'*x/2)))*cosh(x'*y)*diag(exp(-diag(y'*y/2)'));
+        
+    case 'sin'
+        sig = @(t) sin(t);
+        K_xy = @(x,y) diag(exp(-diag(x'*x/2)))*sinh(x'*y)*diag(exp(-diag(y'*y/2)'));
+        
+    case 'abs'
+        sig = @(t) abs(t);
+        angle_xy = @(x,y) diag(1./sqrt(diag(x'*x)))*(x'*y)*diag(1./sqrt(diag(y'*y)));
+        K_xy = @(x,y) 2*sqrt(diag(x'*x))*sqrt(diag(y'*y))'/pi.*(angle_xy(x,y).*(acos(-angle_xy(x,y))-pi/2)+sqrt(1-angle_xy(x,y).^2));
+        
+    case 'exp'
+        sig = @(t) exp(-t.^2/2);
+        K_xy = @(x,y) 1./sqrt( 1 + (x.^2)'*ones(size(x,1))*(y.^2) + diag(x'*x)*ones(1,size(y,2))+ones(size(x,2),1)*diag(y'*y)' - (x'*y).^2);
+end
+
+K_X = real(K_xy(X,X));
+[U_K_X,L_K_X]=svd(K_X);
+U_K_X = real(U_K_X);
+eig_K_X = diag(L_K_X);
+Up_K_X = U_K_X'*K_X;
+
+U_K_y = U_K_X'*y;
+
+K_XXtest = real(K_xy(X,X_test));
+U_K_XXtest = U_K_X'*K_XXtest;
+D_U_K_XXtest_2 = diag(U_K_XXtest*U_K_XXtest');
+
+K_Xtest = K_xy(X_test,X_test);
+D_K_Xtest = real(diag(K_Xtest));
+
+
+gammas=10.^(-5:.25:4);
+
+bar_E_train = zeros(length(gammas),1);
+bar_E_test = zeros(length(gammas),1);
+
+iter_gamma=1;
+delta = 0;
+for gamma=gammas
+    
+    delta_tmp=1;
+    while abs(delta-delta_tmp)>1e-6
+        delta_tmp=delta;
+        delta = 1/n*sum(eig_K_X./(N/n*eig_K_X/(1+delta)+gamma));
+    end
+    
+    eig_bar_K = eig_K_X*(N/n/(1+delta));
+    eig_bar_Q = 1./(eig_bar_K+gamma);
+    
+    bar_E_train(iter_gamma) = gamma^2*sum(abs(U_K_y).^2.*eig_bar_Q.^2.*(1/N*sum(eig_bar_K.*eig_bar_Q.^2)/(1-1/N*sum(eig_bar_K.^2.*eig_bar_Q.^2))*eig_bar_K+1))/n;
+    bar_E_test(iter_gamma) = 1/n_test*sum( (y_test - (N/n/(1+delta))*U_K_XXtest'*(eig_bar_Q.*U_K_y)).^2 ) + 1/N*sum(abs(U_K_y).^2.*(eig_bar_Q.^2.*eig_bar_K))/(1-1/N*sum(eig_bar_K.^2.*eig_bar_Q.^2))*(1/n_test*(N/n/(1+delta))*sum(D_K_Xtest)-gamma/n_test*sum(eig_bar_Q.^2.*( (N/n/(1+delta))^2*D_U_K_XXtest_2 ))-1/n_test*sum(eig_bar_Q.*( (N/n/(1+delta))^2*D_U_K_XXtest_2 )));
+    
+    iter_gamma=iter_gamma+1;
+end
+
+loops=30;
+
+E_train = zeros(length(gammas),loops);
+E_test = zeros(length(gammas),loops);
+
+for loop=1:loops
+    
+    W = randn(N,p);
+    Sigma = sig(W*X);
+    Sigma_test = sig(W*X_test);
+    
+    iter_gamma=1;
+    for gamma=gammas
+        
+        inv_tQ_r = (Sigma'*Sigma/n+gamma*eye(n))\y;
+        beta = Sigma/n*inv_tQ_r;
+        
+        E_train(iter_gamma,loop)=norm(y-Sigma'*beta)^2/n;
+        E_test(iter_gamma,loop)=norm(y_test-Sigma_test'*beta)^2/n_test;
+        
+        iter_gamma=iter_gamma+1;
+    end
+end
+
+figure;
+loglog(gammas,bar_E_train,'b');
+hold on;
+loglog(gammas,bar_E_test,'rREPLACE_WITH_DASH_DASH');
+loglog(gammas,mean(E_train,2),'ob');
+loglog(gammas,mean(E_test,2),'xr');
+legend('$\bar E_{train}$', '$\bar E_{test}$', '$E_{train}$', '$E_{test}$', 'Interpreter', 'latex', 'FontSize', 14)
+xlabel('$\gamma$', 'Interpreter', 'latex')
+ylabel('MSE', 'Interpreter', 'latex')
+axis( [min(gammas), max(gammas), min(mean(E_train,2)), 1] )
+
+%% Double descent test curve
+% Empirical versus theoretical training and test error as a function of N/n
+
+Ns = floor(n*(0:0.05:3.5));
+gamma = 1e-7;
+
+bar_E_train = zeros(length(Ns),1);
+bar_E_test = zeros(length(Ns),1);
+
+loops=30;
+E_train = zeros(length(Ns),loops);
+E_test = zeros(length(Ns),loops);
+
+iter_N=1;
+
+for N=Ns
+    
+    delta = 0;delta_tmp=1; % theoretical
+    while abs(delta-delta_tmp)>1e-6
+        delta_tmp=delta;
+        delta = 1/n*sum(eig_K_X./(N/n*eig_K_X/(1+delta)+gamma));
+    end
+    
+    eig_bar_K = eig_K_X*(N/n/(1+delta));
+    eig_bar_Q = 1./(eig_bar_K+gamma);
+    
+    if N==0
+        bar_E_train(iter_N) = 1;
+        bar_E_test(iter_N) = 1;
+    else
+        bar_E_train(iter_N) = gamma^2*sum(abs(U_K_y).^2.*eig_bar_Q.^2.*(1/N*sum(eig_bar_K.*eig_bar_Q.^2)/(1-1/N*sum(eig_bar_K.^2.*eig_bar_Q.^2))*eig_bar_K+1))/n;
+    end
+    bar_E_test(iter_N) = 1/n_test*sum( (y_test - (N/n/(1+delta))*U_K_XXtest'*(eig_bar_Q.*U_K_y)).^2 ) + 1/N*sum(abs(U_K_y).^2.*(eig_bar_Q.^2.*eig_bar_K))/(1-1/N*sum(eig_bar_K.^2.*eig_bar_Q.^2))*(1/n_test*(N/n/(1+delta))*sum(D_K_Xtest)-gamma/n_test*sum(eig_bar_Q.^2.*( (N/n/(1+delta))^2*D_U_K_XXtest_2 ))-1/n_test*sum(eig_bar_Q.*( (N/n/(1+delta))^2*D_U_K_XXtest_2 )));
+    
+    for loop=1:loops % empirical
+        
+        W = randn(N,p);
+        
+        Sigma = sig(W*X);
+        Sigma_test = sig(W*X_test);
+        
+        inv_tQ_r = (Sigma'*Sigma/n+gamma*eye(n))\y;
+        beta = Sigma/n*inv_tQ_r;
+        
+        E_train(iter_N,loop)=norm(y-Sigma'*beta)^2/n;
+        E_test(iter_N,loop)=norm(y_test-Sigma_test'*beta)^2/n_test;
+        
+    end
+    iter_N=iter_N+1;
+end
+
+figure
+hold on
+plot(Ns/n,bar_E_train,'r')
+plot(Ns/n,bar_E_test,'REPLACE_WITH_DASH_DASHr')
+plot(Ns/n,mean(E_train,2),'ob')
+plot(Ns/n,mean(E_test,2),'xb')
+xlabel('$N/n$', 'Interpreter', 'latex')
+ylabel('MSE', 'Interpreter', 'latex')
+legend('$\bar E_{train}$', '$\bar E_{test}$', '$E_{train}$', '$E_{test}$', 'Interpreter', 'latex', 'FontSize', 14)
+axis( [ min(Ns/n), max(Ns/n), 0, .5] )
+
+##### SOURCE END #####
+--></body></html>
