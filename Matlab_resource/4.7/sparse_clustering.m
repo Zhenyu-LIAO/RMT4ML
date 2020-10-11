@@ -1,6 +1,7 @@
 %% Section 4.5.3 Kernel ridge regression
 % This page contains simulations in Section 4.5.3.
 
+%%
 close all; clear; clc
 
 testcase='mixed'; % (among means,var,orth,mixed,MNIST,cifar10)

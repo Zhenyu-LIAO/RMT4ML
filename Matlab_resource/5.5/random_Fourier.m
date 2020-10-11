@@ -1,123 +1,137 @@
-%% Section 5.2: Gradient descent dynamics in learning linear neural networks
-% This page contains simulations in Section 5.2.
+%% Section 5.5 Practical course material: Effectvie kernel of large dimensional random Fourier features
+% This page contains simulations in Section 5.5 Practical course material.
 
-%% Basic settings
+%% Training MSEs of random Fourier feature and Gaussian kernel regressions
+clear;close all;clc
+
 close all; clear; clc
 
-coeff = 2;
-p = 256*coeff;
-n = 256*coeff;
-n_test = n;
-c = p/n;
+testcase='MNIST'; % among 'MNIST', 'fashion', 'Kuzushiji', 'kannada'
 
-%mu = 1*[-ones(p/2,1);ones(p/2,1)]/sqrt(p); % mean vector
-mu = [sqrt(2);zeros(p-1,1)]; % mean vector
-norm_mu2 = norm(mu)^2;
-gamma = 0.1; % regularization penalty
-
-t_max = 1000;
-alpha = 1e-1;
-
-sigma2_init = .1;
-w_init = sqrt(sigma2_init)*randn(p,1)/sqrt(p);
-
-
+n = 1024;
+N = 256;
 cs = [1/2 1/2];
-y = [-ones(n*cs(1),1); ones(n*cs(2),1)];
-X = mu*(y') + randn(p,n);
-SCM = X*(X')/n;
+k = length(cs);
 
-y_test = [-ones(n_test*cs(1),1); ones(n_test*cs(2),1)];
-X_test = mu*(y_test') + randn(p,n_test);
-
-lambda_s = c + 1 + norm_mu2 + c/norm_mu2;
-
-figure(1)
-histogram(eig(SCM),30, 'Normalization', 'pdf')
-hold on
-plot(lambda_s,0,'x','Linewidth',2)
-legend('Empirical eigenvalues', '$\lambda_s$', 'Interpreter','latex', 'FontSize', 15)
-
-%% Classification error rate: theory versus practice
-
-%%% Theory
-tolerance = eps;
-
-f  = @(x,t) exp(-alpha.*x.*t);
-omega = @(x) sqrt(4*c*x - (1-c-x).^2)./(lambda_s-x)/2/pi;
-nu = @(x) sqrt(4*c*x - (1-c-x).^2)./(2*pi*c*x);
-
-E_test_func = @(x,t) (1 - f(x+gamma,t))./(gamma+x).*omega(x);
-E_test = @(t) integral( @(x)E_test_func(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) + max(norm_mu2^2-c,0)/norm_mu2*(1 - f(lambda_s+gamma,t))./(lambda_s+gamma);
-V_test_func1 = @(x,t) (1 - f(x+gamma,t)).^2./((x+gamma).^2).*omega(x);
-V_test_func2 = @(x,t) (f(x+gamma,t)).^2.*nu(x);
-V_test = @(t) (norm_mu2+c)/norm_mu2*( integral( @(x)V_test_func1(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) + max(norm_mu2^2-c,0)/norm_mu2*(1 - f(lambda_s+gamma,t)).^2./((lambda_s+gamma).^2)) + sigma2_init*(integral( @(x)V_test_func2(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) + max(1-1/c,0)*f(gamma,t).^2 );
-
-
-E_train = @(t) (norm_mu2+c)/norm_mu2*E_test(t);
-V_train_func1 = @(x,t) x.*(1 - f(x+gamma,t)).^2./((gamma+x).^2).*omega(x);
-V_train_func2 = @(x,t) x.*(f(x+gamma,t)).^2.*nu(x);
-V_train = @(t) (norm_mu2+c)/norm_mu2*( integral( @(x)V_train_func1(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) + max(norm_mu2^2-c,0)/norm_mu2*lambda_s*(1 - f(lambda_s+gamma,t)).^2./((lambda_s+gamma).^2)) + sigma2_init*(integral( @(x)V_train_func2(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) ) - E_train(t).^2; %+ max(1-1/c,0)*0.*f(gamma,t).^2
-
-store_theory = zeros(t_max, 2);
-for t=1:t_max
-    store_theory(t,1) = qfunc(E_train(t)/sqrt(V_train(t))); % train theory
-    store_theory(t,2) = qfunc(E_test(t)/sqrt(V_test(t))); % test theory
+switch testcase
+    case 'MNIST'
+        selected_labels=[3 7]; 
+        init_data = loadMNISTImages('../../datasets/MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../../datasets/MNIST/train-labels-idx1-ubyte');
+    case 'fashion'
+        selected_labels=[1 2];
+        init_data = loadMNISTImages('../../datasets/fashion-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../../datasets/fashion-MNIST/train-labels-idx1-ubyte');
+    case 'Kuzushiji'
+        selected_labels=[3 4];
+        init_data = loadMNISTImages('../../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte');
+    case 'kannada'
+        selected_labels=[4 8];
+        init_data = loadMNISTImages('../../datasets/kannada-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../../datasets/kannada-MNIST/train-labels-idx1-ubyte');
 end
 
-%%% Empirical
+[labels,idx_init_labels]=sort(init_labels,'ascend');
+images=init_data(:,idx_init_labels);
+init_n=length(images(1,:));
+
+p=length(images(:,1));
+
+mean_images=mean(images,2);
+norm2_images=0;
+for i=1:init_n
+    norm2_images=norm2_images+1/init_n*norm(images(:,i)-mean_images)^2;
+end
+images=(images-mean_images*ones(1,size(images,2)))/sqrt(norm2_images)*sqrt(p);
+
+
+selected_images=[];
+MNIST = cell(length(selected_labels),1);
+j=1;
+for i=selected_labels
+    selected_images=[selected_images images(:,labels==i)];
+    MNIST{j}=images(:,labels==i);
+    j=j+1;
+end
+
+mean_selected_images=mean(selected_images,2);
+norm2_selected_images=mean(sum(abs(selected_images-mean_selected_images*ones(1,length(selected_images))).^2));
+
+for j=1:length(selected_labels)
+    MNIST{j}=(MNIST{j}-mean_selected_images*ones(1,size(MNIST{j},2)))/sqrt(norm2_selected_images)*sqrt(p);
+end
+
+
 nb_data_loop = 30;
-store_perf = zeros(t_max, nb_data_loop, 2);
+gamma_loop = 10.^(-4:.25:2);
 
-for data_loop = 1:nb_data_loop
-       
-    y = [-ones(n*cs(1),1); ones(n*cs(2),1)];
-    X = mu*(y') + randn(p,n);
-        
-    y_test = [-ones(n_test*cs(1),1); ones(n_test*cs(2),1)];
-    X_test = mu*(y_test') + randn(p,n_test);
+store_MSE_train_1 = zeros(length(gamma_loop),nb_data_loop);
+store_MSE_train_2 = zeros(length(gamma_loop),nb_data_loop);
+
+theo_MSE_train = zeros(length(gamma_loop),nb_data_loop);
+
+%h = waitbar(0,'Please wait...');
+
+for gamma_index = 1:length(gamma_loop)
     
-    w = w_init;
-    for t = 1:t_max
-        w = gd(w, X, y, gamma, alpha, 1);
+    gamma = gamma_loop(gamma_index);
+    for data_loop = 1:nb_data_loop
         
-        store_perf(t,data_loop,1) = 1 - sum( sign(X'*w)==y )/n; % training error rate
-        store_perf(t,data_loop,2) = 1 - sum( sign(X_test'*w)==y_test )/n_test; % test error rate
+        % empirical evaluation
+        X=zeros(p,n);
+        y=zeros(n,1);
+        
+        for i=1:k % random data picking
+            data = MNIST{i}(:,randperm(size(MNIST{i},2)));
+            X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=data(:,1:n*cs(i));
+            y(sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n) = (-1)^i*ones(cs(i)*n,1);
+        end
+        
+        X = X/sqrt(p); % renormalization of the data
+        
+        W = randn(N,p);
+        Sigma = [cos(W*X);sin(W*X)];
+        
+        K_gauss = exp(-1/2*(-2*(X')*X+diag(X'*X)*ones(1,n)+ones(n,1)*diag(X'*X)'));
+        
+        beta = Sigma*((Sigma'*Sigma/n+gamma*eye(n))\y)/n;
+        store_MSE_train_1(gamma_index,data_loop)= norm(y - Sigma'*beta)^2/n;
+        store_MSE_train_2(gamma_index,data_loop) = gamma^2/n*norm( (N/n*K_gauss+gamma*eye(n))\y)^2;
+        
+        % theoretical results
+        K_cos_f = @(x,y) diag(exp(-diag(x'*x/2)))*cosh(x'*y)*diag(exp(-diag(y'*y/2)'));
+        K_sin_f = @(x,y) diag(exp(-diag(x'*x/2)))*sinh(x'*y)*diag(exp(-diag(y'*y/2)'));
+        
+        K_cos = K_cos_f(X,X);
+        K_sin = K_sin_f(X,X);
+        
+        delta = zeros(2,1);
+        delta_tmp = ones(2,1);
+        while max(abs(delta-delta_tmp))>1e-6
+            delta_tmp = delta;
+            
+            delta(1) = trace( (N/n*( K_cos/(1+delta(1)) + K_sin/(1+delta(2)) ) + gamma*eye(n))\K_cos )/n;
+            delta(2) = trace( (N/n*( K_cos/(1+delta(1)) + K_sin/(1+delta(2)) ) + gamma*eye(n))\K_sin )/n;
+        end
+        bar_Q = inv(N/n*( K_cos/(1+delta(1)) + K_sin/(1+delta(2)) ) + gamma*eye(n));
+        bar_Q_y = (N/n*( K_cos/(1+delta(1)) + K_sin/(1+delta(2)) ) + gamma*eye(n))\y;
+        
+        delta(1) = trace(K_cos*bar_Q)/n;
+        delta(2) = trace(K_sin*bar_Q)/n;
+        
+        Delta = inv( eye(2) - N/n*[trace(bar_Q*K_cos*bar_Q*K_cos)/n/(1+delta(1))^2, trace(bar_Q*K_cos*bar_Q*K_sin)/n/(1+delta(2))^2; trace(bar_Q*K_cos*bar_Q*K_sin)/n/(1+delta(1))^2, trace(bar_Q*K_sin*bar_Q*K_sin)/n/(1+delta(2))^2] );
+        tmp = [trace(bar_Q*K_cos*bar_Q)/n/(1+delta(1))^2, trace(bar_Q*K_sin*bar_Q)/n/(1+delta(2))^2]*Delta;
+        theo_MSE_train(gamma_index,data_loop) = gamma^2*norm(bar_Q_y)^2/n + gamma^2*N/n*( tmp(1)*bar_Q_y'*K_cos*bar_Q_y + tmp(2)*bar_Q_y'*K_sin*bar_Q_y )/n;
+    
     end
+    %waitbar(gamma_index/length(gamma_loop),h)
 end
 
-
-time = 0:t_max-1;
-time_index =[1:5:100,101:15:t_max]; 
-%time_index =[1:9,floor(10.^(1:.1:3))]; 
-time = time(time_index);
-
-figure %
-plot(time, mean(store_perf(time_index,:,1),2), 'bx');
+figure
+loglog(gamma_loop,mean(store_MSE_train_1,2),'bo')
 hold on
-plot(time, mean(store_perf(time_index,:,2),2), 'bo');
-plot(time, store_theory(time_index,1),'r-')
-plot(time, store_theory(time_index,2),'r--')
-legend('Empirical training error', 'Empirical test error', 'Asymptotic training error', 'Asymptotic test error', 'FontSize', 15);
-
-%% FUNCTIONS
-function w_new = gd(w0, X, y, gamma, step, nb_step)
-[p,n] = size(X);
-w_tmp = w0;
-
-while nb_step > 0
-    %g = - (y - w_tmp'*X)*(X')/n; g = g';
-    g = (X*X'/n + gamma*eye(p))*w_tmp - X*y/n;
-    
-    % take gradient step
-    w_new = w_tmp - step*g;
-    % check step
-    if ~isfinite(w_new)
-        error('gradient is inf or NaN')
-    end
-    
-    nb_step = nb_step-1;
-    w_tmp = w_new;
-end
-end
-
+loglog(gamma_loop,mean(store_MSE_train_2,2), 'k--')
+loglog(gamma_loop,mean(theo_MSE_train,2),'r')
+xlabel('$\lambda$','Interpreter', 'latex')
+ylabel('Training MSE','Interpreter', 'latex')

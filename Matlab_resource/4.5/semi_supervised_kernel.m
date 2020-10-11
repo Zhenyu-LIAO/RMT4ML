@@ -322,8 +322,8 @@ nu_loop = 100:100:1000;
 store_error = zeros(length(nu_loop),3);
 
 iter = 1;
-nb_average_loop = 50;
-rng(928);
+nb_average_loop = 100;
+rng(1024);
 for nu = nu_loop
     n = nl + nu;
     label_ind = zeros(nl,1);
