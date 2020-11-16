@@ -59,22 +59,21 @@ Below is the table of content of the book that links to corresponding [MATLAB](h
 		* Section 5.1.1 [Regression with random neural networks](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/5.1/html/random_NN.html)
 		* Section 5.1.2 [Delving deeper into limiting kernel](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/5.1/html/random_feature_GMM.html)
 	* Section 5.2 [Gradient descent dynamics in learning linear neural nets](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/5.2/html/grad_descent_dynamics.html)
-	* Section 5.3 [Recurrent neural nets: echo-state works](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/5.3/html/echo_state.html)
+	* Section 5.3 [Recurrent neural nets: echo-state works](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/5.3/html/ESN.html)
 	* Section 5.4 Concluding remarks
 	* Section 5.5 Practical course material
 		* [Effective kernel of large dimensional random Fourier features](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/5.5/html/random_Fourier.html)
 * Chapter 6 Optimization-based Methods with Non-explicit Solutions
 	* Section 6.1 [Generalized linear classifier](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/6/html/empirical_risk_min.html)
 	* Section 6.2 [Large dimensional support vector machines](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/6/html/SVM.html)
-	* Section 6.3 Other convex optimization-based methods in large dimensions
-	* Section 6.4 Concluding remarks
-	* Section 6.5 Practical course material
+	* Section 6.3 Concluding remarks
+	* Section 6.4 Practical course material
 		* [Phase retrieval](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/6/html/phase_retrieval.html)
 * Chapter 7 Community Detection on Graphs
-	* Section 7.1 [Community detection in dense graphs](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/7.1/html/commu_dect_dense.html)
-		* Section 7.1.1 The stochastic block model
-		* Section 7.1.2 The degree-correlated stochastic block model
-	* Section 7.2 [From dense to sparse graphs: a different approach](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/7.2/html/commu_dect_sparse.html)
+	* Section 7.1 Community detection in dense graphs
+		* Section 7.1.1 [The stochastic block model](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/7.1/html/SBM.html)
+		* Section 7.1.2 [The degree-correlated stochastic block model](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/7.1/html/DCSBM.html)
+	* Section 7.2 [From dense to sparse graphs: a different approach](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/7.2/html/sparse_graph.html)
 	* Section 7.3 Concluding remarks
 	* Section 7.4 Practical course material
 		* [Gaussian fluctuations of the SBM eigenvectors](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/7.4/html/Gaussian_eigenvector.html)

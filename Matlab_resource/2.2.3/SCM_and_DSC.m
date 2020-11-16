@@ -188,7 +188,7 @@ Z=randn(n);
 Z_U = triu(Z);
 X = triu(Z) + triu(Z)'-diag(diag(triu(Z)));
 
-bern_mask_p = .1; 
+bern_mask_p = .5; 
 
 bern_mask = (rand(n,n)<bern_mask_p);
 bern_mask_U = triu(bern_mask);
@@ -206,17 +206,29 @@ zs = edges_mu+y*1i;
 mu = zeros(length(zs),1);
 
 g = 0;
+% for j=1:length(zs)
+%     z = zs(j);
+%     
+%     g_tmp = 1;
+%     while abs(g - g_tmp)>1e-6
+%         g_tmp=g;
+%         g = -bern_mask_p/(1+g)/z/z;
+%     end
+%     m = -1/(1+g)/z;
+%     mu(j)=imag(m)/pi;
+% end
 for j=1:length(zs)
     z = zs(j);
     
     g_tmp = 1;
     while abs(g - g_tmp)>1e-6
         g_tmp=g;
-        g = -bern_mask_p/(1+g)/z/z;
+        g = -bern_mask_p/(z + g);
     end
-    m = -1/(1+g)/z;
+    m = -1/(z+g);
     mu(j)=imag(m)/pi;
 end
+
 
 figure
 histogram(eigs_DSC,edges_mu, 'Normalization', 'pdf');
