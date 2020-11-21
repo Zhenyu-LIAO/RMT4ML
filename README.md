@@ -1,5 +1,5 @@
 # RMT4ML
-This repository contains [MATLAB](https://www.mathworks.com/products/matlab.html) for visualizing random matrix theory results and their applications to large dimensional machine learning problems.
+This repository contains [MATLAB](https://www.mathworks.com/products/matlab.html) for visualizing random matrix theory results and their applications to large dimensional machine learning problems, in the preprint of [Random Matrix Advances in Large Dimensional Machine Learning](https://zhenyu-liao.github.io/pdf/RMT4ML.pdf).
 
 In each subfolder (named after the corresponding section number) there are:
 
@@ -64,8 +64,8 @@ Below is the table of content of the book that links to corresponding [MATLAB](h
 	* Section 5.5 Practical course material
 		* [Effective kernel of large dimensional random Fourier features](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/5.5/html/random_Fourier.html)
 * Chapter 6 Optimization-based Methods with Non-explicit Solutions
-	* Section 6.1 [Generalized linear classifier](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/6/html/empirical_risk_min.html)
-	* Section 6.2 [Large dimensional support vector machines](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/6/html/SVM.html)
+	* Section 6.1 [Generalized linear classifier](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/6.1/html/empirical_risk_min.html)
+	* Section 6.2 [Large dimensional support vector machines](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/6.2/html/SVM.html)
 	* Section 6.3 Concluding remarks
 	* Section 6.4 Practical course material
 		* [Phase retrieval](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/6/html/phase_retrieval.html)
