@@ -39,3 +39,53 @@ eigs_N = eig(N);
 figure
 hold on
 plot(eigs_N,'x')
+
+%% Eigenvalue-eigenvector pairs of Bethe Hessian $H_{\gamma}$ under DC-SBM
+
+close all; clear; clc
+
+n = 1000;
+cs = [0.5, 0.5];
+k = length(cs);
+j1 = [ones(n*cs(1),1);zeros(n*cs(2),1)];
+j2 = ones(n,1)-j1;
+J = [j1, j2];
+
+p_in = 35;
+p_out = 5;
+q = [linspace(.2,.9,n/2) linspace(.2,.9,n/2)];
+C = [p_in, p_out; p_out, p_in]/n;
+P = diag(q)*(J*C*(J'))*diag(q);
+
+gamma = sqrt( (p_in + p_out )/2);
+%gamma = (p_in + p_out )/(p_in - p_out );
+
+A_cell = cell(k);
+for i = 1:k
+    tmp = binornd(1,P(sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n),n*cs(i),n*cs(i));
+    tmp = tril(tmp,-1)+tril(tmp,-1)';
+    A_cell{i,i} = tmp;
+    for j = i+1:k
+        A_cell{i,j} = binornd(1,P(sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n,sum(cs(1:(j-1)))*n+1:sum(cs(1:j))*n),n*cs(i),n*cs(j));
+    end
+end
+A = [A_cell{1,1} A_cell{1,2}; A_cell{1,2}' A_cell{2,2}];
+A = A - diag(A);
+D = diag(A*ones(n,1));
+
+H = (gamma^2 - 1)*eye(n) + D - gamma*A;
+[V_H,eigs_H] = eig(H,'vector');
+[~,ind] = sort(eigs_H);
+eigs_H = eigs_H(ind);
+V_H = V_H(:,ind);
+
+clc
+figure
+histogram(eigs_H, 50, 'Normalization', 'pdf')
+title('Eigenvalue distribution', 'Interpreter', 'latex')
+
+figure
+plot(V_H(:,2))
+title('Informative Eigenvector of $H_{\gamma}$', 'Interpreter', 'latex')
+
+%% FUNCTIONS
