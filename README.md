@@ -77,6 +77,6 @@ Below is the table of content of the book that links to corresponding [MATLAB](h
 	* Section 7.3 Concluding remarks
 	* Section 7.4 Practical course material
 		* [Gaussian fluctuations of the SBM eigenvectors](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/7.4/html/Gaussian_eigenvector.html)
-* Chapter 8 [Discussions on Universality and Practical Applications]()
+* Chapter 8 [Discussions on Universality and Practical Applications](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/8/html/RMT_universality.html)
 
 
