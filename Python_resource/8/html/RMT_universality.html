@@ -1,0 +1,458 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Chapter 8: Discussions on Universality and Practical Applications.</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-11-25"><meta name="DC.source" content="RMT_universality.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Chapter 8: Discussions on Universality and Practical Applications.</h1><!--introduction--><p>This page contains simulations in Chapter 1 and 8.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Gaussian kernel matrices of small and large dimensional GAUSSIAN data</a></li><li><a href="#2">Gaussian kernel matrices of real-world data</a></li><li><a href="#3">MNIST images versus Gaussian vectors with the same statistics</a></li></ul></div><h2 id="1">Gaussian kernel matrices of small and large dimensional GAUSSIAN data</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc;
+
+n = 5000;
+
+cs = [1/2, 1/2];
+ns = n*cs;
+k = length(cs); <span class="comment">% nb of classes</span>
+J = [ones(ns(1),1); -ones(ns(2),1)];
+
+p = 250; <span class="comment">% data dimension</span>
+means = @(i) (-1)^(i)*[2;zeros(p-1,1)];
+covs = @(i) eye(p);
+
+W=zeros(p,n);
+<span class="keyword">for</span> i=1:k
+    W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=sqrtm(covs(i))*randn(p,cs(i)*n);
+<span class="keyword">end</span>
+
+X=zeros(p,n);
+<span class="keyword">for</span> i=1:k
+    X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)+means(i)*ones(1,cs(i)*n);
+<span class="keyword">end</span>
+
+XX=X'*X;
+d=diag(XX);
+K=exp(-(-2*XX+d*ones(1,n)+ones(n,1)*d')/2/p);
+
+[V_K,~] = eigs(K,3);
+
+figure
+colormap <span class="string">gray</span>;
+imshow(K,<span class="string">'border'</span>,<span class="string">'tight'</span>,<span class="string">'initialmagnification'</span>,<span class="string">'fit'</span>);
+axis <span class="string">normal</span>; axis <span class="string">off</span>;
+
+index = 1:10:n;
+eig_vec = V_K(:,2);
+<span class="keyword">if</span> eig_vec'*J&lt;0
+    eig_vec = -eig_vec;
+<span class="keyword">end</span>
+eig_vec = eig_vec(index);
+
+figure
+plot(eig_vec);
+title(<span class="string">'Second top eigenvector of $K$'</span>,<span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+</pre><img vspace="5" hspace="5" src="RMT_universality_01.png" alt=""> <img vspace="5" hspace="5" src="RMT_universality_02.png" alt=""> <h2 id="2">Gaussian kernel matrices of real-world data</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc;
+
+n = 5000;
+
+cs = [1/2, 1/2];
+ns = n*cs;
+k = length(cs); <span class="comment">% nb of classes</span>
+J = [ones(ns(1),1); -ones(ns(2),1)];
+
+testcase = <span class="string">'MNIST'</span>; <span class="comment">% among 'MNIST', 'Fashion-MNIST', 'CIFAR', 'Word2Vec'</span>
+
+<span class="keyword">switch</span> testcase
+    <span class="keyword">case</span> <span class="string">'MNIST'</span>
+        init_data = loadMNISTImages(<span class="string">'../../datasets/MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../../datasets/MNIST/train-labels-idx1-ubyte'</span>);
+
+        selected_labels=[8 9];
+    <span class="keyword">case</span> <span class="string">'Fashion-MNIST'</span>
+        init_data = loadMNISTImages(<span class="string">'../../datasets/fashion-MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../../datasets/fashion-MNIST/train-labels-idx1-ubyte'</span>);
+
+        selected_labels=[5 7];
+    <span class="keyword">case</span> <span class="string">'CIFAR'</span>
+        load <span class="string">../../datasets/CIFAR_VGG.mat</span>
+        init_data = double(CIFAR_feature);
+        init_labels = double(labels);
+        <span class="comment">%W = randn(p,p_init);</span>
+        <span class="comment">%W = sqrtm(W*W')\W; %% Random projection</span>
+        <span class="comment">%selected_images = W*[airplane(:,1:n/2) bird(:,1:n/2)];</span>
+        selected_labels=[1 3];
+<span class="keyword">end</span>
+
+[labels,idx_init_labels]=sort(init_labels,<span class="string">'ascend'</span>);
+images=init_data(:,idx_init_labels);
+init_n=length(images(1,:));
+
+p=length(images(:,1));
+
+mean_images=mean(images,2);
+norm2_images=0;
+<span class="keyword">for</span> i=1:init_n
+    norm2_images=norm2_images+1/init_n*norm(images(:,i)-mean_images)^2;
+<span class="keyword">end</span>
+images=(images-mean_images*ones(1,size(images,2)))/sqrt(norm2_images)*sqrt(p);
+
+
+selected_images=[];
+MNIST = cell(length(selected_labels),1);
+j=1;
+<span class="keyword">for</span> i=selected_labels
+    selected_images=[selected_images images(:,labels==i)];
+    MNIST{j}=images(:,labels==i);
+    j=j+1;
+<span class="keyword">end</span>
+
+mean_selected_images=mean(selected_images,2);
+norm2_selected_images=mean(sum(abs(selected_images-mean_selected_images*ones(1,length(selected_images))).^2));
+
+<span class="keyword">for</span> j=1:length(selected_labels)
+    MNIST{j}=(MNIST{j}-mean_selected_images*ones(1,size(MNIST{j},2)))/sqrt(norm2_selected_images)*sqrt(p);
+<span class="keyword">end</span>
+
+X=zeros(p,n);
+<span class="keyword">for</span> i=1:k
+    data = MNIST{i}(:,randperm(size(MNIST{i},2)));
+    X(:,sum(ns(1:(i-1)))+1:sum(ns(1:i)))=data(:,1:ns(i));
+<span class="keyword">end</span>
+
+XX=X'*X;
+d=diag(XX);
+K=exp(-(-2*XX+d*ones(1,n)+ones(n,1)*d')/2/p);
+
+[V_K, D_K] = eigs(K,3);
+
+figure
+colormap <span class="string">gray</span>;
+imshow(K,<span class="string">'border'</span>,<span class="string">'tight'</span>,<span class="string">'initialmagnification'</span>,<span class="string">'fit'</span>);
+axis <span class="string">normal</span>; axis <span class="string">off</span>;
+
+index = 1:10:n;
+eig_vec = V_K(:,2);
+<span class="keyword">if</span> eig_vec'*J&lt;0
+    eig_vec = -eig_vec;
+<span class="keyword">end</span>
+eig_vec = eig_vec(index);
+
+figure
+plot(eig_vec);
+title(<span class="string">'Second top eigenvector of $K$'</span>,<span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+</pre><img vspace="5" hspace="5" src="RMT_universality_03.png" alt=""> <img vspace="5" hspace="5" src="RMT_universality_04.png" alt=""> <h2 id="3">MNIST images versus Gaussian vectors with the same statistics</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc;
+
+init_data = loadMNISTImages(<span class="string">'../../datasets/MNIST/train-images-idx3-ubyte'</span>);
+init_labels = loadMNISTLabels(<span class="string">'../../datasets/MNIST/train-labels-idx1-ubyte'</span>);
+
+selected_labels=[1 2];
+
+[labels,idx_init_labels]=sort(init_labels,<span class="string">'ascend'</span>);
+images=init_data(:,idx_init_labels);
+init_n=length(images(1,:));
+
+p=length(images(:,1));
+
+<span class="comment">% mean_images=mean(images,2);</span>
+<span class="comment">% norm2_images=0;</span>
+<span class="comment">% for i=1:init_n</span>
+<span class="comment">%     norm2_images=norm2_images+1/init_n*norm(images(:,i)-mean_images)^2;</span>
+<span class="comment">% end</span>
+<span class="comment">% images=(images-mean_images*ones(1,size(images,2)))/sqrt(norm2_images)*sqrt(p);</span>
+
+selected_images=[];
+MNIST = cell(length(selected_labels),1);
+j=1;
+<span class="keyword">for</span> i=selected_labels
+    selected_images=[selected_images images(:,labels==i)];
+    MNIST{j}=images(:,labels==i);
+    j=j+1;
+<span class="keyword">end</span>
+
+means = @(i) mean(MNIST{i},2);
+covs = @(i) 1/length(MNIST{i})*(MNIST{i}*MNIST{i}')-means(i)*means(i)';
+
+class_1_image = MNIST{1};
+class_1_image = reshape(class_1_image(:,1),sqrt(p),sqrt(p));
+class_2_image = MNIST{2};
+class_2_image = reshape(class_2_image(:,1),sqrt(p),sqrt(p));
+
+z = randn(p,1);
+class_1_gauss = reshape(real(means(1)+(covs(1)^(1/2))*z),sqrt(p),sqrt(p));
+class_2_gauss = reshape(real(means(2)+(covs(2)^(1/2))*z),sqrt(p),sqrt(p));
+
+figure
+colormap <span class="string">gray</span>;
+subplot(2,2,1);
+imshow(class_1_image,<span class="string">'border'</span>,<span class="string">'tight'</span>,<span class="string">'initialmagnification'</span>,<span class="string">'fit'</span>);
+axis <span class="string">normal</span>; axis <span class="string">off</span>;
+subplot(2,2,2);
+imshow(class_1_gauss,<span class="string">'border'</span>,<span class="string">'tight'</span>,<span class="string">'initialmagnification'</span>,<span class="string">'fit'</span>);
+axis <span class="string">normal</span>; axis <span class="string">off</span>;
+subplot(2,2,3);
+imshow(class_2_image,<span class="string">'border'</span>,<span class="string">'tight'</span>,<span class="string">'initialmagnification'</span>,<span class="string">'fit'</span>);
+axis <span class="string">normal</span>; axis <span class="string">off</span>;
+subplot(2,2,4);
+imshow(class_2_gauss,<span class="string">'border'</span>,<span class="string">'tight'</span>,<span class="string">'initialmagnification'</span>,<span class="string">'fit'</span>);
+axis <span class="string">normal</span>; axis <span class="string">off</span>;
+</pre><img vspace="5" hspace="5" src="RMT_universality_05.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Chapter 8: Discussions on Universality and Practical Applications.
+% This page contains simulations in Chapter 1 and 8.
+
+%% Gaussian kernel matrices of small and large dimensional GAUSSIAN data
+close all; clear; clc;
+
+n = 5000;
+
+cs = [1/2, 1/2];
+ns = n*cs;
+k = length(cs); % nb of classes
+J = [ones(ns(1),1); -ones(ns(2),1)];
+
+p = 250; % data dimension
+means = @(i) (-1)^(i)*[2;zeros(p-1,1)];
+covs = @(i) eye(p);
+
+W=zeros(p,n);
+for i=1:k
+    W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=sqrtm(covs(i))*randn(p,cs(i)*n);
+end
+
+X=zeros(p,n);
+for i=1:k
+    X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)+means(i)*ones(1,cs(i)*n);
+end
+
+XX=X'*X;
+d=diag(XX);
+K=exp(-(-2*XX+d*ones(1,n)+ones(n,1)*d')/2/p);
+
+[V_K,~] = eigs(K,3);
+
+figure
+colormap gray;
+imshow(K,'border','tight','initialmagnification','fit');
+axis normal; axis off;
+
+index = 1:10:n;
+eig_vec = V_K(:,2);
+if eig_vec'*J<0
+    eig_vec = -eig_vec;
+end
+eig_vec = eig_vec(index);
+
+figure
+plot(eig_vec);
+title('Second top eigenvector of $K$','Interpreter', 'latex')
+
+%% Gaussian kernel matrices of real-world data
+close all; clear; clc;
+
+n = 5000;
+
+cs = [1/2, 1/2];
+ns = n*cs;
+k = length(cs); % nb of classes
+J = [ones(ns(1),1); -ones(ns(2),1)];
+
+testcase = 'MNIST'; % among 'MNIST', 'Fashion-MNIST', 'CIFAR', 'Word2Vec'
+
+switch testcase
+    case 'MNIST'
+        init_data = loadMNISTImages('../../datasets/MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../../datasets/MNIST/train-labels-idx1-ubyte');
+        
+        selected_labels=[8 9];
+    case 'Fashion-MNIST'
+        init_data = loadMNISTImages('../../datasets/fashion-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../../datasets/fashion-MNIST/train-labels-idx1-ubyte');
+        
+        selected_labels=[5 7];
+    case 'CIFAR'
+        load ../../datasets/CIFAR_VGG.mat
+        init_data = double(CIFAR_feature);
+        init_labels = double(labels);
+        %W = randn(p,p_init);
+        %W = sqrtm(W*W')\W; %% Random projection
+        %selected_images = W*[airplane(:,1:n/2) bird(:,1:n/2)];
+        selected_labels=[1 3];
+end
+
+[labels,idx_init_labels]=sort(init_labels,'ascend');
+images=init_data(:,idx_init_labels);
+init_n=length(images(1,:));
+
+p=length(images(:,1));
+
+mean_images=mean(images,2);
+norm2_images=0;
+for i=1:init_n
+    norm2_images=norm2_images+1/init_n*norm(images(:,i)-mean_images)^2;
+end
+images=(images-mean_images*ones(1,size(images,2)))/sqrt(norm2_images)*sqrt(p);
+
+
+selected_images=[];
+MNIST = cell(length(selected_labels),1);
+j=1;
+for i=selected_labels
+    selected_images=[selected_images images(:,labels==i)];
+    MNIST{j}=images(:,labels==i);
+    j=j+1;
+end
+
+mean_selected_images=mean(selected_images,2);
+norm2_selected_images=mean(sum(abs(selected_images-mean_selected_images*ones(1,length(selected_images))).^2));
+
+for j=1:length(selected_labels)
+    MNIST{j}=(MNIST{j}-mean_selected_images*ones(1,size(MNIST{j},2)))/sqrt(norm2_selected_images)*sqrt(p);
+end
+
+X=zeros(p,n);
+for i=1:k
+    data = MNIST{i}(:,randperm(size(MNIST{i},2)));
+    X(:,sum(ns(1:(i-1)))+1:sum(ns(1:i)))=data(:,1:ns(i));
+end
+
+XX=X'*X;
+d=diag(XX);
+K=exp(-(-2*XX+d*ones(1,n)+ones(n,1)*d')/2/p);
+
+[V_K, D_K] = eigs(K,3);
+
+figure
+colormap gray;
+imshow(K,'border','tight','initialmagnification','fit');
+axis normal; axis off;
+
+index = 1:10:n;
+eig_vec = V_K(:,2);
+if eig_vec'*J<0
+    eig_vec = -eig_vec;
+end
+eig_vec = eig_vec(index);
+
+figure
+plot(eig_vec);
+title('Second top eigenvector of $K$','Interpreter', 'latex')
+
+%% MNIST images versus Gaussian vectors with the same statistics
+close all; clear; clc;
+
+init_data = loadMNISTImages('../../datasets/MNIST/train-images-idx3-ubyte');
+init_labels = loadMNISTLabels('../../datasets/MNIST/train-labels-idx1-ubyte');
+
+selected_labels=[1 2];
+
+[labels,idx_init_labels]=sort(init_labels,'ascend');
+images=init_data(:,idx_init_labels);
+init_n=length(images(1,:));
+
+p=length(images(:,1));
+
+% mean_images=mean(images,2);
+% norm2_images=0;
+% for i=1:init_n
+%     norm2_images=norm2_images+1/init_n*norm(images(:,i)-mean_images)^2;
+% end
+% images=(images-mean_images*ones(1,size(images,2)))/sqrt(norm2_images)*sqrt(p);
+
+selected_images=[];
+MNIST = cell(length(selected_labels),1);
+j=1;
+for i=selected_labels
+    selected_images=[selected_images images(:,labels==i)];
+    MNIST{j}=images(:,labels==i);
+    j=j+1;
+end
+
+means = @(i) mean(MNIST{i},2);
+covs = @(i) 1/length(MNIST{i})*(MNIST{i}*MNIST{i}')-means(i)*means(i)';
+
+class_1_image = MNIST{1};
+class_1_image = reshape(class_1_image(:,1),sqrt(p),sqrt(p));
+class_2_image = MNIST{2};
+class_2_image = reshape(class_2_image(:,1),sqrt(p),sqrt(p));
+
+z = randn(p,1);
+class_1_gauss = reshape(real(means(1)+(covs(1)^(1/2))*z),sqrt(p),sqrt(p));
+class_2_gauss = reshape(real(means(2)+(covs(2)^(1/2))*z),sqrt(p),sqrt(p));
+
+figure
+colormap gray;
+subplot(2,2,1);
+imshow(class_1_image,'border','tight','initialmagnification','fit');
+axis normal; axis off;
+subplot(2,2,2);
+imshow(class_1_gauss,'border','tight','initialmagnification','fit');
+axis normal; axis off;
+subplot(2,2,3);
+imshow(class_2_image,'border','tight','initialmagnification','fit');
+axis normal; axis off;
+subplot(2,2,4);
+imshow(class_2_gauss,'border','tight','initialmagnification','fit');
+axis normal; axis off;
+
+##### SOURCE END #####
+--></body></html>

@@ -1,0 +1,302 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Section 5.3: Recurrent neural nets: echo-state networks (ESNs)</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-10-11"><meta name="DC.source" content="ESN.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Section 5.3: Recurrent neural nets: echo-state networks (ESNs)</h1><!--introduction--><p>This page contains simulations in Section 5.3.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Memory curve for block Haar <img src="ESN_eq14900514129597942148.png" alt="$W$"></a></li><li><a href="#2">Illustration of <img src="ESN_eq02631104721331331854.png" alt="$\mathcal{R}$"> for non-symmetric and (Wigner) symmetric Gaussian <img src="ESN_eq14900514129597942148.png" alt="$W$"></a></li><li><a href="#3">FUNCTIONS</a></li></ul></div><h2 id="1">Memory curve for block Haar <img src="ESN_eq14900514129597942148.png" alt="$W$"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+c = .75;
+c1 = 0.01; alpha1 = 0.99;
+c2 = 0.1; alpha2 = 0.9;
+c3 = 0.89; alpha3 = 0.5;
+
+
+taus = linspace(1,30,30);
+MC_multip = ( c1*alpha1.^(2*taus) + c2*alpha2.^(2*taus) + c3*alpha3.^(2*taus) )/( c1/(1-alpha1^2) + c2/(1-alpha2^2) + c3/(1-alpha3^2) )/(1-c);
+MC1 = ( alpha1.^(2*taus)*(1-alpha1^2) )/(1-c);
+MC2 = ( alpha2.^(2*taus)*(1-alpha2^2) )/(1-c);
+MC3 = ( alpha3.^(2*taus)*(1-alpha3^2) )/(1-c);
+
+
+figure
+semilogy(taus, MC_multip, <span class="string">'r'</span>)
+hold <span class="string">on</span>
+semilogy(taus, MC1, <span class="string">'b--'</span>)
+semilogy(taus, MC2, <span class="string">'bo-'</span>)
+semilogy(taus, MC3, <span class="string">'bs-'</span>)
+legend(<span class="string">'$MC(\tau;W)$'</span>, <span class="string">'$MC(\tau;W_1^+)$'</span>, <span class="string">'$MC(\tau;W_2^+)$'</span>, <span class="string">'$MC(\tau;W_3^+)$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 15)
+axis([1, 30, 1e-4, 3])
+xlabel(<span class="string">'$\tau$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+ylabel(<span class="string">'Memory capacity'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+</pre><img vspace="5" hspace="5" src="ESN_01.png" alt=""> <h2 id="2">Illustration of <img src="ESN_eq02631104721331331854.png" alt="$\mathcal{R}$"> for non-symmetric and (Wigner) symmetric Gaussian <img src="ESN_eq14900514129597942148.png" alt="$W$"></h2><pre class="codeinput">close <span class="string">all</span>; clc; clear;
+
+choice_W = <span class="string">'Wigner'</span>; <span class="comment">% 'iid', 'Wigner', 'Haar'</span>
+alpha = 0.9;
+n = 200;
+T = 400;
+
+<span class="keyword">switch</span> choice_W
+    <span class="keyword">case</span> <span class="string">'iid'</span>
+        W = randn(n)/sqrt(n);
+        W = W/max(abs(eig(W)));
+        W = alpha*W;
+    <span class="keyword">case</span> <span class="string">'Wigner'</span>
+        W = randn(n)/sqrt(n);
+        W = triu(W,1)+tril(W',-1)+diag(randn(n,1)/sqrt(n));
+        W = W/abs(eigs(W,1));
+        W = alpha*W;
+    <span class="keyword">case</span> <span class="string">'Haar'</span>
+        W = randn(n)/sqrt(n);
+        W = (W*W')^(-1/2)*W;
+        W = W/max(abs(eig(W)));
+        W = alpha*W;
+<span class="keyword">end</span>
+
+pW = zeros(n,n,T);
+pW(:,:,1)=eye(n);
+
+pWW = zeros(n,n,T);
+pWW(:,:,1)=eye(n);
+
+<span class="keyword">for</span> i=2:T
+    pW(:,:,i)=W*pW(:,:,i-1);
+    pWW(:,:,i)=W*pWW(:,:,i-1)*W';
+<span class="keyword">end</span>
+
+sumpWW = sum(pWW,3);
+S=zeros(n,n,T);
+<span class="keyword">for</span> i=1:T
+    S(:,:,i)=sumpWW*pW(:,:,i)';
+<span class="keyword">end</span>
+
+start_R=n/T/abs(1-n/T)*eye(T);
+start_tR=abs(1-n/T)*sumpWW;
+[R,tR]=computeR(n,T,S,start_R,start_tR);
+
+
+figure
+colormap <span class="string">gray</span>
+imagesc(1-R(1:10,1:10));
+title(<span class="string">'Illustration of $\mathcal{R}$'</span>,<span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+</pre><h2 id="3">FUNCTIONS</h2><pre class="codeinput"><span class="keyword">function</span> [R,tR]=computeR(n,T,S,start_R,start_tR)
+
+<span class="keyword">if</span> n&lt;T
+    dIn=0;
+    dIT=eye(T);
+<span class="keyword">else</span>
+    dIn=eye(n);
+    dIT=0;
+<span class="keyword">end</span>
+
+Rtmp  = zeros(T);
+
+R = start_R;
+tR= start_tR;
+
+<span class="keyword">while</span> max(abs((R(:)-Rtmp(:))))&gt;1e-15
+    Rtmp=R;
+
+    invtR = inv(dIn+tR);
+    r=zeros(1,T);
+    <span class="keyword">for</span> q=1:T
+        r(q)=1/n*trace(S(:,:,q)*invtR);
+    <span class="keyword">end</span>
+    R = n/T*toeplitz(r);
+
+    inv_I_R = inv(dIT+R);
+    tR = 1/T*trace(inv_I_R)*S(:,:,1);
+    <span class="keyword">for</span> q=2:T
+        tR = tR + 1/T*sum(diag(inv_I_R,q-1))*(S(:,:,q)+S(:,:,q)');
+    <span class="keyword">end</span>
+
+    max(abs(R(:)-Rtmp(:)));
+<span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="ESN_02.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Section 5.3: Recurrent neural nets: echo-state networks (ESNs)
+% This page contains simulations in Section 5.3.
+
+%% Memory curve for block Haar $W$
+close all; clear; clc
+
+c = .75;
+c1 = 0.01; alpha1 = 0.99;
+c2 = 0.1; alpha2 = 0.9;
+c3 = 0.89; alpha3 = 0.5;
+
+
+taus = linspace(1,30,30);
+MC_multip = ( c1*alpha1.^(2*taus) + c2*alpha2.^(2*taus) + c3*alpha3.^(2*taus) )/( c1/(1-alpha1^2) + c2/(1-alpha2^2) + c3/(1-alpha3^2) )/(1-c);
+MC1 = ( alpha1.^(2*taus)*(1-alpha1^2) )/(1-c);
+MC2 = ( alpha2.^(2*taus)*(1-alpha2^2) )/(1-c);
+MC3 = ( alpha3.^(2*taus)*(1-alpha3^2) )/(1-c);
+
+
+figure
+semilogy(taus, MC_multip, 'r')
+hold on
+semilogy(taus, MC1, 'bREPLACE_WITH_DASH_DASH')
+semilogy(taus, MC2, 'bo-')
+semilogy(taus, MC3, 'bs-')
+legend('$MC(\tau;W)$', '$MC(\tau;W_1^+)$', '$MC(\tau;W_2^+)$', '$MC(\tau;W_3^+)$', 'Interpreter', 'latex', 'FontSize', 15)
+axis([1, 30, 1e-4, 3])
+xlabel('$\tau$', 'Interpreter', 'latex')
+ylabel('Memory capacity', 'Interpreter', 'latex')
+
+%% Illustration of $\mathcal{R}$ for non-symmetric and (Wigner) symmetric Gaussian $W$
+close all; clc; clear;
+
+choice_W = 'Wigner'; % 'iid', 'Wigner', 'Haar'
+alpha = 0.9;
+n = 200;
+T = 400;
+
+switch choice_W
+    case 'iid'
+        W = randn(n)/sqrt(n);
+        W = W/max(abs(eig(W)));
+        W = alpha*W;
+    case 'Wigner'
+        W = randn(n)/sqrt(n);
+        W = triu(W,1)+tril(W',-1)+diag(randn(n,1)/sqrt(n));
+        W = W/abs(eigs(W,1));
+        W = alpha*W;
+    case 'Haar'
+        W = randn(n)/sqrt(n);
+        W = (W*W')^(-1/2)*W;
+        W = W/max(abs(eig(W)));
+        W = alpha*W;
+end
+
+pW = zeros(n,n,T);
+pW(:,:,1)=eye(n);
+
+pWW = zeros(n,n,T);
+pWW(:,:,1)=eye(n);
+
+for i=2:T
+    pW(:,:,i)=W*pW(:,:,i-1);
+    pWW(:,:,i)=W*pWW(:,:,i-1)*W';
+end
+
+sumpWW = sum(pWW,3);
+S=zeros(n,n,T);
+for i=1:T
+    S(:,:,i)=sumpWW*pW(:,:,i)';
+end
+
+start_R=n/T/abs(1-n/T)*eye(T);
+start_tR=abs(1-n/T)*sumpWW;
+[R,tR]=computeR(n,T,S,start_R,start_tR);
+
+
+figure
+colormap gray
+imagesc(1-R(1:10,1:10));
+title('Illustration of $\mathcal{R}$','Interpreter', 'latex')
+
+%% FUNCTIONS
+function [R,tR]=computeR(n,T,S,start_R,start_tR)
+
+if n<T
+    dIn=0;
+    dIT=eye(T);
+else
+    dIn=eye(n);
+    dIT=0;
+end
+
+Rtmp  = zeros(T);
+
+R = start_R;
+tR= start_tR;
+
+while max(abs((R(:)-Rtmp(:))))>1e-15
+    Rtmp=R;
+    
+    invtR = inv(dIn+tR);
+    r=zeros(1,T);
+    for q=1:T
+        r(q)=1/n*trace(S(:,:,q)*invtR);
+    end
+    R = n/T*toeplitz(r);
+    
+    inv_I_R = inv(dIT+R);
+    tR = 1/T*trace(inv_I_R)*S(:,:,1);
+    for q=2:T
+        tR = tR + 1/T*sum(diag(inv_I_R,q-1))*(S(:,:,q)+S(:,:,q)');
+    end
+    
+    max(abs(R(:)-Rtmp(:)));
+end
+end
+
+
+
+##### SOURCE END #####
+--></body></html>

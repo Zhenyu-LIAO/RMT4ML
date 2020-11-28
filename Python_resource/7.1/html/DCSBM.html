@@ -1,0 +1,469 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Section 7.1.2: The degree-corrected stochastic block model</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-11-15"><meta name="DC.source" content="DCSBM.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Section 7.1.2: The degree-corrected stochastic block model</h1><!--introduction--><p>This page contains simulations in Section 7.1.2.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Limiting spectrum and isolated eigen-pairs of a <img src="DCSBM_eq14956984979706529373.png" alt="$3$">-class DC-SBM</a></li><li><a href="#2">Overlap performance of different <img src="DCSBM_eq14221827199139923399.png" alt="$\alpha$"> on DS-SBM for bimodal <img src="DCSBM_eq17206279351962342546.png" alt="$q_i$"></a></li><li><a href="#3">FUNCTIONS</a></li></ul></div><h2 id="1">Limiting spectrum and isolated eigen-pairs of a <img src="DCSBM_eq14956984979706529373.png" alt="$3$">-class DC-SBM</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+n = 3000;
+cs = [0.1, 0.3, 0.6];
+ns = n*cs;
+k = length(cs);
+j = @(i) [zeros(sum(ns(1:i-1)),1);ones(ns(i),1);zeros(sum(ns(i+1:k)),1)];
+J = [j(1) j(2) j(3)];
+
+testcase = <span class="string">'left'</span>;
+<span class="keyword">switch</span> testcase
+    <span class="keyword">case</span> <span class="string">'left'</span>
+        q = 0.1*(randn(n,1)&gt;0)+ 0.8;
+        M = [10, 0, 0; 0, 10, 0; 0, 0, 10];
+    <span class="keyword">case</span> <span class="string">'right'</span>
+        q = 0.8*(randn(n,1)&gt;0)+ 0.1;
+        M = [5, 0, 0; 0, 5, 0; 0, 0, 5];
+<span class="keyword">end</span>
+C = 1 + M/sqrt(n);
+P = diag(q)*(J*C*(J'))*diag(q);
+
+A_cell = cell(3);
+<span class="keyword">for</span> i = 1:k
+    tmp = binornd(1,P(sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n),n*cs(i),n*cs(i));
+    tmp = tril(tmp,-1)+tril(tmp,-1)';
+    A_cell{i,i} = tmp;
+    <span class="keyword">for</span> j = i+1:k
+        A_cell{i,j} = binornd(1,P(sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n,sum(cs(1:(j-1)))*n+1:sum(cs(1:j))*n),n*cs(i),n*cs(j));
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+A = [A_cell{1,1} A_cell{1,2} A_cell{1,3}; A_cell{1,2}' A_cell{2,2} A_cell{2,3}; A_cell{1,3}' A_cell{2,3}' A_cell{3,3}];
+A = A - diag(A);
+d = A*ones(n,1);
+
+B = 1/sqrt(n)*(A-d*d'/sum(d));
+[V_B,eigs_B] = eig(B,<span class="string">'vector'</span>);
+[~,ind] = sort(eigs_B);
+eigs_B = eigs_B(ind);
+V_B = V_B(:,ind);
+
+figure
+histogram(eigs_B, 50, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>)
+title(<span class="string">'Eigenvalue distribution'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+
+figure
+subplot(1,2,1)
+plot(V_B(:,n))
+xlabel(<span class="string">'Eigenvector $1$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+subplot(1,2,2)
+plot(V_B(:,n-1))
+xlabel(<span class="string">'Eigenvector $2$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+</pre><img vspace="5" hspace="5" src="DCSBM_01.png" alt=""> <img vspace="5" hspace="5" src="DCSBM_02.png" alt=""> <h2 id="2">Overlap performance of different <img src="DCSBM_eq14221827199139923399.png" alt="$\alpha$"> on DS-SBM for bimodal <img src="DCSBM_eq17206279351962342546.png" alt="$q_i$"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+n = 3000;
+cs = [1/3, 1/3, 1/3];
+ns = n*cs;
+k = length(cs);
+j = @(i) [zeros(sum(ns(1:i-1)),1);ones(ns(i),1);zeros(sum(ns(i+1:k)),1)];
+J = [j(1) j(2) j(3)];
+
+option_alpha = <span class="string">'any'</span>; <span class="comment">% 'optim' or 'any'</span>
+
+range_q2 = linspace(0.1,0.9,30);
+
+loops = 50;
+classif_overlap = zeros(length(range_q2),loops);
+
+q1 = 0.1;
+
+range_index=1;
+<span class="keyword">for</span> q2 = range_q2
+    <span class="keyword">for</span> loop=1:loops
+        q = (q2-q1)*(rand(n,1)&gt;3/4)+ q1;
+        M = [10, -10, -10; -10, 10, -10; -10, -10, 10];
+        C = 1 + M/sqrt(n);
+        P = diag(q)*(J*C*(J'))*diag(q);
+
+        A_cell = cell(3);
+        <span class="keyword">for</span> i = 1:k
+            tmp = binornd(1,P(sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n),n*cs(i),n*cs(i));
+            tmp = tril(tmp,-1)+tril(tmp,-1)';
+            A_cell{i,i} = tmp;
+            <span class="keyword">for</span> j = i+1:k
+                A_cell{i,j} = binornd(1,P(sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n,sum(cs(1:(j-1)))*n+1:sum(cs(1:j))*n),n*cs(i),n*cs(j));
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+        A = [A_cell{1,1} A_cell{1,2} A_cell{1,3}; A_cell{1,2}' A_cell{2,2} A_cell{2,3}; A_cell{1,3}' A_cell{2,3}' A_cell{3,3}];
+        A = A - diag(A);
+        d = A*ones(n,1);
+        D = diag(d);
+
+        <span class="keyword">switch</span> option_alpha
+            <span class="keyword">case</span> <span class="string">'optim'</span>
+                alpha = find_optim_alpha(d);
+            <span class="keyword">otherwise</span>
+                alpha = 1/2;
+        <span class="keyword">end</span>
+
+        L = (sum(d))^alpha*D^(-alpha)*(A-d*d'/sum(d))*D^(-alpha)/sqrt(n);
+
+        nb_eig = 2;
+        [V_L,~] = eigs(L,nb_eig,<span class="string">'largestreal'</span>);
+        V = D^(alpha-1)*V_L;
+        V_means=zeros(k,nb_eig);
+        <span class="keyword">for</span> i=1:k
+            V_means(i,:)=mean(V(sum(ns(1:(i-1)))+1:sum(ns(1:i)),:));
+        <span class="keyword">end</span>
+        kmeans_output = kmeans(V,k,<span class="string">'Start'</span>, V_means);
+
+        vec=zeros(n,1);
+        tmp=0;
+        <span class="keyword">for</span> perm=perms(1:k)'
+            <span class="keyword">for</span> i=1:k
+                vec(sum(ns(1:(i-1)))+1:sum(ns(1:i)))=perm(i)*ones(ns(i),1);
+            <span class="keyword">end</span>
+            <span class="keyword">if</span> kmeans_output'*vec&gt;tmp
+                tmp=kmeans_output'*vec;
+                best_vec=vec;
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+        classif_overlap(range_index,loop) = (sum(best_vec==kmeans_output)/n -1/k)/(1- 1/k);
+    <span class="keyword">end</span>
+    range_index = range_index+1;
+<span class="keyword">end</span>
+
+figure;
+hold <span class="string">on</span>;
+plot(range_q2,mean(classif_overlap,2));
+xlabel(<span class="string">'$q_{(2)}$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+ylabel(<span class="string">'Classification overlap'</span>)
+</pre><pre class="codeoutput">Warning: Failed to converge in 100 iterations. 
+Warning: Failed to converge in 100 iterations. 
+Warning: Failed to converge in 100 iterations. 
+</pre><img vspace="5" hspace="5" src="DCSBM_03.png" alt=""> <h2 id="3">FUNCTIONS</h2><pre class="codeinput"><span class="keyword">function</span> optim_alpha = find_optim_alpha(d)
+
+n = length(d);
+
+
+q_estim = d./sqrt(sum(d));
+range_alpha = linspace(0,1,100);
+limit = zeros(size(range_alpha));
+
+<span class="keyword">for</span> alpha_index = 1:length(range_alpha)
+    alpha = range_alpha(alpha_index);
+
+    q_estim_1_2alpha = q_estim.^(1-2*alpha);
+    q_estim_2_2alpha = q_estim.^(2-2*alpha);
+
+    left_edge = 0;
+    right_edge = 100;
+    found_a_valid_point = 0;
+
+    watchdog1 = 1;
+    watchdog1_max = 1e3;
+
+    tilde_g = 0;
+    tilde_g_tmp = 1;
+    <span class="keyword">while</span> abs(tilde_g- tilde_g_tmp)&gt;1e-5 &amp;&amp; watchdog1&lt;watchdog1_max
+        x = (left_edge + right_edge)/2;
+        watchdog2 = 1;
+        watchdog2_max = 1e2;
+
+        g_vec = zeros(2,1);
+        g_vec_tmp = ones(2,1);
+
+        <span class="keyword">while</span> max(abs(g_vec - g_vec_tmp)&gt;1e-7) &amp;&amp; watchdog2&lt;watchdog2_max
+            g_vec_tmp = g_vec;
+
+            g_vec(1) = sum(q_estim_1_2alpha./(-x-g_vec(1)*q_estim_1_2alpha+g_vec(2)*q_estim_2_2alpha))/n;
+            g_vec(2) = sum(q_estim_2_2alpha./(-x-g_vec(1)*q_estim_1_2alpha+g_vec(2)*q_estim_2_2alpha))/n;
+
+            watchdog2 = watchdog2 + 1;
+        <span class="keyword">end</span>
+
+        <span class="keyword">if</span> watchdog2 &lt; watchdog2_max
+            found_a_valid_point = 1;
+            tilde_g_tmp = tilde_g;
+            right_edge = x;
+            tilde_g = g_vec(2);
+        <span class="keyword">else</span>
+            <span class="keyword">if</span> found_a_valid_point == 0
+                right_edge = right_edge*2;
+            <span class="keyword">end</span>
+            left_edge = x;
+        <span class="keyword">end</span>
+
+        watchdog1 = watchdog1 + 1;
+    <span class="keyword">end</span>
+    limit(alpha_index) = -1/tilde_g;
+<span class="keyword">end</span>
+
+[~,index] = min(limit);
+
+optim_alpha = range_alpha(index);
+<span class="keyword">end</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Section 7.1.2: The degree-corrected stochastic block model
+% This page contains simulations in Section 7.1.2.
+
+%% Limiting spectrum and isolated eigen-pairs of a $3$-class DC-SBM
+close all; clear; clc
+
+n = 3000;
+cs = [0.1, 0.3, 0.6];
+ns = n*cs;
+k = length(cs);
+j = @(i) [zeros(sum(ns(1:i-1)),1);ones(ns(i),1);zeros(sum(ns(i+1:k)),1)];
+J = [j(1) j(2) j(3)];
+
+testcase = 'left';
+switch testcase
+    case 'left'
+        q = 0.1*(randn(n,1)>0)+ 0.8;
+        M = [10, 0, 0; 0, 10, 0; 0, 0, 10];
+    case 'right'
+        q = 0.8*(randn(n,1)>0)+ 0.1;
+        M = [5, 0, 0; 0, 5, 0; 0, 0, 5];
+end
+C = 1 + M/sqrt(n);
+P = diag(q)*(J*C*(J'))*diag(q);
+
+A_cell = cell(3);
+for i = 1:k
+    tmp = binornd(1,P(sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n),n*cs(i),n*cs(i));
+    tmp = tril(tmp,-1)+tril(tmp,-1)';
+    A_cell{i,i} = tmp;
+    for j = i+1:k
+        A_cell{i,j} = binornd(1,P(sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n,sum(cs(1:(j-1)))*n+1:sum(cs(1:j))*n),n*cs(i),n*cs(j));
+    end
+end
+A = [A_cell{1,1} A_cell{1,2} A_cell{1,3}; A_cell{1,2}' A_cell{2,2} A_cell{2,3}; A_cell{1,3}' A_cell{2,3}' A_cell{3,3}];
+A = A - diag(A);
+d = A*ones(n,1);
+
+B = 1/sqrt(n)*(A-d*d'/sum(d));
+[V_B,eigs_B] = eig(B,'vector');
+[~,ind] = sort(eigs_B);
+eigs_B = eigs_B(ind);
+V_B = V_B(:,ind);
+
+figure
+histogram(eigs_B, 50, 'Normalization', 'pdf')
+title('Eigenvalue distribution', 'Interpreter', 'latex')
+
+figure
+subplot(1,2,1)
+plot(V_B(:,n))
+xlabel('Eigenvector $1$', 'Interpreter', 'latex')
+subplot(1,2,2)
+plot(V_B(:,n-1))
+xlabel('Eigenvector $2$', 'Interpreter', 'latex')
+
+%% Overlap performance of different $\alpha$ on DS-SBM for bimodal $q_i$
+close all; clear; clc
+
+n = 3000;
+cs = [1/3, 1/3, 1/3];
+ns = n*cs;
+k = length(cs);
+j = @(i) [zeros(sum(ns(1:i-1)),1);ones(ns(i),1);zeros(sum(ns(i+1:k)),1)];
+J = [j(1) j(2) j(3)];
+
+option_alpha = 'any'; % 'optim' or 'any'
+
+range_q2 = linspace(0.1,0.9,30);
+
+loops = 50;
+classif_overlap = zeros(length(range_q2),loops);
+
+q1 = 0.1;
+
+range_index=1;
+for q2 = range_q2
+    for loop=1:loops
+        q = (q2-q1)*(rand(n,1)>3/4)+ q1;
+        M = [10, -10, -10; -10, 10, -10; -10, -10, 10];
+        C = 1 + M/sqrt(n);
+        P = diag(q)*(J*C*(J'))*diag(q);
+        
+        A_cell = cell(3);
+        for i = 1:k
+            tmp = binornd(1,P(sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n),n*cs(i),n*cs(i));
+            tmp = tril(tmp,-1)+tril(tmp,-1)';
+            A_cell{i,i} = tmp;
+            for j = i+1:k
+                A_cell{i,j} = binornd(1,P(sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n,sum(cs(1:(j-1)))*n+1:sum(cs(1:j))*n),n*cs(i),n*cs(j));
+            end
+        end
+        A = [A_cell{1,1} A_cell{1,2} A_cell{1,3}; A_cell{1,2}' A_cell{2,2} A_cell{2,3}; A_cell{1,3}' A_cell{2,3}' A_cell{3,3}];
+        A = A - diag(A);
+        d = A*ones(n,1);
+        D = diag(d);
+        
+        switch option_alpha
+            case 'optim'
+                alpha = find_optim_alpha(d);
+            otherwise
+                alpha = 1/2;
+        end
+        
+        L = (sum(d))^alpha*D^(-alpha)*(A-d*d'/sum(d))*D^(-alpha)/sqrt(n);
+        
+        nb_eig = 2;
+        [V_L,~] = eigs(L,nb_eig,'largestreal');
+        V = D^(alpha-1)*V_L;
+        V_means=zeros(k,nb_eig);
+        for i=1:k
+            V_means(i,:)=mean(V(sum(ns(1:(i-1)))+1:sum(ns(1:i)),:));
+        end
+        kmeans_output = kmeans(V,k,'Start', V_means);
+        
+        vec=zeros(n,1);
+        tmp=0;
+        for perm=perms(1:k)'
+            for i=1:k
+                vec(sum(ns(1:(i-1)))+1:sum(ns(1:i)))=perm(i)*ones(ns(i),1);
+            end
+            if kmeans_output'*vec>tmp
+                tmp=kmeans_output'*vec;
+                best_vec=vec;
+            end
+        end
+        classif_overlap(range_index,loop) = (sum(best_vec==kmeans_output)/n -1/k)/(1- 1/k);
+    end
+    range_index = range_index+1;
+end
+
+figure;
+hold on;
+plot(range_q2,mean(classif_overlap,2));
+xlabel('$q_{(2)}$', 'Interpreter', 'latex')
+ylabel('Classification overlap')
+
+%% FUNCTIONS
+function optim_alpha = find_optim_alpha(d)
+
+n = length(d);
+
+
+q_estim = d./sqrt(sum(d));
+range_alpha = linspace(0,1,100);
+limit = zeros(size(range_alpha));
+
+for alpha_index = 1:length(range_alpha)
+    alpha = range_alpha(alpha_index);
+    
+    q_estim_1_2alpha = q_estim.^(1-2*alpha);
+    q_estim_2_2alpha = q_estim.^(2-2*alpha);
+    
+    left_edge = 0;
+    right_edge = 100;
+    found_a_valid_point = 0;
+    
+    watchdog1 = 1;
+    watchdog1_max = 1e3;
+    
+    tilde_g = 0;
+    tilde_g_tmp = 1;
+    while abs(tilde_g- tilde_g_tmp)>1e-5 && watchdog1<watchdog1_max
+        x = (left_edge + right_edge)/2;
+        watchdog2 = 1;
+        watchdog2_max = 1e2;
+        
+        g_vec = zeros(2,1);
+        g_vec_tmp = ones(2,1);
+        
+        while max(abs(g_vec - g_vec_tmp)>1e-7) && watchdog2<watchdog2_max
+            g_vec_tmp = g_vec;
+            
+            g_vec(1) = sum(q_estim_1_2alpha./(-x-g_vec(1)*q_estim_1_2alpha+g_vec(2)*q_estim_2_2alpha))/n;
+            g_vec(2) = sum(q_estim_2_2alpha./(-x-g_vec(1)*q_estim_1_2alpha+g_vec(2)*q_estim_2_2alpha))/n;
+            
+            watchdog2 = watchdog2 + 1;
+        end
+        
+        if watchdog2 < watchdog2_max
+            found_a_valid_point = 1;
+            tilde_g_tmp = tilde_g;
+            right_edge = x;
+            tilde_g = g_vec(2);
+        else
+            if found_a_valid_point == 0
+                right_edge = right_edge*2;
+            end
+            left_edge = x;
+        end
+        
+        watchdog1 = watchdog1 + 1;
+    end
+    limit(alpha_index) = -1/tilde_g;
+end
+
+[~,index] = min(limit);
+
+optim_alpha = range_alpha(index);
+end
+
+##### SOURCE END #####
+--></body></html>

@@ -1,0 +1,247 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Section 7.2: From dense to sparse graphs: a different approach.</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-11-22"><meta name="DC.source" content="sparse_graph.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Section 7.2: From dense to sparse graphs: a different approach.</h1><!--introduction--><p>This page contains simulations in Section 7.2.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Complex spectrum of the non-backtracking matrix <img src="sparse_graph_eq03672095713503266041.png" alt="$N$"></a></li><li><a href="#2">Eigenvalue-eigenvector pairs of Bethe Hessian <img src="sparse_graph_eq06391815180256886102.png" alt="$H_{\gamma}$"> under DC-SBM</a></li><li><a href="#3">FUNCTIONS</a></li></ul></div><h2 id="1">Complex spectrum of the non-backtracking matrix <img src="sparse_graph_eq03672095713503266041.png" alt="$N$"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+n = 1000;
+
+p_in = 12;
+p_out = 1;
+cs = [1/2 1/2]';
+k = length(cs);
+
+A11 = binornd(1,p_in/n,n*cs(1),n*cs(1));
+A11 = tril(A11,-1)+tril(A11,-1)';
+A22 = binornd(1,p_in/n,n*cs(2),n*cs(2));
+A22 = tril(A22,-1)+tril(A22,-1)';
+A12 = binornd(1,p_out/n,n*cs(1),n*cs(2));
+
+A = [A11 A12; A12' A22];
+A = A - diag(A);
+
+<span class="comment">% get the (directed) edges from A</span>
+[I,J] = ind2sub(size(A),find(triu(A,1)&gt;0));
+E = [I,J;J,I];
+m = length(E);
+N = zeros(m,m);
+
+<span class="keyword">for</span> i=1:m
+    <span class="keyword">for</span> j=1:m
+        <span class="keyword">if</span> E(i,2)==E(j,1) &amp;&amp; E(i,1)~=E(j,2)
+            N(i,j) = 1;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+eigs_N = eig(N);
+
+figure
+hold <span class="string">on</span>
+plot(eigs_N,<span class="string">'x'</span>)
+</pre><img vspace="5" hspace="5" src="sparse_graph_01.png" alt=""> <h2 id="2">Eigenvalue-eigenvector pairs of Bethe Hessian <img src="sparse_graph_eq06391815180256886102.png" alt="$H_{\gamma}$"> under DC-SBM</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+n = 1000;
+cs = [0.5, 0.5];
+k = length(cs);
+j1 = [ones(n*cs(1),1);zeros(n*cs(2),1)];
+j2 = ones(n,1)-j1;
+J = [j1, j2];
+
+p_in = 35;
+p_out = 5;
+q = [linspace(.2,.9,n/2) linspace(.2,.9,n/2)];
+C = [p_in, p_out; p_out, p_in]/n;
+P = diag(q)*(J*C*(J'))*diag(q);
+
+gamma = sqrt( (p_in + p_out )/2);
+<span class="comment">%gamma = (p_in + p_out )/(p_in - p_out );</span>
+
+A_cell = cell(k);
+<span class="keyword">for</span> i = 1:k
+    tmp = binornd(1,P(sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n),n*cs(i),n*cs(i));
+    tmp = tril(tmp,-1)+tril(tmp,-1)';
+    A_cell{i,i} = tmp;
+    <span class="keyword">for</span> j = i+1:k
+        A_cell{i,j} = binornd(1,P(sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n,sum(cs(1:(j-1)))*n+1:sum(cs(1:j))*n),n*cs(i),n*cs(j));
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+A = [A_cell{1,1} A_cell{1,2}; A_cell{1,2}' A_cell{2,2}];
+A = A - diag(A);
+D = diag(A*ones(n,1));
+
+H = (gamma^2 - 1)*eye(n) + D - gamma*A;
+[V_H,eigs_H] = eig(H,<span class="string">'vector'</span>);
+[~,ind] = sort(eigs_H);
+eigs_H = eigs_H(ind);
+V_H = V_H(:,ind);
+
+clc
+figure
+histogram(eigs_H, 50, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>)
+title(<span class="string">'Eigenvalue distribution'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+
+figure
+plot(V_H(:,2))
+title(<span class="string">'Informative Eigenvector of $H_{\gamma}$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+</pre><img vspace="5" hspace="5" src="sparse_graph_02.png" alt=""> <img vspace="5" hspace="5" src="sparse_graph_03.png" alt=""> <h2 id="3">FUNCTIONS</h2><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Section 7.2: From dense to sparse graphs: a different approach.
+% This page contains simulations in Section 7.2.
+
+%% Complex spectrum of the non-backtracking matrix $N$
+close all; clear; clc
+
+n = 1000;
+
+p_in = 12;
+p_out = 1;
+cs = [1/2 1/2]';
+k = length(cs);
+
+A11 = binornd(1,p_in/n,n*cs(1),n*cs(1));
+A11 = tril(A11,-1)+tril(A11,-1)';
+A22 = binornd(1,p_in/n,n*cs(2),n*cs(2));
+A22 = tril(A22,-1)+tril(A22,-1)';
+A12 = binornd(1,p_out/n,n*cs(1),n*cs(2));
+
+A = [A11 A12; A12' A22];
+A = A - diag(A);
+
+% get the (directed) edges from A
+[I,J] = ind2sub(size(A),find(triu(A,1)>0));
+E = [I,J;J,I];
+m = length(E);
+N = zeros(m,m);
+
+for i=1:m
+    for j=1:m
+        if E(i,2)==E(j,1) && E(i,1)~=E(j,2)
+            N(i,j) = 1;
+        end
+    end
+end
+
+eigs_N = eig(N);
+
+figure
+hold on
+plot(eigs_N,'x')
+
+%% Eigenvalue-eigenvector pairs of Bethe Hessian $H_{\gamma}$ under DC-SBM
+
+close all; clear; clc
+
+n = 1000;
+cs = [0.5, 0.5];
+k = length(cs);
+j1 = [ones(n*cs(1),1);zeros(n*cs(2),1)];
+j2 = ones(n,1)-j1;
+J = [j1, j2];
+
+p_in = 35;
+p_out = 5;
+q = [linspace(.2,.9,n/2) linspace(.2,.9,n/2)];
+C = [p_in, p_out; p_out, p_in]/n;
+P = diag(q)*(J*C*(J'))*diag(q);
+
+gamma = sqrt( (p_in + p_out )/2);
+%gamma = (p_in + p_out )/(p_in - p_out );
+
+A_cell = cell(k);
+for i = 1:k
+    tmp = binornd(1,P(sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n),n*cs(i),n*cs(i));
+    tmp = tril(tmp,-1)+tril(tmp,-1)';
+    A_cell{i,i} = tmp;
+    for j = i+1:k
+        A_cell{i,j} = binornd(1,P(sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n,sum(cs(1:(j-1)))*n+1:sum(cs(1:j))*n),n*cs(i),n*cs(j));
+    end
+end
+A = [A_cell{1,1} A_cell{1,2}; A_cell{1,2}' A_cell{2,2}];
+A = A - diag(A);
+D = diag(A*ones(n,1));
+
+H = (gamma^2 - 1)*eye(n) + D - gamma*A;
+[V_H,eigs_H] = eig(H,'vector');
+[~,ind] = sort(eigs_H);
+eigs_H = eigs_H(ind);
+V_H = V_H(:,ind);
+
+clc
+figure
+histogram(eigs_H, 50, 'Normalization', 'pdf')
+title('Eigenvalue distribution', 'Interpreter', 'latex')
+
+figure
+plot(V_H(:,2))
+title('Informative Eigenvector of $H_{\gamma}$', 'Interpreter', 'latex')
+
+%% FUNCTIONS
+
+##### SOURCE END #####
+--></body></html>

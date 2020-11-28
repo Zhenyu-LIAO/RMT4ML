@@ -1,0 +1,313 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Section 4.3 The  random kernel model</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-08-09"><meta name="DC.source" content="alpha_beta_kernel.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Section 4.3 The <img src="alpha_beta_kernel_eq16358489609969597442.png" alt="$\alpha-\beta$"> random kernel model</h1><!--introduction--><p>This page contains simulations in Section 4.3.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Eigenspectrum of <img src="alpha_beta_kernel_eq01908532921846404702.png" alt="$\Phi$"></a></li><li><a href="#2">Limiting spectra of <img src="alpha_beta_kernel_eq16358489609969597442.png" alt="$\alpha-\beta$"> kernel</a></li></ul></div><h2 id="1">Eigenspectrum of <img src="alpha_beta_kernel_eq01908532921846404702.png" alt="$\Phi$"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+coeff = 2;
+p = 400*coeff;
+n = 1200*coeff;
+c = p/n;
+
+rng(928);
+W = randn(p,n); <span class="comment">% population covariance = identity</span>
+
+Phi = sqrt(p)*( (W'*W/p).^2 - 1/p);
+Phi = Phi - diag(diag(Phi));
+eigs_Phi = eig(Phi);
+
+omega = sqrt(2);
+Omega = sqrt(2);
+
+spike_location = Omega/c+omega^2/Omega;
+edges = linspace(-2*omega/sqrt(c), 2*omega/sqrt(c), 100);
+mu = sqrt( 4*omega^2/c - edges.^2 )*c/2/pi/omega^2;
+
+figure
+hold <span class="string">on</span>
+histogram(eigs_Phi, 50, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+plot(edges,mu, <span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
+plot([-spike_location, spike_location],[0,0],<span class="string">'x'</span>, <span class="string">'LineWidth'</span>, 2);
+legend(<span class="string">'Empirical eigenvalues'</span>, <span class="string">'Rescaled semi-circle law'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
+axis([-7 7 0 0.16]);
+</pre><img vspace="5" hspace="5" src="alpha_beta_kernel_01.png" alt=""> <h2 id="2">Limiting spectra of <img src="alpha_beta_kernel_eq16358489609969597442.png" alt="$\alpha-\beta$"> kernel</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+coeff = 1;
+p = 512*coeff;
+n = 1024*coeff;
+c = p/n;
+
+cs = [1/2, 1/2];
+n_cs = n*cs;
+k = length(cs); <span class="comment">% number of classes</span>
+
+alpha = 8; beta = 1;
+f = @(t) beta*(t+alpha/2/beta/sqrt(p)).^2;
+f_d = @(t) 2*beta*(t+alpha/2/beta/sqrt(p));
+
+testcase_option = <span class="string">'iid'</span>;
+
+<span class="keyword">switch</span> testcase_option
+    <span class="keyword">case</span> <span class="string">'iid'</span>
+        means = @(i) zeros(p,1);
+        covs  = @(i) eye(p);
+    <span class="keyword">case</span> <span class="string">'means'</span>
+        means = @(i) [zeros(i-1,1);1;zeros(p-i,1)]*5;
+        covs  = @(i) eye(p);
+    <span class="keyword">case</span> <span class="string">'var'</span>
+        means = @(i) zeros(p,1);
+        covs  = @(i) eye(p)*(1+(i-1)/sqrt(p)*10);
+    <span class="keyword">case</span> <span class="string">'orth'</span>
+        means = @(i) zeros(p,1);
+        covs = @(i) toeplitz((6*(i-1)/10).^(0:(p-1)));
+    <span class="keyword">case</span> <span class="string">'mixed'</span>
+        means = @(i) (-1)^(i)*[1;zeros(p-1,1)]*2;
+        covs  = @(i) eye(p)*(1+(i-1)/sqrt(p)*5);
+<span class="keyword">end</span>
+
+covs_mean = cs(1)*covs(1) + cs(2)*covs(2);
+eigs_covs_mean = eig(covs_mean);
+tau = trace(covs_mean)/p;
+
+rng(928);
+W=zeros(p,n);
+<span class="keyword">for</span> i=1:k
+    W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=sqrtm(covs(i))*randn(p,cs(i)*n);
+<span class="keyword">end</span>
+
+X=zeros(p,n);
+<span class="keyword">for</span> i=1:k
+    X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)+means(i)*ones(1,cs(i)*n);
+<span class="keyword">end</span>
+
+P = eye(n) - ones(n,n)/n;
+X_center = X*P;
+
+K = f(X_center'*X_center/p);
+K = K - diag(diag(K));
+PKP = P*K*P;
+rescale_PKP = sqrt(p)*(PKP + (f(0)+tau*f_d(0) )*P);
+eigs_rescale_PKP = eig(rescale_PKP);
+
+omega = sqrt(2)*trace(covs_mean*covs_mean)/p;
+
+<span class="keyword">if</span> min(eigs_rescale_PKP)&lt;0
+    edges = linspace(min(eigs_rescale_PKP)*1.1, max(eigs_rescale_PKP)*1.1, 200);
+<span class="keyword">else</span>
+    edges = linspace(min(eigs_rescale_PKP)*0.9, max(eigs_rescale_PKP)*1.1, 200);
+<span class="keyword">end</span>
+
+clear <span class="string">i</span> <span class="comment">% make sure i stands for the imaginary unit</span>
+y = 1e-5;
+zs = edges+y*1i;
+mu = zeros(length(zs),1);
+
+m=0;
+<span class="keyword">for</span> j=1:length(zs)
+    z = zs(j);
+
+    m_tmp=1;
+    <span class="keyword">while</span> abs(m-m_tmp)&gt;1e-6
+        m_tmp=m;
+        m = 1/( -z + alpha*mean(eigs_covs_mean./(1+alpha*m*eigs_covs_mean/c)) - beta^2*omega^2*m/c);
+    <span class="keyword">end</span>
+    mu(j)=imag(m)/pi;
+<span class="keyword">end</span>
+
+figure
+histogram(eigs_rescale_PKP, 40, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+hold <span class="string">on</span>;
+plot(edges,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
+legend(<span class="string">'Empirical spectrum of $\check K$'</span>, <span class="string">'Limiting law'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
+</pre><img vspace="5" hspace="5" src="alpha_beta_kernel_02.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Section 4.3 The $\alpha-\beta$ random kernel model
+% This page contains simulations in Section 4.3.
+
+%% Eigenspectrum of $\Phi$
+close all; clear; clc
+
+coeff = 2;
+p = 400*coeff;
+n = 1200*coeff;
+c = p/n;
+
+rng(928);
+W = randn(p,n); % population covariance = identity
+
+Phi = sqrt(p)*( (W'*W/p).^2 - 1/p);
+Phi = Phi - diag(diag(Phi));
+eigs_Phi = eig(Phi);
+
+omega = sqrt(2);
+Omega = sqrt(2);
+
+spike_location = Omega/c+omega^2/Omega;
+edges = linspace(-2*omega/sqrt(c), 2*omega/sqrt(c), 100);
+mu = sqrt( 4*omega^2/c - edges.^2 )*c/2/pi/omega^2;
+
+figure
+hold on
+histogram(eigs_Phi, 50, 'Normalization', 'pdf');
+plot(edges,mu, 'r', 'Linewidth',2);
+plot([-spike_location, spike_location],[0,0],'x', 'LineWidth', 2);
+legend('Empirical eigenvalues', 'Rescaled semi-circle law', 'FontSize', 15, 'Interpreter', 'latex');
+axis([-7 7 0 0.16]);
+
+%% Limiting spectra of $\alpha-\beta$ kernel
+close all; clear; clc
+
+coeff = 1;
+p = 512*coeff;
+n = 1024*coeff;
+c = p/n;
+
+cs = [1/2, 1/2];
+n_cs = n*cs;
+k = length(cs); % number of classes
+
+alpha = 8; beta = 1;
+f = @(t) beta*(t+alpha/2/beta/sqrt(p)).^2;
+f_d = @(t) 2*beta*(t+alpha/2/beta/sqrt(p));
+
+testcase_option = 'iid';
+
+switch testcase_option
+    case 'iid'
+        means = @(i) zeros(p,1);
+        covs  = @(i) eye(p);
+    case 'means'
+        means = @(i) [zeros(i-1,1);1;zeros(p-i,1)]*5;
+        covs  = @(i) eye(p);
+    case 'var'
+        means = @(i) zeros(p,1);
+        covs  = @(i) eye(p)*(1+(i-1)/sqrt(p)*10);
+    case 'orth'
+        means = @(i) zeros(p,1);
+        covs = @(i) toeplitz((6*(i-1)/10).^(0:(p-1)));
+    case 'mixed'
+        means = @(i) (-1)^(i)*[1;zeros(p-1,1)]*2;
+        covs  = @(i) eye(p)*(1+(i-1)/sqrt(p)*5);
+end
+
+covs_mean = cs(1)*covs(1) + cs(2)*covs(2);
+eigs_covs_mean = eig(covs_mean);
+tau = trace(covs_mean)/p;
+
+rng(928);
+W=zeros(p,n);
+for i=1:k
+    W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=sqrtm(covs(i))*randn(p,cs(i)*n);
+end
+
+X=zeros(p,n);
+for i=1:k
+    X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)+means(i)*ones(1,cs(i)*n);
+end
+
+P = eye(n) - ones(n,n)/n;
+X_center = X*P;
+
+K = f(X_center'*X_center/p);
+K = K - diag(diag(K));
+PKP = P*K*P;
+rescale_PKP = sqrt(p)*(PKP + (f(0)+tau*f_d(0) )*P);
+eigs_rescale_PKP = eig(rescale_PKP);
+
+omega = sqrt(2)*trace(covs_mean*covs_mean)/p;
+
+if min(eigs_rescale_PKP)<0
+    edges = linspace(min(eigs_rescale_PKP)*1.1, max(eigs_rescale_PKP)*1.1, 200);
+else
+    edges = linspace(min(eigs_rescale_PKP)*0.9, max(eigs_rescale_PKP)*1.1, 200);
+end
+
+clear i % make sure i stands for the imaginary unit
+y = 1e-5;
+zs = edges+y*1i;
+mu = zeros(length(zs),1);
+
+m=0;
+for j=1:length(zs)
+    z = zs(j);
+    
+    m_tmp=1;
+    while abs(m-m_tmp)>1e-6
+        m_tmp=m;
+        m = 1/( -z + alpha*mean(eigs_covs_mean./(1+alpha*m*eigs_covs_mean/c)) - beta^2*omega^2*m/c);
+    end
+    mu(j)=imag(m)/pi;
+end
+
+figure
+histogram(eigs_rescale_PKP, 40, 'Normalization', 'pdf');
+hold on;
+plot(edges,mu,'r', 'Linewidth',2);
+legend('Empirical spectrum of $\check K$', 'Limiting law', 'FontSize', 15, 'Interpreter', 'latex');
+
+##### SOURCE END #####
+--></body></html>
