@@ -1,0 +1,267 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Section 6.4: Practical Lecture Material 6</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-11-29"><meta name="DC.source" content="phase_retrieval.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Section 6.4: Practical Lecture Material 6</h1><!--introduction--><p>This page contains simulations of Practical Lecture Material 6: Phase retrieval</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Spectra of <img src="phase_retrieval_eq17354617462179732091.png" alt="$H$"> versus the limiting law</a></li><li><a href="#2">phase transition behavior of the top eigenvalue-eigenvector pair</a></li></ul></div><h2 id="1">Spectra of <img src="phase_retrieval_eq17354617462179732091.png" alt="$H$"> versus the limiting law</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+coeff = 2;
+p = 250*coeff;
+n = 1500*coeff;
+c = p/n;
+
+<span class="comment">% processing/truncating function</span>
+<span class="comment">%f = @(t) t;</span>
+f = @(t) (max(t,0)-1)./(max(t,0)+sqrt(2/c)-1);
+
+value_posit = 100;
+alpha = [zeros(value_posit-1,1); 1; zeros(p-value_posit,1)]; <span class="comment">%%% vector to recover</span>
+alpha = alpha/norm(alpha);
+
+
+X = randn(p,n);
+v = X'*alpha;
+y = v.^2;
+fD = diag(f(y));
+eigs_fD = diag(fD);
+
+<span class="comment">%chi_s = @(t) exp(-t/2)./sqrt(t)/sqrt(2)/gamma(1/2);</span>
+
+H = X*fD*(X')/n;
+eigs_H = eig(H);
+
+<span class="keyword">if</span> min(eigs_H)&lt;0
+    edges = linspace(min(eigs_H)*1.1, max(eigs_H)*1.1, 100);
+<span class="keyword">else</span>
+    edges = linspace(min(eigs_H)*0.9, max(eigs_H)*1.1, 100);
+<span class="keyword">end</span>
+
+clear <span class="string">i</span> <span class="comment">% make sure i stands for the imaginary unit</span>
+y = 1e-5;
+zs = edges+y*1i;
+dens = zeros(length(zs),1);
+
+m=1;
+<span class="keyword">for</span> j=1:length(zs)
+    z = zs(j);
+
+    m_tmp=-1;
+    <span class="keyword">while</span> abs(m-m_tmp)&gt;1e-6
+        m_tmp=m;
+        m = 1/( -z + mean(eigs_fD./(1+c*m*eigs_fD)));
+    <span class="keyword">end</span>
+    dens(j)=imag(m)/pi;
+<span class="keyword">end</span>
+
+figure
+histogram(eigs_H, 40, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+hold <span class="string">on</span>;
+plot(edges,dens,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
+legend(<span class="string">'Empirical spectrum'</span>, <span class="string">'Limiting spectrum'</span>, <span class="string">'FontSize'</span>, 15)
+</pre><img vspace="5" hspace="5" src="phase_retrieval_01.png" alt=""> <h2 id="2">phase transition behavior of the top eigenvalue-eigenvector pair</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+coeff = 1;
+p = 500*coeff;
+c_loop = 0.1:0.1:1.9;
+n_loop = p./c_loop;
+
+alpha = [-ones(p/2,1); ones(p/2,1)];
+alpha = alpha/norm(alpha);
+
+nb_average_loop = 50;
+store_align = zeros(length(n_loop), nb_average_loop);
+<span class="keyword">for</span> n_index = 1:length(n_loop)
+    n = floor(n_loop(n_index));
+    c = p/n;
+
+    <span class="comment">% processing/truncating function</span>
+    <span class="comment">%f = @(t) t;</span>
+    f = @(t) (max(t,0)-1)./(max(t,0)+sqrt(2/c)-1);
+
+    <span class="keyword">for</span> average_loop = 1:nb_average_loop
+        X = randn(p,n);
+        v = X'*alpha;
+        y = v.^2;
+        fD = diag(f(y));
+        eigs_fD = diag(fD);
+        H = X*fD*(X')/n;
+        [hat_v,~] = eigs(H,1,<span class="string">'largestreal'</span>);
+
+        store_align(n_index, average_loop) = (alpha'*hat_v)^2;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+figure
+errorbar(c_loop, mean(store_align,2), std(store_align,1,2))
+xlabel(<span class="string">'$c= p/n$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+ylabel(<span class="string">'($a^T \hat v)^2$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+</pre><img vspace="5" hspace="5" src="phase_retrieval_02.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Section 6.4: Practical Lecture Material 6
+% This page contains simulations of Practical Lecture Material 6: Phase
+% retrieval
+
+%% Spectra of $H$ versus the limiting law
+close all; clear; clc
+
+coeff = 2;
+p = 250*coeff;
+n = 1500*coeff;
+c = p/n;
+
+% processing/truncating function
+%f = @(t) t;
+f = @(t) (max(t,0)-1)./(max(t,0)+sqrt(2/c)-1);
+
+value_posit = 100;
+alpha = [zeros(value_posit-1,1); 1; zeros(p-value_posit,1)]; %%% vector to recover
+alpha = alpha/norm(alpha);
+
+
+X = randn(p,n);
+v = X'*alpha;
+y = v.^2;
+fD = diag(f(y));
+eigs_fD = diag(fD);
+
+%chi_s = @(t) exp(-t/2)./sqrt(t)/sqrt(2)/gamma(1/2);
+
+H = X*fD*(X')/n;
+eigs_H = eig(H);
+
+if min(eigs_H)<0
+    edges = linspace(min(eigs_H)*1.1, max(eigs_H)*1.1, 100);
+else
+    edges = linspace(min(eigs_H)*0.9, max(eigs_H)*1.1, 100);
+end
+
+clear i % make sure i stands for the imaginary unit
+y = 1e-5;
+zs = edges+y*1i;
+dens = zeros(length(zs),1);
+
+m=1;
+for j=1:length(zs)
+    z = zs(j);
+    
+    m_tmp=-1;
+    while abs(m-m_tmp)>1e-6
+        m_tmp=m;
+        m = 1/( -z + mean(eigs_fD./(1+c*m*eigs_fD)));
+    end
+    dens(j)=imag(m)/pi;
+end
+
+figure
+histogram(eigs_H, 40, 'Normalization', 'pdf');
+hold on;
+plot(edges,dens,'r', 'Linewidth',2);
+legend('Empirical spectrum', 'Limiting spectrum', 'FontSize', 15)
+
+%% phase transition behavior of the top eigenvalue-eigenvector pair
+close all; clear; clc
+
+coeff = 1;
+p = 500*coeff;
+c_loop = 0.1:0.1:1.9;
+n_loop = p./c_loop;
+
+alpha = [-ones(p/2,1); ones(p/2,1)];
+alpha = alpha/norm(alpha);
+
+nb_average_loop = 50;
+store_align = zeros(length(n_loop), nb_average_loop);
+for n_index = 1:length(n_loop)
+    n = floor(n_loop(n_index));
+    c = p/n;
+    
+    % processing/truncating function
+    %f = @(t) t;
+    f = @(t) (max(t,0)-1)./(max(t,0)+sqrt(2/c)-1);
+    
+    for average_loop = 1:nb_average_loop
+        X = randn(p,n);
+        v = X'*alpha;
+        y = v.^2;
+        fD = diag(f(y));
+        eigs_fD = diag(fD);
+        H = X*fD*(X')/n;
+        [hat_v,~] = eigs(H,1,'largestreal');
+        
+        store_align(n_index, average_loop) = (alpha'*hat_v)^2;
+    end
+end
+
+
+figure
+errorbar(c_loop, mean(store_align,2), std(store_align,1,2))
+xlabel('$c= p/n$', 'Interpreter', 'latex')
+ylabel('($a^T \hat v)^2$', 'Interpreter', 'latex')
+
+##### SOURCE END #####
+--></body></html>
