@@ -1,12 +1,12 @@
 # RMT4ML
-This repository contains [MATLAB](https://www.mathworks.com/products/matlab.html) for visualizing random matrix theory results and their applications to large dimensional machine learning problems, in the preprint of [Random Matrix Advances in Large Dimensional Machine Learning](https://zhenyu-liao.github.io/pdf/RMT4ML.pdf).
+This repository contains [MATLAB](https://www.mathworks.com/products/matlab.html) and [Python](https://www.python.org/) codes for visualizing random matrix theory results and their applications to large dimensional machine learning, in the preprint of [Random Matrix Advances in Large Dimensional Machine Learning](https://zhenyu-liao.github.io/pdf/RMT4ML.pdf).
 
-In each subfolder (named after the corresponding section number) there are:
+In each subfolder (named after the corresponding section) there are:
 
-* a HTML file containing the MATLAB demos in the section
-* some .m functions containing the (improved) algorithms in the section
+* a .html file containing the MATLAB/IPython Notebook demos in the section
+* a .m or .ipynb source file containing the (improved) algorithms in the section
 
-Below is the table of content of the book that links to corresponding [MATLAB](https://www.mathworks.com/products/matlab.html) simulations.
+Below is the table of content of the book that links to corresponding [MATLAB](https://www.mathworks.com/products/matlab.html) and [Python](https://www.python.org/) simulations.
 
 * Chapter 1 Introduction
 * Chapter 2 Basics of Random Matrix Theory
@@ -76,7 +76,7 @@ Below is the table of content of the book that links to corresponding [MATLAB](h
 	* Section 7.2 [From dense to sparse graphs: a different approach](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/7.2/html/sparse_graph.html)
 	* Section 7.3 Concluding remarks
 	* Section 7.4 Practical course material
-		* [Gaussian fluctuations of the SBM eigenvectors](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/7.4/html/Gaussian_eigenvector.html)
+		* [Gaussian fluctuations of the SBM eigenvectors](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/7.1/html/SBM.html)
 * Chapter 8 [Discussions on Universality and Practical Applications](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/8/html/RMT_universality.html)
 
 
