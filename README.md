@@ -1,18 +1,16 @@
 # RMT4ML
-This repository contains [MATLAB](https://www.mathworks.com/products/matlab.html) and [Python](https://www.python.org/) codes for visualizing random matrix theory results and their applications to large dimensional machine learning, in the preprint of [Random Matrix Advances in Large Dimensional Machine Learning](https://zhenyu-liao.github.io/pdf/RMT4ML.pdf).
+This repository contains [`MATLAB`](https://www.mathworks.com/products/matlab.html) and [`Python`](https://www.python.org/) codes for visualizing random matrix theory results and their applications to machine learning, in [Random Matrix Theory for Machine Learning](https://zhenyu-liao.github.io/pdf/RMT4ML.pdf).
 
 In each subfolder (named after the corresponding section) there are:
 
-* a .html file containing the MATLAB/IPython Notebook demos in the section
-* a .m or .ipynb source file containing the (improved) algorithms in the section
-
-Below is the table of content of the book that links to corresponding [MATLAB](https://www.mathworks.com/products/matlab.html) and [Python](https://www.python.org/) simulations.
+* a `.html` file containing the [`MATLAB`](https://www.mathworks.com/products/matlab.html) or [IPython Notebook](https://ipython.org/notebook.html) demos
+* a `.m` or `.ipynb` source file
 
 * Chapter 1 Introduction
 * Chapter 2 Basics of Random Matrix Theory
 	* Section 2.1 Fundamental objects
 	* Section 2.2 Foundational random matrix results
-		* Section 2.2.1 Key lemma and identities: [Matlab](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/2.2.1/html/lemma_plots.html) and [Python](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Python_resource/2.2.1/lemma_plot.html)
+		* Section 2.2.1 Key lemma and identities: [Matlab code](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/2.2.1/html/lemma_plots.html) and [Python](https://nbviewer.jupyter.org/github/Zhenyu-LIAO/RMT4LSSVM/blob/master/Python_resource/2.2.1/lemma_plot.ipynb)
 		* Section 2.2.2 The Marcenko-Pastur and semi-circle laws: [Matlab](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/2.2.2/html/MP_and_SC.html) and [Python](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Python_resource/2.2.2/MP_and_SC.html)
 		* Section 2.2.3 Large sample covariance matrices and generalized semi-circles: [Matlab](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/2.2.3/html/SCM_and_DSC.html) and [Python](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Python_resource/2.2.3/SCM_and_DSC.html)
 	* Section 2.3 Advanced spectrum considerations for sample covariances: [Matlab](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/2.3/html/advanced_spectrum.html) and [Python](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Python_resource/2.3/advanced_spectrum.html)
@@ -29,7 +27,7 @@ Below is the table of content of the book that links to corresponding [MATLAB](h
 	* Section 2.6 Information-plus-noise, deformed Wigner, and other models
 	* Section 2.7 Beyond vectors of independent entries: concentration of measure in RMT
 	* Section 2.8 Concluding remarks
-	* Section 2.9 [Exercises]()
+	* Section 2.9 Exercises
 * Chapter 3 Statistical Inference in Linear Models
 	* Section 3.1 Detection and estimation in information-plus-noise models
 		* Section 3.1.1 [GLRT asymptotics](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/Matlab_resource/3.1/html/GLRT.html)
