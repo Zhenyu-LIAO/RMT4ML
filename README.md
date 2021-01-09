@@ -41,17 +41,17 @@ In each subfolder (named after the corresponding section) there are:
 		* Robust portfolio optimization via Tyler estimator [Matlab code](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/3.5/html/robust_portfolio.html) and [Python code](https://nbviewer.jupyter.org/github/Zhenyu-LIAO/RMT4ML/blob/master/3.5/robust_portfolio.ipynb)
 * Chapter 4 Kernel Methods
 	* Section 4.1 Basic setting
-	* Section 4.2 [Distance and inner-product random kernel matrices](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/4.2/html/dist_kernel.html)
-	* Section 4.3 [The alpha-beta random kernel model](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/4.3/html/alpha_beta_kernel.html)
-	* Section 4.4 [Properly scaling kernels](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/4.4/html/proper_scale_kernel.html)
+	* Section 4.2 Distance and inner-product random kernel matrices [Matlab code](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/4.2/html/dist_kernel.html) and [Python code](https://nbviewer.jupyter.org/github/Zhenyu-LIAO/RMT4ML/blob/master/4.2/dist_kernel.ipynb)
+	* Section 4.3 The alpha-beta random kernel model [Matlab code](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/4.3/html/alpha_beta_kernel.html) and [Python code](https://nbviewer.jupyter.org/github/Zhenyu-LIAO/RMT4ML/blob/master/4.3/alpha_beta_kernel.ipynb)
+	* Section 4.4 Properly scaling kernels [Matlab code](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/4.4/html/proper_scale_kernel.html) and [Python code](https://nbviewer.jupyter.org/github/Zhenyu-LIAO/RMT4ML/blob/master/4.4/proper_scale_kernel.ipynb)
 	* Section 4.5 Implications to kernel methods
-		* Section 4.5.1 [Application to kernel spectral clustering](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/4.5/html/kernel_spectral_clustering.html)
-		* Section 4.5.2 [Application to semi-supervised kernel learning](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/4.5/html/semi_supervised_kernel.html)
-		* Section 4.5.3 [Application to kernel ridge regression](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/4.5/html/kernel_ridge.html)
+		* Section 4.5.1 Application to kernel spectral clustering [Matlab code](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/4.5/html/kernel_spectral_clustering.html) and [Python code](https://nbviewer.jupyter.org/github/Zhenyu-LIAO/RMT4ML/blob/master/4.5/kernel_spectral_clustering.ipynb)
+		* Section 4.5.2 Application to semi-supervised kernel learning [Matlab code](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/4.5/html/semi_supervised_kernel.html) and [Python code](https://nbviewer.jupyter.org/github/Zhenyu-LIAO/RMT4ML/blob/master/4.5/semi_supervised_kernel.ipynb)
+		* Section 4.5.3 Application to kernel ridge regression [Matlab code](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/4.5/html/kernel_ridge.html) and [Python code](https://nbviewer.jupyter.org/github/Zhenyu-LIAO/RMT4ML/blob/master/4.5/kernel_ridge.ipynb)
 	* Section 4.6 Concluding remarks
 	* Section 4.7 Practical course material: 
-		* [Complexity-performance trade-off in spectral clustering with sparse kernel](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/4.7/html/sparse_clustering.html)
-		* [Towards transfer learning with kernel regression](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/4.7/html/transfer.html)
+		* Complexity-performance trade-off in spectral clustering with sparse kernel [Matlab code](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/4.7/html/sparse_clustering.html) and [Python code](https://nbviewer.jupyter.org/github/Zhenyu-LIAO/RMT4ML/blob/master/4.7/sparse_clustering.ipynb)
+		* Towards transfer learning with kernel regression [Matlab code](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/4.7/html/transfer.html) and [Python code](https://nbviewer.jupyter.org/github/Zhenyu-LIAO/RMT4ML/blob/master/4.7/transfer.ipynb)
 * Chapter 5 Large Neural Networks
 	* Section 5.1 Random neural networks
 		* Section 5.1.1 [Regression with random neural networks](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/5.1/html/random_NN.html)
