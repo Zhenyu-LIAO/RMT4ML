@@ -1,8 +1,7 @@
-%% Section 2.2.1: Key Lemmas and identities
+%% Section 2.2.1: Key lemmas and identities
 % This page contains simulations in Section 2.2.1.
 
 %% Illustration of Lemma 2.9
-
 clear; close all; clc; 
 
 coeff = 2;
@@ -11,7 +10,7 @@ n = 500*coeff;
 
 X = randn(p,n);
 
-rng(828);
+rng(928);
 M = X*X'/n;
 u = ones(p,1)/sqrt(p);
 tau = 1;
@@ -51,8 +50,8 @@ xline(d_M_plus(eig_index),'--r');
 xline(d_M_plus(eig_index+1),'--r');
 axis([eig1-50*Tol eig3+50*Tol -8 8])
 set(gca,'xtick',[])
-xlabel('Eigenvalues ($\lambda$)', 'Interpreter', 'latex')
-ylabel('$\tau u^T Q_M(\lambda) u$', 'Interpreter', 'latex')
-legend([p1 p2 p3], '$\lambda(M)$', '$\lambda(M+ \tau uu^T)$', '$\tau u^T Q_M(\lambda) u$', 'Interpreter', 'latex', 'FontSize', 15, 'Location','northwest')
+xlabel('Eigenvalues ($z$)', 'Interpreter', 'latex')
+ylabel('$\tau u^T Q_M(z) u$', 'Interpreter', 'latex')
+legend([p1 p2 p3], '$\lambda(M)$', '$\lambda(M+ \tau uu^T)$', '$\tau u^T Q_M(z) u$', 'Interpreter', 'latex', 'FontSize', 15, 'Location','northwest')
 
 

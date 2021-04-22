@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 2.2.1: Key Lemmas and identities</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-06-27"><meta name="DC.source" content="lemma_plots.m"><style type="text/css">
+      --><title>Section 2.2.1: Key lemmas and identities</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-04-22"><meta name="DC.source" content="lemma_plots.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +52,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -66,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 2.2.1: Key Lemmas and identities</h1><!--introduction--><p>This page contains simulations in Section 2.2.1.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Illustration of Lemma 2.9</a></li></ul></div><h2 id="1">Illustration of Lemma 2.9</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>Section 2.2.1: Key lemmas and identities</h1><!--introduction--><p>This page contains simulations in Section 2.2.1.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Illustration of Lemma 2.9</a></li></ul></div><h2 id="1">Illustration of Lemma 2.9</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 
 coeff = 2;
 p = 200*coeff;
@@ -74,7 +75,7 @@ n = 500*coeff;
 
 X = randn(p,n);
 
-rng(828);
+rng(928);
 M = X*X'/n;
 u = ones(p,1)/sqrt(p);
 tau = 1;
@@ -114,16 +115,15 @@ xline(d_M_plus(eig_index),<span class="string">'--r'</span>);
 xline(d_M_plus(eig_index+1),<span class="string">'--r'</span>);
 axis([eig1-50*Tol eig3+50*Tol -8 8])
 set(gca,<span class="string">'xtick'</span>,[])
-xlabel(<span class="string">'Eigenvalues ($\lambda$)'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
-ylabel(<span class="string">'$\tau u^T Q_M(\lambda) u$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
-legend([p1 p2 p3], <span class="string">'$\lambda(M)$'</span>, <span class="string">'$\lambda(M+ \tau uu^T)$'</span>, <span class="string">'$\tau u^T Q_M(\lambda) u$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Location'</span>,<span class="string">'northwest'</span>)
-</pre><img vspace="5" hspace="5" src="lemma_plots_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+xlabel(<span class="string">'Eigenvalues ($z$)'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+ylabel(<span class="string">'$\tau u^T Q_M(z) u$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+legend([p1 p2 p3], <span class="string">'$\lambda(M)$'</span>, <span class="string">'$\lambda(M+ \tau uu^T)$'</span>, <span class="string">'$\tau u^T Q_M(z) u$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Location'</span>,<span class="string">'northwest'</span>)
+</pre><img vspace="5" hspace="5" src="lemma_plots_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% Section 2.2.1: Key Lemmas and identities
+%% Section 2.2.1: Key lemmas and identities
 % This page contains simulations in Section 2.2.1.
 
 %% Illustration of Lemma 2.9
-
 clear; close all; clc; 
 
 coeff = 2;
@@ -132,7 +132,7 @@ n = 500*coeff;
 
 X = randn(p,n);
 
-rng(828);
+rng(928);
 M = X*X'/n;
 u = ones(p,1)/sqrt(p);
 tau = 1;
@@ -172,9 +172,9 @@ xline(d_M_plus(eig_index),'REPLACE_WITH_DASH_DASHr');
 xline(d_M_plus(eig_index+1),'REPLACE_WITH_DASH_DASHr');
 axis([eig1-50*Tol eig3+50*Tol -8 8])
 set(gca,'xtick',[])
-xlabel('Eigenvalues ($\lambda$)', 'Interpreter', 'latex')
-ylabel('$\tau u^T Q_M(\lambda) u$', 'Interpreter', 'latex')
-legend([p1 p2 p3], '$\lambda(M)$', '$\lambda(M+ \tau uu^T)$', '$\tau u^T Q_M(\lambda) u$', 'Interpreter', 'latex', 'FontSize', 15, 'Location','northwest')
+xlabel('Eigenvalues ($z$)', 'Interpreter', 'latex')
+ylabel('$\tau u^T Q_M(z) u$', 'Interpreter', 'latex')
+legend([p1 p2 p3], '$\lambda(M)$', '$\lambda(M+ \tau uu^T)$', '$\tau u^T Q_M(z) u$', 'Interpreter', 'latex', 'FontSize', 15, 'Location','northwest')
 
 
 
