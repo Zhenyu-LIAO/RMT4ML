@@ -1,7 +1,7 @@
 %% Section 2.2.2: The Marcenko-Pastur and semicircle laws
 % This page contains simulations in Section 2.2.2.
 
-%% The Marcenko-Pastur law (Theorem 2.3）
+%% The Marcenko-Pastur law (Theorem 2.4）
 % Generate a (Gaussian) random matrix $X$ of dimension $p \times n$.
 close all; clear; clc
 
@@ -28,7 +28,7 @@ xlabel('Eigenvalues of $\hat C$', 'Interpreter', 'latex', 'FontSize', 15)
 ylabel('Histogram', 'Interpreter', 'latex', 'FontSize', 15)
 axis([0.7 1.3 0 4.5]);
 
-%% The Wigner semicircle law（Theorem 2.4)
+%% The Wigner semicircle law（Theorem 2.5)
 % Generate a (Gaussian) *symmetric* random matrix $X$ of size $n \times n$.
 close all; clear; clc
 
