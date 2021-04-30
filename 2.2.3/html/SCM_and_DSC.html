@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 2.2.3: Large dimensional sample covariance matrices and deformed semi-circles</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-06-27"><meta name="DC.source" content="SCM_and_DSC.m"><style type="text/css">
+      --><title>Section 2.2.3: Large dimensional sample covariance matrices and generalized semicircles</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-04-30"><meta name="DC.source" content="SCM_and_DSC.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +52,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -66,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 2.2.3: Large dimensional sample covariance matrices and deformed semi-circles</h1><!--introduction--><p>This page contains simulations in Section 2.2.3.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Large dimensional sample covariance matrix (Theorem 2.5)</a></li><li><a href="#3">The bi-correlated model (Theorem 2.6)</a></li><li><a href="#5">Sample covariance of <img src="SCM_and_DSC_eq15636846968047188835.png" alt="$k$">-class mixture models (Theorem 2.7)</a></li><li><a href="#6">The deformed semi-circle law (Theorem 2.8)</a></li></ul></div><h2 id="1">Large dimensional sample covariance matrix (Theorem 2.5)</h2><p>Generate a (Gaussian i.i.d.) random matrix <img src="SCM_and_DSC_eq05013124788323701083.png" alt="$Z$"> of dimension <img src="SCM_and_DSC_eq00624470566282429309.png" alt="$p \times n$"> Generate the associated data matrix <img src="SCM_and_DSC_eq16790799175696745712.png" alt="$X = C^{\frac12} Z$"></p><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 2.2.3: Large dimensional sample covariance matrices and generalized semicircles</h1><!--introduction--><p>This page contains simulations in Section 2.2.3.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Large dimensional sample covariance matrix (Theorem 2.6)</a></li><li><a href="#3">The bi-correlated model (Theorem 2.7)</a></li><li><a href="#5">Sample covariance of <img src="SCM_and_DSC_eq15636846968047188835.png" alt="$k$" style="width:6px;height:8px;">-class mixture models (Theorem 2.8)</a></li><li><a href="#7">The generalized semicircle law (Theorem 2.9)</a></li></ul></div><h2 id="1">Large dimensional sample covariance matrix (Theorem 2.6)</h2><p>Generate a (Gaussian i.i.d.) random matrix <img src="SCM_and_DSC_eq05013124788323701083.png" alt="$Z$" style="width:8px;height:8px;"> of dimension <img src="SCM_and_DSC_eq00624470566282429309.png" alt="$p \times n$" style="width:26px;height:8px;"> Generate the associated data matrix <img src="SCM_and_DSC_eq16790799175696745712.png" alt="$X = C^{\frac12} Z$" style="width:47px;height:11px;"></p><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 3;
 p = 100*coeff;
@@ -76,14 +77,12 @@ c = p/n;
 eigs_C = [ones(p/3,1); 3*ones(p/3,1); 7*ones(p/3,1)]; <span class="comment">%eigs_C = [1,..,3,...,5...]</span>
 C = diag(eigs_C); <span class="comment">% population covariance</span>
 
-rng(928)
 Z = randn(p,n);
 X = sqrtm(C)*Z;
-</pre><p>Empirical eigenvalues of the sample covariance matrix <img src="SCM_and_DSC_eq16333555957456510003.png" alt="$\frac1n X X^T = \frac1n C^{\frac12} Z Z^T C ^{\frac12}$"> versus the solution of fixed-point equation in Theorem 2.5</p><pre class="codeinput">Tol = 1e-1;
+</pre><p>Empirical eigenvalues of the sample covariance matrix <img src="SCM_and_DSC_eq16333555957456510003.png" alt="$\frac1n X X^T = \frac1n C^{\frac12} Z Z^T C ^{\frac12}$" style="width:105px;height:15px;"> versus the solution of fixed-point equation in Theorem 2.6</p><pre class="codeinput">Tol = 1e-1;
 SCM = X*(X')/n;
 eigs_SCM = eig(SCM);
-edges=linspace(min(eigs_SCM)-Tol,max(eigs_SCM)+Tol,60);
-edges_mu=linspace(min(eigs_SCM)+Tol,max(eigs_SCM)+Tol,200);
+edges_mu=linspace(min(eigs_SCM)-Tol,max(eigs_SCM)+Tol,200);
 
 clear <span class="string">i</span> <span class="comment">% make sure i stands for the imaginary unit</span>
 y = 1e-5;
@@ -105,11 +104,11 @@ tilde_m=0;
 <span class="keyword">end</span>
 
 figure
-histogram(eigs_SCM, edges, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+histogram(eigs_SCM, 40, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>,<span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
 hold <span class="string">on</span>;
 plot(edges_mu,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
-legend(<span class="string">'Empirical spectrum'</span>, <span class="string">'Theorem 2.5'</span>, <span class="string">'FontSize'</span>, 15)
-</pre><img vspace="5" hspace="5" src="SCM_and_DSC_01.png" alt=""> <h2 id="3">The bi-correlated model (Theorem 2.6)</h2><p>Generate a (Gaussian i.i.d.) random matrix <img src="SCM_and_DSC_eq05013124788323701083.png" alt="$Z$"> of dimension <img src="SCM_and_DSC_eq00624470566282429309.png" alt="$p \times n$"> Generate the associated data matrix <img src="SCM_and_DSC_eq02604745865473247871.png" alt="$X = C^{\frac12} Z \tilde C^{\frac12}$"></p><pre class="codeinput">close <span class="string">all</span>; clear; clc
+legend(<span class="string">'Empirical spectrum'</span>, <span class="string">'Theorem 2.6'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 15);
+</pre><img vspace="5" hspace="5" src="SCM_and_DSC_01.png" alt=""> <h2 id="3">The bi-correlated model (Theorem 2.7)</h2><p>Generate a (Gaussian i.i.d.) random matrix <img src="SCM_and_DSC_eq05013124788323701083.png" alt="$Z$" style="width:8px;height:8px;"> of dimension <img src="SCM_and_DSC_eq00624470566282429309.png" alt="$p \times n$" style="width:26px;height:8px;"> Generate the associated data matrix <img src="SCM_and_DSC_eq02604745865473247871.png" alt="$X = C^{\frac12} Z \tilde C^{\frac12}$" style="width:60px;height:11px;"></p><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 3;
 p = 200*coeff;
@@ -121,19 +120,19 @@ eigs_tilde_C = [ones(n/2,1); 3/2*ones(n/2,1)];
 C = diag(eigs_C);
 tilde_C = diag(eigs_tilde_C);
 
-rng(928);
 Z = randn(p,n);
 X = sqrtm(C)*Z*sqrtm(tilde_C);
-</pre><p>Empirical eigenvalues of the sample covariance matrix <img src="SCM_and_DSC_eq11271240897753853831.png" alt="$\frac1n X X^T = \frac1n C^{\frac12} Z \tilde C Z^T C^{\frac12}$"> versus the solution of (symmetric) fixed-point equation systems in Theorem 2.6</p><pre class="codeinput">SCM = X*(X')/n;
+</pre><p>Empirical eigenvalues of the sample covariance matrix <img src="SCM_and_DSC_eq11271240897753853831.png" alt="$\frac1n X X^T = \frac1n C^{\frac12} Z \tilde C Z^T C^{\frac12}$" style="width:113px;height:15px;"> versus the solution of (symmetric) fixed-point equation systems in Theorem 2.7</p><pre class="codeinput">Tol = 1e-1;
+SCM = X*(X')/n;
 eigs_SCM = eig(SCM);
-edges_mu=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.2,100);
+edges_mu=linspace(min(eigs_SCM)-Tol,max(eigs_SCM)+Tol,100);
 
 clear <span class="string">i</span> <span class="comment">% make sure i stands for the imaginary unit</span>
 y = 1e-5;
 zs = edges_mu+y*1i;
 mu = zeros(length(zs),1);
 
-delta = [0,0]; <span class="comment">% corresponds to [delta, delta_delta] in Theorem 2.6</span>
+delta = [0,0]; <span class="comment">% corresponds to [delta, delta_delta] in Theorem 2.7</span>
 <span class="keyword">for</span> j = 1:length(zs)
     z = zs(j);
 
@@ -150,11 +149,11 @@ delta = [0,0]; <span class="comment">% corresponds to [delta, delta_delta] in Th
 <span class="keyword">end</span>
 
 figure
-histogram(eigs_SCM, 50, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+histogram(eigs_SCM, 40, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>, <span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
 hold <span class="string">on</span>;
 plot(edges_mu,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
-legend(<span class="string">'Empirical eigenvalues'</span>, <span class="string">'Theorem 2.6'</span>, <span class="string">'FontSize'</span>, 15)
-</pre><img vspace="5" hspace="5" src="SCM_and_DSC_02.png" alt=""> <h2 id="5">Sample covariance of <img src="SCM_and_DSC_eq15636846968047188835.png" alt="$k$">-class mixture models (Theorem 2.7)</h2><p>Generate a (Gaussian i.i.d.) random matrix <img src="SCM_and_DSC_eq05013124788323701083.png" alt="$Z$"> of dimension <img src="SCM_and_DSC_eq00624470566282429309.png" alt="$p \times n$"> Generate the associated data matrix <img src="SCM_and_DSC_eq11208063956702228074.png" alt="$X = [C_1^{\frac12}z_1, \ldots, C_k^{\frac12}z_i,\ldots]$"></p><pre class="codeinput">close <span class="string">all</span>; clear; clc
+legend(<span class="string">'Empirical eigenvalues'</span>, <span class="string">'Theorem 2.7'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 15);
+</pre><img vspace="5" hspace="5" src="SCM_and_DSC_02.png" alt=""> <h2 id="5">Sample covariance of <img src="SCM_and_DSC_eq15636846968047188835.png" alt="$k$" style="width:6px;height:8px;">-class mixture models (Theorem 2.8)</h2><p>Generate a (Gaussian i.i.d.) random matrix <img src="SCM_and_DSC_eq05013124788323701083.png" alt="$Z$" style="width:8px;height:8px;"> of dimension <img src="SCM_and_DSC_eq00624470566282429309.png" alt="$p \times n$" style="width:26px;height:8px;"> Generate the associated data matrix <img src="SCM_and_DSC_eq05497500925890011219.png" alt="$X = [C_1^{\frac12}z_1, \ldots, C_a^{\frac12}z_i,\ldots]$" style="width:119px;height:17px;"></p><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 3;
 p = 200*coeff;
@@ -164,7 +163,6 @@ k = 3; <span class="comment">% three classes in total</span>
 
 eigs_C = @(a) [ones(p/3,1); a*ones(p/3,1); a^2*ones(p/3,1)];
 C = @(a) diag(eigs_C(a));
-<span class="comment">% fell free to vary the setting of C_a, a=1,...,k</span>
 
 <span class="comment">%cs  = ones(k,1)/k; % the vector of c_a, a=1,...,k, proportion in each class</span>
 cs = [1/4 1/4 1/2];
@@ -173,24 +171,21 @@ cs = [1/4 1/4 1/2];
     error(<span class="string">'Error: number of classes mismatches!'</span>)
 <span class="keyword">end</span>
 
-rng(928);
 X=zeros(p,n);
 <span class="keyword">for</span> i=1:k
     X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=sqrtm(C(i))*randn(p,cs(i)*n);
 <span class="keyword">end</span>
-
-<span class="comment">% Empirical eigenvalues of the mixture sample covariance matrix $\frac1n X X^T$</span>
-<span class="comment">% versus the solution of the system of equations in Theorem 2.7</span>
+</pre><p>Empirical eigenvalues of the mixture sample covariance matrix <img src="SCM_and_DSC_eq04476533116490492850.png" alt="$\frac1n X X^T$" style="width:32px;height:14px;"> versus the solution of the system of equations in Theorem 2.8</p><pre class="codeinput">Tol = 1e-1;
 SCM = X*(X')/n;
 eigs_SCM = eig(SCM);
-edges_mu=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.1,60);
+edges_mu=linspace(min(eigs_SCM)-Tol,max(eigs_SCM)+Tol,100);
 
 clear <span class="string">i</span> <span class="comment">% make sure i stands for the imaginary unit</span>
 y = 1e-5;
 zs = edges_mu+y*1i;
 mu = zeros(length(zs),1);
 
-tilde_g = ones(k,1); <span class="comment">% corresponds to [tilde_g_1, ..., tilde_g_k] in Theorem 2.6</span>
+tilde_g = ones(k,1); <span class="comment">% corresponds to [tilde_g_1, ..., tilde_g_k] in Theorem 2.8</span>
 <span class="keyword">for</span> j = 1:length(zs)
     z = zs(j);
 
@@ -220,27 +215,27 @@ tilde_g = ones(k,1); <span class="comment">% corresponds to [tilde_g_1, ..., til
 <span class="keyword">end</span>
 
 figure
-histogram(eigs_SCM,edges_mu, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+histogram(eigs_SCM, 40, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>, <span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
 hold <span class="string">on</span>;
 plot(edges_mu,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
-legend(<span class="string">'Empirical eigenvalues'</span>, <span class="string">'Theorem 2.7'</span>, <span class="string">'FontSize'</span>, 15)
-</pre><img vspace="5" hspace="5" src="SCM_and_DSC_03.png" alt=""> <h2 id="6">The deformed semi-circle law (Theorem 2.8)</h2><p>Generate a (Gaussian) symmetric random matrix <img src="SCM_and_DSC_eq05013124788323701083.png" alt="$Z$"> of size <img src="SCM_and_DSC_eq14662025674782596410.png" alt="$n \times n$">.</p><pre class="codeinput">close <span class="string">all</span>; clear; clc
+legend(<span class="string">'Empirical eigenvalues'</span>, <span class="string">'Theorem 2.8'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 15);
+</pre><img vspace="5" hspace="5" src="SCM_and_DSC_03.png" alt=""> <h2 id="7">The generalized semicircle law (Theorem 2.9)</h2><p>Generate a (Gaussian) symmetric random matrix <img src="SCM_and_DSC_eq05013124788323701083.png" alt="$Z$" style="width:8px;height:8px;"> of size <img src="SCM_and_DSC_eq14662025674782596410.png" alt="$n \times n$" style="width:27px;height:6px;">.</p><pre class="codeinput">close <span class="string">all</span>; clear; clc
 coeff = 2;
 n=500*coeff;
 
-rng(928);
 Z=randn(n);
 Z_U = triu(Z);
 X = triu(Z) + triu(Z)'-diag(diag(triu(Z)));
 
-bern_mask_p = .1;
+bern_mask_p = .5;
 
 bern_mask = (rand(n,n)&lt;bern_mask_p);
 bern_mask_U = triu(bern_mask);
 bern_mask = triu(bern_mask_U) + triu(bern_mask_U)'-diag(diag(triu(bern_mask_U)));
-</pre><p>Empirical eigenvalues of <img src="SCM_and_DSC_eq03495543733368146133.png" alt="$\frac1{\sqrt n} X.*Mask$"> versus the deformed semi-circle law.</p><pre class="codeinput">DSC = (X.*bern_mask)/sqrt(n);
+</pre><p>Empirical eigenvalues of <img src="SCM_and_DSC_eq03495543733368146133.png" alt="$\frac1{\sqrt n} X.*Mask$" style="width:32px;height:8px;"> versus the generalized semicircle law.</p><pre class="codeinput">DSC = (X.*bern_mask)/sqrt(n);
+Tol = 1e-1;
 eigs_DSC = eig(DSC);
-edges_mu=linspace(min(eigs_DSC)-.1,max(eigs_DSC)+.1,60);
+edges_mu=linspace(min(eigs_DSC)-Tol,max(eigs_DSC)+Tol,60);
 
 clear <span class="string">i</span> <span class="comment">% make sure i stands for the imaginary unit</span>
 y = 1e-5;
@@ -254,46 +249,45 @@ g = 0;
     g_tmp = 1;
     <span class="keyword">while</span> abs(g - g_tmp)&gt;1e-6
         g_tmp=g;
-        g = -bern_mask_p/(1+g)/z/z;
+        g = -bern_mask_p/(z + g);
     <span class="keyword">end</span>
-    m = -1/(1+g)/z;
+    m = -1/(z+g);
     mu(j)=imag(m)/pi;
 <span class="keyword">end</span>
 
+
 figure
-histogram(eigs_DSC,edges_mu, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+histogram(eigs_DSC, 30, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>, <span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
 hold <span class="string">on</span>;
 plot(edges_mu,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
-legend(<span class="string">'Empirical eigenvalues'</span>, <span class="string">'Theorem 2.8'</span>, <span class="string">'FontSize'</span>, 15)
-</pre><img vspace="5" hspace="5" src="SCM_and_DSC_04.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+legend(<span class="string">'Empirical eigenvalues'</span>, <span class="string">'Theorem 2.9'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 15);
+</pre><img vspace="5" hspace="5" src="SCM_and_DSC_04.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% Section 2.2.3: Large dimensional sample covariance matrices and deformed semi-circles
+%% Section 2.2.3: Large dimensional sample covariance matrices and generalized semicircles
 % This page contains simulations in Section 2.2.3.
 
-%% Large dimensional sample covariance matrix (Theorem 2.5)
+%% Large dimensional sample covariance matrix (Theorem 2.6)
 % Generate a (Gaussian i.i.d.) random matrix $Z$ of dimension $p \times n$
 % Generate the associated data matrix $X = C^{\frac12} Z$
 close all; clear; clc
 
 coeff = 3;
-p = 100*coeff;
+p = 100*coeff;  
 n = 1000*coeff;
 c = p/n;
 
 eigs_C = [ones(p/3,1); 3*ones(p/3,1); 7*ones(p/3,1)]; %eigs_C = [1,..,3,...,5...]
 C = diag(eigs_C); % population covariance
 
-rng(928)
 Z = randn(p,n);
 X = sqrtm(C)*Z;
 %%
 % Empirical eigenvalues of the sample covariance matrix $\frac1n X X^T = \frac1n C^{\frac12} Z Z^T C ^{\frac12}$
-% versus the solution of fixed-point equation in Theorem 2.5
+% versus the solution of fixed-point equation in Theorem 2.6
 Tol = 1e-1;
 SCM = X*(X')/n;
 eigs_SCM = eig(SCM);
-edges=linspace(min(eigs_SCM)-Tol,max(eigs_SCM)+Tol,60);
-edges_mu=linspace(min(eigs_SCM)+Tol,max(eigs_SCM)+Tol,200);
+edges_mu=linspace(min(eigs_SCM)-Tol,max(eigs_SCM)+Tol,200);
 
 clear i % make sure i stands for the imaginary unit
 y = 1e-5;
@@ -315,12 +309,12 @@ for j=1:length(zs)
 end
 
 figure
-histogram(eigs_SCM, edges, 'Normalization', 'pdf');
+histogram(eigs_SCM, 40, 'Normalization', 'pdf','EdgeColor', 'white');
 hold on;
 plot(edges_mu,mu,'r', 'Linewidth',2);
-legend('Empirical spectrum', 'Theorem 2.5', 'FontSize', 15)
+legend('Empirical spectrum', 'Theorem 2.6', 'Interpreter', 'latex', 'FontSize', 15);
 
-%% The bi-correlated model (Theorem 2.6)
+%% The bi-correlated model (Theorem 2.7)
 % Generate a (Gaussian i.i.d.) random matrix $Z$ of dimension $p \times n$
 % Generate the associated data matrix $X = C^{\frac12} Z \tilde C^{\frac12}$
 close all; clear; clc
@@ -335,23 +329,24 @@ eigs_tilde_C = [ones(n/2,1); 3/2*ones(n/2,1)];
 C = diag(eigs_C);
 tilde_C = diag(eigs_tilde_C);
 
-rng(928);
 Z = randn(p,n);
 X = sqrtm(C)*Z*sqrtm(tilde_C);
 
 %%
 % Empirical eigenvalues of the sample covariance matrix $\frac1n X X^T = \frac1n C^{\frac12} Z \tilde C Z^T C^{\frac12}$
-% versus the solution of (symmetric) fixed-point equation systems in Theorem 2.6
+% versus the solution of (symmetric) fixed-point equation systems in
+% Theorem 2.7
+Tol = 1e-1;
 SCM = X*(X')/n;
 eigs_SCM = eig(SCM);
-edges_mu=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.2,100);
+edges_mu=linspace(min(eigs_SCM)-Tol,max(eigs_SCM)+Tol,100);
 
 clear i % make sure i stands for the imaginary unit
 y = 1e-5;
 zs = edges_mu+y*1i;
 mu = zeros(length(zs),1);
 
-delta = [0,0]; % corresponds to [delta, delta_delta] in Theorem 2.6
+delta = [0,0]; % corresponds to [delta, delta_delta] in Theorem 2.7
 for j = 1:length(zs)
     z = zs(j);
     
@@ -368,14 +363,14 @@ for j = 1:length(zs)
 end
 
 figure
-histogram(eigs_SCM, 50, 'Normalization', 'pdf');
+histogram(eigs_SCM, 40, 'Normalization', 'pdf', 'EdgeColor', 'white');
 hold on;
 plot(edges_mu,mu,'r', 'Linewidth',2);
-legend('Empirical eigenvalues', 'Theorem 2.6', 'FontSize', 15)
+legend('Empirical eigenvalues', 'Theorem 2.7', 'Interpreter', 'latex', 'FontSize', 15);
 
-%% Sample covariance of $k$-class mixture models (Theorem 2.7)
+%% Sample covariance of $k$-class mixture models (Theorem 2.8)
 % Generate a (Gaussian i.i.d.) random matrix $Z$ of dimension $p \times n$
-% Generate the associated data matrix $X = [C_1^{\frac12}z_1, \ldots, C_k^{\frac12}z_i,\ldots]$
+% Generate the associated data matrix $X = [C_1^{\frac12}z_1, \ldots, C_a^{\frac12}z_i,\ldots]$
 close all; clear; clc
 
 coeff = 3;
@@ -386,7 +381,6 @@ k = 3; % three classes in total
 
 eigs_C = @(a) [ones(p/3,1); a*ones(p/3,1); a^2*ones(p/3,1)];
 C = @(a) diag(eigs_C(a));
-% fell free to vary the setting of C_a, a=1,...,k
 
 %cs  = ones(k,1)/k; % the vector of c_a, a=1,...,k, proportion in each class
 cs = [1/4 1/4 1/2];
@@ -395,24 +389,25 @@ if length(cs) ~= k
     error('Error: number of classes mismatches!')
 end
 
-rng(928);
 X=zeros(p,n);
 for i=1:k
     X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=sqrtm(C(i))*randn(p,cs(i)*n);
 end
 
+%%
 % Empirical eigenvalues of the mixture sample covariance matrix $\frac1n X X^T$
-% versus the solution of the system of equations in Theorem 2.7
+% versus the solution of the system of equations in Theorem 2.8
+Tol = 1e-1;
 SCM = X*(X')/n;
 eigs_SCM = eig(SCM);
-edges_mu=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.1,60);
+edges_mu=linspace(min(eigs_SCM)-Tol,max(eigs_SCM)+Tol,100);
 
 clear i % make sure i stands for the imaginary unit
 y = 1e-5;
 zs = edges_mu+y*1i;
 mu = zeros(length(zs),1);
 
-tilde_g = ones(k,1); % corresponds to [tilde_g_1, ..., tilde_g_k] in Theorem 2.6
+tilde_g = ones(k,1); % corresponds to [tilde_g_1, ..., tilde_g_k] in Theorem 2.8
 for j = 1:length(zs)
     z = zs(j);
     
@@ -442,33 +437,33 @@ for j = 1:length(zs)
 end
 
 figure
-histogram(eigs_SCM,edges_mu, 'Normalization', 'pdf');
+histogram(eigs_SCM, 40, 'Normalization', 'pdf', 'EdgeColor', 'white');
 hold on;
 plot(edges_mu,mu,'r', 'Linewidth',2);
-legend('Empirical eigenvalues', 'Theorem 2.7', 'FontSize', 15)
+legend('Empirical eigenvalues', 'Theorem 2.8', 'Interpreter', 'latex', 'FontSize', 15);
 
-%% The deformed semi-circle law (Theorem 2.8)
+%% The generalized semicircle law (Theorem 2.9)
 % Generate a (Gaussian) symmetric random matrix $Z$ of size $n \times n$.
 close all; clear; clc
 coeff = 2;
 n=500*coeff;
 
-rng(928);
 Z=randn(n);
 Z_U = triu(Z);
 X = triu(Z) + triu(Z)'-diag(diag(triu(Z)));
 
-bern_mask_p = .1; 
+bern_mask_p = .5; 
 
 bern_mask = (rand(n,n)<bern_mask_p);
 bern_mask_U = triu(bern_mask);
 bern_mask = triu(bern_mask_U) + triu(bern_mask_U)'-diag(diag(triu(bern_mask_U)));
 
 %%
-% Empirical eigenvalues of $\frac1{\sqrt n} X.*Mask$ versus the deformed semi-circle law.
+% Empirical eigenvalues of $\frac1{\sqrt n} X.*Mask$ versus the generalized semicircle law.
 DSC = (X.*bern_mask)/sqrt(n);
+Tol = 1e-1;
 eigs_DSC = eig(DSC);
-edges_mu=linspace(min(eigs_DSC)-.1,max(eigs_DSC)+.1,60);
+edges_mu=linspace(min(eigs_DSC)-Tol,max(eigs_DSC)+Tol,60);
 
 clear i % make sure i stands for the imaginary unit
 y = 1e-5;
@@ -482,17 +477,18 @@ for j=1:length(zs)
     g_tmp = 1;
     while abs(g - g_tmp)>1e-6
         g_tmp=g;
-        g = -bern_mask_p/(1+g)/z/z;
+        g = -bern_mask_p/(z + g);
     end
-    m = -1/(1+g)/z;
+    m = -1/(z+g);
     mu(j)=imag(m)/pi;
 end
 
+
 figure
-histogram(eigs_DSC,edges_mu, 'Normalization', 'pdf');
+histogram(eigs_DSC, 30, 'Normalization', 'pdf', 'EdgeColor', 'white');
 hold on;
 plot(edges_mu,mu,'r', 'Linewidth',2);
-legend('Empirical eigenvalues', 'Theorem 2.8', 'FontSize', 15)
+legend('Empirical eigenvalues', 'Theorem 2.9', 'Interpreter', 'latex', 'FontSize', 15);
 
 ##### SOURCE END #####
 --></body></html>
