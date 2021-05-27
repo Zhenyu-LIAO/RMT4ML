@@ -2,8 +2,8 @@
 % This page contains simulations in Section 2.2.3.
 
 %% Large dimensional sample covariance matrix (Theorem 2.6)
-% Generate a (Gaussian i.i.d.) random matrix $Z$ of dimension $p \times n$
-% Generate the associated data matrix $X = C^{\frac12} Z$
+% Generate a (Gaussian i.i.d.) random matrix $Z$ of dimension $p \times n$.
+% Generate the data matrix $X = C^{\frac12} Z$.
 close all; clear; clc
 
 coeff = 3;
@@ -50,8 +50,9 @@ plot(edges_mu,mu,'r', 'Linewidth',2);
 legend('Empirical spectrum', 'Theorem 2.6', 'Interpreter', 'latex', 'FontSize', 15);
 
 %% The bi-correlated model (Theorem 2.7)
-% Generate a (Gaussian i.i.d.) random matrix $Z$ of dimension $p \times n$
-% Generate the associated data matrix $X = C^{\frac12} Z \tilde C^{\frac12}$
+% Generate a (Gaussian i.i.d.) random matrix $Z$ of dimension $p \times n$.
+% Generate the associated data matrix $X = C^{\frac12} Z \tilde
+% C^{\frac12}$.
 close all; clear; clc
 
 coeff = 3;
@@ -104,8 +105,9 @@ plot(edges_mu,mu,'r', 'Linewidth',2);
 legend('Empirical eigenvalues', 'Theorem 2.7', 'Interpreter', 'latex', 'FontSize', 15);
 
 %% Sample covariance of $k$-class mixture models (Theorem 2.8)
-% Generate a (Gaussian i.i.d.) random matrix $Z$ of dimension $p \times n$
-% Generate the associated data matrix $X = [C_1^{\frac12}z_1, \ldots, C_a^{\frac12}z_i,\ldots]$
+% Generate a (Gaussian i.i.d.) random matrix $Z$ of dimension $p \times n$.
+% Generate the associated data matrix $X = [C_1^{\frac12}z_1, \ldots,
+% C_a^{\frac12}z_i,\ldots]$.
 close all; clear; clc
 
 coeff = 3;

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 2.2.3: Large dimensional sample covariance matrices and generalized semicircles</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-04-30"><meta name="DC.source" content="SCM_and_DSC.m"><style type="text/css">
+      --><title>Section 2.2.3: Large dimensional sample covariance matrices and generalized semicircles</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-05-27"><meta name="DC.source" content="SCM_and_DSC.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 2.2.3: Large dimensional sample covariance matrices and generalized semicircles</h1><!--introduction--><p>This page contains simulations in Section 2.2.3.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Large dimensional sample covariance matrix (Theorem 2.6)</a></li><li><a href="#3">The bi-correlated model (Theorem 2.7)</a></li><li><a href="#5">Sample covariance of <img src="SCM_and_DSC_eq15636846968047188835.png" alt="$k$" style="width:6px;height:8px;">-class mixture models (Theorem 2.8)</a></li><li><a href="#7">The generalized semicircle law (Theorem 2.9)</a></li></ul></div><h2 id="1">Large dimensional sample covariance matrix (Theorem 2.6)</h2><p>Generate a (Gaussian i.i.d.) random matrix <img src="SCM_and_DSC_eq05013124788323701083.png" alt="$Z$" style="width:8px;height:8px;"> of dimension <img src="SCM_and_DSC_eq00624470566282429309.png" alt="$p \times n$" style="width:26px;height:8px;"> Generate the associated data matrix <img src="SCM_and_DSC_eq16790799175696745712.png" alt="$X = C^{\frac12} Z$" style="width:47px;height:11px;"></p><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 2.2.3: Large dimensional sample covariance matrices and generalized semicircles</h1><!--introduction--><p>This page contains simulations in Section 2.2.3.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Large dimensional sample covariance matrix (Theorem 2.6)</a></li><li><a href="#3">The bi-correlated model (Theorem 2.7)</a></li><li><a href="#5">Sample covariance of <img src="SCM_and_DSC_eq15636846968047188835.png" alt="$k$" style="width:6px;height:8px;">-class mixture models (Theorem 2.8)</a></li><li><a href="#7">The generalized semicircle law (Theorem 2.9)</a></li></ul></div><h2 id="1">Large dimensional sample covariance matrix (Theorem 2.6)</h2><p>Generate a (Gaussian i.i.d.) random matrix <img src="SCM_and_DSC_eq05013124788323701083.png" alt="$Z$" style="width:8px;height:8px;"> of dimension <img src="SCM_and_DSC_eq00624470566282429309.png" alt="$p \times n$" style="width:26px;height:8px;">. Generate the data matrix <img src="SCM_and_DSC_eq16790799175696745712.png" alt="$X = C^{\frac12} Z$" style="width:47px;height:11px;">.</p><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 3;
 p = 100*coeff;
@@ -108,7 +108,7 @@ histogram(eigs_SCM, 40, <span class="string">'Normalization'</span>, <span class
 hold <span class="string">on</span>;
 plot(edges_mu,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
 legend(<span class="string">'Empirical spectrum'</span>, <span class="string">'Theorem 2.6'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 15);
-</pre><img vspace="5" hspace="5" src="SCM_and_DSC_01.png" alt=""> <h2 id="3">The bi-correlated model (Theorem 2.7)</h2><p>Generate a (Gaussian i.i.d.) random matrix <img src="SCM_and_DSC_eq05013124788323701083.png" alt="$Z$" style="width:8px;height:8px;"> of dimension <img src="SCM_and_DSC_eq00624470566282429309.png" alt="$p \times n$" style="width:26px;height:8px;"> Generate the associated data matrix <img src="SCM_and_DSC_eq02604745865473247871.png" alt="$X = C^{\frac12} Z \tilde C^{\frac12}$" style="width:60px;height:11px;"></p><pre class="codeinput">close <span class="string">all</span>; clear; clc
+</pre><img vspace="5" hspace="5" src="SCM_and_DSC_01.png" alt=""> <h2 id="3">The bi-correlated model (Theorem 2.7)</h2><p>Generate a (Gaussian i.i.d.) random matrix <img src="SCM_and_DSC_eq05013124788323701083.png" alt="$Z$" style="width:8px;height:8px;"> of dimension <img src="SCM_and_DSC_eq00624470566282429309.png" alt="$p \times n$" style="width:26px;height:8px;">. Generate the associated data matrix <img src="SCM_and_DSC_eq02604745865473247871.png" alt="$X = C^{\frac12} Z \tilde C^{\frac12}$" style="width:60px;height:11px;">.</p><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 3;
 p = 200*coeff;
@@ -153,7 +153,7 @@ histogram(eigs_SCM, 40, <span class="string">'Normalization'</span>, <span class
 hold <span class="string">on</span>;
 plot(edges_mu,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
 legend(<span class="string">'Empirical eigenvalues'</span>, <span class="string">'Theorem 2.7'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 15);
-</pre><img vspace="5" hspace="5" src="SCM_and_DSC_02.png" alt=""> <h2 id="5">Sample covariance of <img src="SCM_and_DSC_eq15636846968047188835.png" alt="$k$" style="width:6px;height:8px;">-class mixture models (Theorem 2.8)</h2><p>Generate a (Gaussian i.i.d.) random matrix <img src="SCM_and_DSC_eq05013124788323701083.png" alt="$Z$" style="width:8px;height:8px;"> of dimension <img src="SCM_and_DSC_eq00624470566282429309.png" alt="$p \times n$" style="width:26px;height:8px;"> Generate the associated data matrix <img src="SCM_and_DSC_eq05497500925890011219.png" alt="$X = [C_1^{\frac12}z_1, \ldots, C_a^{\frac12}z_i,\ldots]$" style="width:119px;height:17px;"></p><pre class="codeinput">close <span class="string">all</span>; clear; clc
+</pre><img vspace="5" hspace="5" src="SCM_and_DSC_02.png" alt=""> <h2 id="5">Sample covariance of <img src="SCM_and_DSC_eq15636846968047188835.png" alt="$k$" style="width:6px;height:8px;">-class mixture models (Theorem 2.8)</h2><p>Generate a (Gaussian i.i.d.) random matrix <img src="SCM_and_DSC_eq05013124788323701083.png" alt="$Z$" style="width:8px;height:8px;"> of dimension <img src="SCM_and_DSC_eq00624470566282429309.png" alt="$p \times n$" style="width:26px;height:8px;">. Generate the associated data matrix <img src="SCM_and_DSC_eq05497500925890011219.png" alt="$X = [C_1^{\frac12}z_1, \ldots, C_a^{\frac12}z_i,\ldots]$" style="width:119px;height:17px;">.</p><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 3;
 p = 200*coeff;
@@ -267,8 +267,8 @@ legend(<span class="string">'Empirical eigenvalues'</span>, <span class="string"
 % This page contains simulations in Section 2.2.3.
 
 %% Large dimensional sample covariance matrix (Theorem 2.6)
-% Generate a (Gaussian i.i.d.) random matrix $Z$ of dimension $p \times n$
-% Generate the associated data matrix $X = C^{\frac12} Z$
+% Generate a (Gaussian i.i.d.) random matrix $Z$ of dimension $p \times n$.
+% Generate the data matrix $X = C^{\frac12} Z$.
 close all; clear; clc
 
 coeff = 3;
@@ -315,8 +315,9 @@ plot(edges_mu,mu,'r', 'Linewidth',2);
 legend('Empirical spectrum', 'Theorem 2.6', 'Interpreter', 'latex', 'FontSize', 15);
 
 %% The bi-correlated model (Theorem 2.7)
-% Generate a (Gaussian i.i.d.) random matrix $Z$ of dimension $p \times n$
-% Generate the associated data matrix $X = C^{\frac12} Z \tilde C^{\frac12}$
+% Generate a (Gaussian i.i.d.) random matrix $Z$ of dimension $p \times n$.
+% Generate the associated data matrix $X = C^{\frac12} Z \tilde
+% C^{\frac12}$.
 close all; clear; clc
 
 coeff = 3;
@@ -369,8 +370,9 @@ plot(edges_mu,mu,'r', 'Linewidth',2);
 legend('Empirical eigenvalues', 'Theorem 2.7', 'Interpreter', 'latex', 'FontSize', 15);
 
 %% Sample covariance of $k$-class mixture models (Theorem 2.8)
-% Generate a (Gaussian i.i.d.) random matrix $Z$ of dimension $p \times n$
-% Generate the associated data matrix $X = [C_1^{\frac12}z_1, \ldots, C_a^{\frac12}z_i,\ldots]$
+% Generate a (Gaussian i.i.d.) random matrix $Z$ of dimension $p \times n$.
+% Generate the associated data matrix $X = [C_1^{\frac12}z_1, \ldots,
+% C_a^{\frac12}z_i,\ldots]$.
 close all; clear; clc
 
 coeff = 3;
