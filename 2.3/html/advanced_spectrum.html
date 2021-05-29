@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 2.3: Advanced spectrum considerations for sample covariances</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-05-27"><meta name="DC.source" content="advanced_spectrum.m"><style type="text/css">
+      --><title>Section 2.3: Advanced spectrum considerations for sample covariances</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-05-28"><meta name="DC.source" content="advanced_spectrum.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -153,9 +153,11 @@ eigs_SCM = eig(SCM);
 clear <span class="string">i</span>
 y_min = -1;
 y_max = 1;
-x_min = -1;
+x_min = 0.5;
 x_max = 10;
+<span class="comment">% x_min = -1;</span>
 <span class="comment">% x_max = 30;</span>
+
 
 zs1 = (x_max:-0.1:x_min) + y_max*1i;
 zs2 = x_min + (y_max:-0.1:y_min)*1i;
@@ -170,7 +172,7 @@ tilde_m=0;
     z = zs(j);
 
     tilde_m_tmp=-1;
-    <span class="keyword">while</span> abs(tilde_m-tilde_m_tmp)&gt;1e-6
+    <span class="keyword">while</span> abs(tilde_m-tilde_m_tmp)&gt;1e-7
         tilde_m_tmp=tilde_m;
         tilde_m = 1/( -z + 1/n*sum(eigs_C./(1+tilde_m*eigs_C)) );
     <span class="keyword">end</span>
@@ -376,9 +378,11 @@ eigs_SCM = eig(SCM);
 clear i
 y_min = -1;
 y_max = 1;
-x_min = -1;
+x_min = 0.5;
 x_max = 10;
+% x_min = -1;
 % x_max = 30;
+
 
 zs1 = (x_max:-0.1:x_min) + y_max*1i;
 zs2 = x_min + (y_max:-0.1:y_min)*1i;
@@ -393,7 +397,7 @@ for j=1:length(zs)
     z = zs(j);
     
     tilde_m_tmp=-1;
-    while abs(tilde_m-tilde_m_tmp)>1e-6
+    while abs(tilde_m-tilde_m_tmp)>1e-7
         tilde_m_tmp=tilde_m;
         tilde_m = 1/( -z + 1/n*sum(eigs_C./(1+tilde_m*eigs_C)) );
     end

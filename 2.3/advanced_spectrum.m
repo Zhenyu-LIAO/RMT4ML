@@ -95,8 +95,9 @@ eigs_SCM = eig(SCM);
 clear i
 y_min = -1;
 y_max = 1;
-x_min = -1;
+x_min = 0.5;
 x_max = 10;
+% x_min = -1;
 % x_max = 30;
 
 
