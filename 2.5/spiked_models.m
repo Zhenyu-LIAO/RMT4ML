@@ -1,17 +1,16 @@
 %% Section 2.5: Spiked models
-% This page contains simulations in Section 2.5
+% This page contains simulations in Section 2.5.
 %
 %% Empirical eigenvalues of spiked sample covariance versus the Marcenko-Pastur law
-% with isolated "spike" empirical eigenvalues predicted per Theorem 2.12
+% with isolated "spike" empirical eigenvalues predicted per Theorem 2.13.
 %
 close all; clear; clc
 
 coeff = 1;
-p = 512*coeff;
+p = 1024*coeff;
 n = p*4;
 c = p/n;
 
-rng(928);
 Z = randn(p,n);
 eig_P = [1,2,3,4];
 P = diag([eig_P, zeros(1,p-length(eig_P))]);
@@ -20,7 +19,8 @@ X = sqrtm(C)*Z;
 
 SCM = X*(X')/n;
 eigs_SCM = eig(SCM);
-edges=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.1,200);
+eigs_SCM = sort(eigs_SCM);
+edges=linspace((1-sqrt(c))^2-eps,(1+sqrt(c))^2+eps,300);
 
 a = (1-sqrt(c))^2;
 b = (1+sqrt(c))^2;
@@ -29,24 +29,23 @@ isolated_eigs = 1+eig_P+c*(1+eig_P)./eig_P;
 isolated_eigs(eig_P<=sqrt(c)) = NaN;
 
 figure
-histogram(eigs_SCM, 60, 'Normalization', 'pdf');
+histogram(eigs_SCM, 40, 'Normalization', 'pdf', 'EdgeColor', 'white');
 hold on;
 mu=sqrt( max(edges-a,0).*max(b-edges,0) )/2/pi/c./edges;
 plot(edges,mu,'r', 'Linewidth',2);
 plot(isolated_eigs,zeros(length(isolated_eigs),1),'rx', 'MarkerSize',10);
-legend('Empirical eigenvalues', 'Marcenko-Pastur law', 'Isolated eigs per Theorem 2.12', 'FontSize', 15)
-axis([0 max(eigs_SCM)+.5 0 1]);
+legend('Empirical eigenvalues', 'Marcenko-Pastur law', 'Spikes per Theorem 2.13', 'FontSize', 15, 'Interpreter', 'latex')
+axis([0 max(eigs_SCM)+.5 0 max(mu)*1.1]);
 
-%% Theorem 2.13: alignment of isolated eigenvectors
+%% Alignment of isolated eigenvectors in Theorem 2.14
 %
 close all; clear; clc
 
-coeff_loop = [1 2 4];
+coeff_loop = [1 4];
 popu_spike_loop = linspace(0,4,30);
-nb_average_loop = 100;
+nb_average_loop = 200;
 eigvec_alignment = zeros(length(coeff_loop), length(popu_spike_loop), nb_average_loop);
 
-rng(928);
 for i = 1:length(coeff_loop)
     for j = 1:length(popu_spike_loop)
         for average_loop = 1:nb_average_loop
@@ -75,15 +74,14 @@ theo_alignment(popu_spike_loop<sqrt(c))=0;
 
 figure
 hold on;
-plot(popu_spike_loop,squeeze(mean(eigvec_alignment(1,:,:),3)),'b--');
-plot(popu_spike_loop,squeeze(mean(eigvec_alignment(2,:,:),3)),'b.-');
-plot(popu_spike_loop,squeeze(mean(eigvec_alignment(3,:,:),3)),'bx');
+plot(popu_spike_loop,squeeze(mean(eigvec_alignment(1,:,:),3)),'b--o');
+plot(popu_spike_loop,squeeze(mean(eigvec_alignment(2,:,:),3)),'b-^');
 plot(popu_spike_loop,theo_alignment,'r')
 xlabel('Population spike $\ell_1$', 'Interpreter', 'latex');
-ylabel('Top eigenvector alignement $| \hat u_1^T u_i |^2$', 'Interpreter', 'latex');
-legend('$p=128$', '$p=256$', '$p=512$', '$\frac{1-c \ell_1^{-2}}{ 1+c \ell_1^{-1} }$', 'Interpreter', 'latex', 'Location','southeast', 'FontSize', 15)
+ylabel('Top eigenvector alignement $| \hat u_1^T u_1 |^2$', 'Interpreter', 'latex');
+legend('$p=128$', '$p=512$', '$\zeta_1$', 'Interpreter', 'latex', 'Location','southeast', 'FontSize', 15)
 
-%% Theorem 2.14: fluctuation of the largest eigenvalue and the Tracy-Widom distribution
+%% Theorem 2.15: fluctuation of the largest eigenvalue and the Tracy-Widom law
 %
 close all; clear; clc
 
@@ -96,11 +94,10 @@ nb_loop = 5000;
 eig_MP_max = zeros(nb_loop,1);
 eig_SCM_max = zeros(nb_loop,1);
 
-eig_P = sqrt(c);
-sqrt_C=diag(sqrt([1+eig_P, ones(1,p-1)]));
+eig_P = sqrt(c)/2;
+sqrt_C= diag(sqrt([1+eig_P, ones(1,p-1)]));
 
-rng(928);
-for loop=1:nb_loop %%% empirical evaluation
+for loop=1:nb_loop % empirical evaluation
     Z = randn(p,n);
     X = sqrt_C*Z;
     eig_MP_max(loop)= eigs(Z*(Z')/n, 1);
@@ -112,18 +109,19 @@ edges=linspace(-5,5,100);
 factor = c^(-1/6)*(1+sqrt(c))^(4/3);
 
 figure
+subplot(2,1,1)
 hold on
-histogram((eig_MP_max-(1+sqrt(c))^2)*n^(2/3)/factor, 60, 'Normalization', 'pdf');
+histogram((eig_MP_max-(1+sqrt(c))^2)*n^(2/3)/factor, 60, 'Normalization', 'pdf', 'EdgeColor', 'white');
 plot(edges,tracy_widom_appx(edges,1), 'r', 'Linewidth',2);
-legend('Fluctuation of largest eigenvalue', 'Tracy-Widom law', 'FontSize', 15)
+legend('Fluctuation of the largest eigenvalue', 'Tracy-Widom law', 'FontSize', 15, 'Interpreter', 'latex');
 title('Fluctuation of the largest eig of null model $\frac1n Z Z^T$', 'Interpreter', 'latex');
 
-figure
+subplot(2,1,2)
 hold on
-histogram((eig_SCM_max-(1+sqrt(c))^2)*n^(2/3)/factor, 60, 'Normalization', 'pdf');
+histogram((eig_SCM_max-(1+sqrt(c))^2)*n^(2/3)/factor, 60, 'Normalization', 'pdf', 'EdgeColor', 'white');
 plot(edges,tracy_widom_appx(edges,1), 'r', 'Linewidth',2);
-legend('Fluctuation of largest eigvalue', 'Tracy-Widom law', 'FontSize', 15)
-title('Fluctuation of the largest eigvalue of SCM $\frac1n C^{\frac12} Z Z^T C^{\frac12}$', 'Interpreter', 'latex');
+legend('Fluctuation of largest eigvalue', 'Tracy-Widom law', 'FontSize', 15, 'Interpreter', 'latex');
+title('Fluctuation of the largest eigvalue of $\frac1n (I+P)^{\frac12} Z Z^T (I+P)^{\frac12}$', 'Interpreter', 'latex');
 
 
 function [pdftwappx, cdftwappx] = tracy_widom_appx(x, i)

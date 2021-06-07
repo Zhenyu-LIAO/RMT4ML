@@ -1,6 +1,6 @@
 %% Section 2.4.2: Eigenvector projections and subspace methods
-% This page contains an application example of estimating functionals of
-% random matrices $X$. *Fully separable case* with $\nu = \frac13 (\delta_1 + \delta_3 + \delta_7)$ and $c = 1/10$
+% This page contains the example of estimating eigenspace correlation
+% of the sample covariance model, in the *fully separable case*.
 
 %% Empirical eigenvalues of $\frac1n X X^T$ versus limiting spectrum
 %
@@ -18,14 +18,13 @@ C = diag([eig_C(1)*ones(p/3,1); eig_C(2)*ones(p/3,1); eig_C(3)*ones(p/3,1)]); %%
 [U,eigs_C] = eig(C);
 eigs_C = diag(eigs_C);
 
-rng(928);
 Z = randn(p,n);
 X = sqrtm(C)*Z;
 
 SCM = X*(X')/n; %%% sample covariance matrix and its empirical spectral measure
 [hat_U,eigs_SCM] = eig(SCM);
 eigs_SCM = diag(eigs_SCM);
-edges=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.1,100);
+edges=linspace(min(eigs_SCM)-.1,max(eigs_SCM)+.1,300);
 
 clear i
 y = 1e-5;
@@ -49,12 +48,12 @@ end
 figure(1) %%% limiting versus empirical spectral measure of SCM
 subplot(2,1,1);
 hold on
-histogram(eigs_SCM, 60, 'Normalization', 'pdf');
+histogram(eigs_SCM, 60, 'Normalization', 'pdf', 'EdgeColor', 'white');
 plot(edges,mu,'r', 'Linewidth',2);
-legend('Empirical eigenvalues', 'Limiting spectrum', 'FontSize', 15)
+legend('Empirical eigenvalues', 'Limiting spectrum', 'FontSize', 15, 'Interpreter', 'latex')
 
-%% Determine the support of $\mu$ via Theorem 2.9
-%
+%Determine the support of $\mu$ via Theorem 2.10
+
 Tol = 1e-3;
 search_min = -2;
 search_max = Tol;
@@ -81,7 +80,7 @@ xlabel('$\Re[z]$', 'Interpreter', 'latex')
 ylabel('$\Im[z]$', 'Interpreter', 'latex')
 axis([0 max(eigs_SCM)+.5 -.5 .5]);
 
-%% Empirical eigenspace correlation with the proposed estimator
+%% Empirical eigenspace correlation
 %
 emp_eig_corr = zeros(1,length(cs));
 
@@ -97,7 +96,6 @@ disp('Empirical eigenspace correlation:')
 disp(emp_eig_corr)
 
 %% Estimation of eigenspace correlation with rectangular contour
-%
 estim_eig_corr = zeros(1,length(cs));
 
 for a=1:length(cs)
@@ -134,10 +132,10 @@ for a=1:length(cs)
     estim_eig_corr(a) = real(trapz(zs,integrand)/(pi*2i));
 end
 
-disp('Eigenspace correlation estimated with contour integration (2.29):')
+disp('Eigenspace correlation estimated with contour integration:')
 disp(estim_eig_corr)
 
-%% Estimation of eigenspace correlation with line integrals
+%% Estimation of eigenspace correlation with line integrals (simplified from contour integration)
 %
 estim_eig_corr = zeros(1,length(cs));
 
@@ -164,10 +162,10 @@ for a=1:length(cs)
     end
     estim_eig_corr(a) = trapz(xs,integrand);
 end
-disp('Eigenspace correlation estimated with line integral (2.30):')
+disp('Eigenspace correlation estimated with line integral:')
 disp(estim_eig_corr)
 
-%% Application: "spiked" model eigenvalue correlation
+%% Application: "spiked" model eigenspace correlation
 %
 clear; close all; clc
 
@@ -179,7 +177,6 @@ c_loop = p_over_m*m_loop/n;
 emp_eig_corr = zeros(length(m_loop),1);
 estim_eig_corr = zeros(length(m_loop),1);
 
-rng(928);
 for m_index=1:length(m_loop)
     m = m_loop(m_index);
     p = p_over_m*m;
@@ -245,15 +242,16 @@ plot(c_loop,emp_eig_corr,'bx')
 plot(c_loop,estim_eig_corr,'r--')
 plot(c_loop,(1-c_loop/4)./(1+c_loop/2),'k')
 xline(c_loop(1),'k--');
-xlabel('$p/n$', 'Interpreter', 'latex')
-ylabel('Eigenspace correlation')
-legend('Empirical spike eigenspace corr', 'Asymptotics by (2.30)', 'Asymptotics by Theo 2.13', 'FontSize', 15)
+xlabel('$p/n$', 'Interpreter', 'latex', 'Interpreter', 'latex')
+ylabel('Eigenspace correlation', 'Interpreter', 'latex')
+legend('Empirical spike eigenspace correlation', 'Asymptotics in Sec 2.4.2.2', 'Asymptotics via spiked model', 'FontSize', 15, 'Interpreter', 'latex')
 
+% FUNCTIONS
 function [x,x_d] = SCM_func_inv(tilde_m, eig_C, cs, c)
 %SCM_func_inv functional inverse of Stieltjes transform of large sample
 %covariance model
-%   INPUT: Stieltjes transform tilde_m, (k-discrete) eigenvalues of C (or
-%   nu), vector cs=p_a/p for a=1,...k, ratio c=p/n
+%   INPUT: Stieltjes transform tilde_m, (k-discrete) eigenvalues of C,
+%   vector cs=p_a/p for a=1,...k, ratio c=p/n
 %   OUTPUT: functional inverse x (of tilde_m) and its first derivative x_d
 
 if length(eig_C) ~= length(cs)
