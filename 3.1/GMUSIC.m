@@ -1,5 +1,5 @@
 %% Section 3.1.3: Subspace methods: the G-MUSIC algorithm
-% This page contains simulations in Section 3.1.3: estimation of the "direction of arrival" of signal from noisy observation
+% This page contains simulations in Section 3.1.3. 
 
 %% Basic settings
 close all; clear; clc
@@ -12,25 +12,26 @@ theta_true = [-10, 35, 37]./180*pi;
 k = length(theta_true);
 sigma2 = .1;
 P = eye(k);
-a = @(theta) exp(-pi*1i*sin(theta)*(0:p-1)')/sqrt(p);
+a = @(theta) exp(-pi*1i*sin(theta)*(0:p-1)')/sqrt(p); % here d=pi
 A = [a(theta_true(1)), a(theta_true(2)), a(theta_true(3))];
 
-theta_range = linspace(-45,45,500)./180*pi;
+theta_range = linspace(-45,45,300)./180*pi;
 
 store_output = zeros(length(theta_range),2); % [MUSIC, G-MUSIC]
 
 rng(991);
-
 S = sqrtm(P)*randn(k,n);
 W = complex(randn(p,n), randn(p,n));
 X = A*S + sqrt(sigma2/2)*W;
+
+%% MUSIC versus G-MUSIC
 SCM = X*(X')/n;
 [U,eigs_SCM] = eig(SCM,'vector');
 [eigs_SCM, index] = sort(eigs_SCM,'descend');
 U = U(:, index);
 U_S = U(:,1:k);
 
-%%% MUSIC versus G-MUSIC
+
 for j = 1:length(theta_range)
     theta = theta_range(j);
     
@@ -39,7 +40,9 @@ for j = 1:length(theta_range)
     
     %G-MUSIC with different estimators for sigma2
     sigma2_estim = eigs_SCM(k+1)/(1+sqrt(c))^2;
+    %sigma2_estim = mean(eigs_SCM(k+1:end));
     %sigma2_estim = sigma2;
+    
     tmp = 0;
     D = zeros(k,k);
     for l = 1:k

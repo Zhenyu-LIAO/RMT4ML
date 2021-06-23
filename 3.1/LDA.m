@@ -1,19 +1,20 @@
 %% Section 3.1.2: Linear discriminant analysis (LDA)
-% This page contains simulations in Section 3.1.2:
-% Hypotheses testing between two Gaussian models: $\mathcal N(\mu_0, C_0)$ versus $\mathcal N(\mu_1, C_1)$
+% This page contains simulations in Section 3.1.2.
 
-%% Basic setting
+%% Basic settings
 close all; clear; clc
 
-testcase = 'kannada-MNIST'; % Among 'GMM', 'MNIST' and 'fashion-MNIST', 'kannada-MNIST'
-testcase_option = 'mixed'; % when testcase = 'GMM', among 'mean', 'cov', 'orth' and 'mixed'
+testcase = 'Fashion-MNIST'; % Among 'GMM', 'MNIST', 'Fashion-MNIST', 'Kannada-MNIST', 'Kuzushiji-MNIST'
+switch testcase
+    case 'GMM'
+        testcase_option = 'mixed'; % when testcase = 'GMM', among 'mean', 'cov', 'orth' and 'mixed'
+end
 
 coeff = 1;
 n = 2048*coeff;
 n_test = 128*coeff;
 cs = [1/2 1/2]; 
 k = length(cs);
-rng(928);
 
 switch testcase
     case 'GMM'
@@ -37,18 +38,21 @@ switch testcase
         end
         
     case 'MNIST'
-        init_data = loadMNISTImages('./../../datasets/MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('./../../datasets/MNIST/train-labels-idx1-ubyte');
-    case 'fashion-MNIST'
-        init_data = loadMNISTImages('./../../datasets/fashion-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('./../../datasets/fashion-MNIST/train-labels-idx1-ubyte');
-    case 'kannada-MNIST'
-        init_data = loadMNISTImages('./../../datasets/kannada-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('./../../datasets/kannada-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets//MNIST/train-labels-idx1-ubyte');
+    case 'Fashion-MNIST'
+        init_data = loadMNISTImages('../datasets/Fashion-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/Fashion-MNIST/train-labels-idx1-ubyte');
+    case 'Kannada-MNIST'
+        init_data = loadMNISTImages('../datasets/Kannada-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/Kannada-MNIST/train-labels-idx1-ubyte');
+    case 'Kuzushiji-MNIST'
+        init_data = loadMNISTImages('../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte');
 end
 
 switch testcase % real-world data pre-processing 
-    case {'MNIST', 'fashion-MNIST','kannada-MNIST'}
+    case {'MNIST', 'Fashion-MNIST','Kannada-MNIST','Kuzushiji-MNIST'}
         [labels,idx_init_labels]=sort(init_labels,'ascend');
         data=init_data(:,idx_init_labels);
         
@@ -95,7 +99,7 @@ accuracy_store = zeros(nb_loop,1);
 for data_loop = 1:nb_loop
     
     switch testcase % generate data
-        case {'MNIST', 'fashion-MNIST','kannada-MNIST'}
+        case {'MNIST', 'Fashion-MNIST','Kannada-MNIST','Kuzushiji-MNIST'}
             X=zeros(p,n);
             X_test=zeros(p,n_test);
             for i=1:k % random data picking
@@ -142,7 +146,7 @@ T_store1 = T_store(cs(1)*n_test+1:end,:);
 
 disp(['Classif accuracy:', num2str(mean(accuracy_store))]);
 
-%% Theoretical predictions of LDA decision (soft) output
+%% Theoretical prediction of LDA decision (soft) output
 eigs_C = @(l) eig(covs(l));
 
 z = - gamma;
@@ -178,8 +182,58 @@ edges = linspace(min([T_store0(:);T_store1(:)])-.5,max([T_store0(:);T_store1(:)]
 
 figure
 hold on
-histogram(T_store0(:),30,'Normalization','pdf');
-histogram(T_store1(:),30,'Normalization','pdf');
+histogram(T_store0(:),30,'Normalization','pdf','EdgeColor', 'white');
+histogram(T_store1(:),30,'Normalization','pdf','EdgeColor', 'white');
 plot(edges,normpdf(edges, theo_mean(0), sqrt(theo_var(0))),'--b');
 plot(edges,normpdf(edges, theo_mean(1), sqrt(theo_var(1))),'--r');
-legend('empirical $T(x\sim \mathcal H_0)$', 'empirical $T(x\sim \mathcal H_1)$', 'theory $T(x\sim \mathcal H_0)$', 'theory $T(x\sim \mathcal H_1)$', 'Interpreter','latex', 'FontSize', 15)
+legend('Empirical $T(x\sim \mathcal H_0)$', 'Empirical $T(x\sim \mathcal H_1)$', 'Theory $T(x\sim \mathcal H_0)$', 'Theory $T(x\sim \mathcal H_1)$', 'Interpreter','latex', 'FontSize', 15)
+
+
+%% FUNCTION
+function images = loadMNISTImages(filename)
+%loadMNISTImages returns a 28x28x[number of MNIST images] matrix containing
+%the raw MNIST images
+%from 
+
+fp = fopen(filename, 'rb');
+assert(fp ~= -1, ['Could not open ', filename, '']);
+
+magic = fread(fp, 1, 'int32', 0, 'ieee-be');
+assert(magic == 2051, ['Bad magic number in ', filename, '']);
+
+numImages = fread(fp, 1, 'int32', 0, 'ieee-be');
+numRows = fread(fp, 1, 'int32', 0, 'ieee-be');
+numCols = fread(fp, 1, 'int32', 0, 'ieee-be');
+
+images = fread(fp, inf, 'unsigned char');
+images = reshape(images, numCols, numRows, numImages);
+images = permute(images,[2 1 3]);
+
+fclose(fp);
+
+% Reshape to #pixels x #examples
+images = reshape(images, size(images, 1) * size(images, 2), size(images, 3));
+% Convert to double and rescale to [0,1]
+images = double(images) / 255;
+
+end
+
+function labels = loadMNISTLabels(filename)
+%loadMNISTLabels returns a [number of MNIST images]x1 matrix containing
+%the labels for the MNIST images
+
+fp = fopen(filename, 'rb');
+assert(fp ~= -1, ['Could not open ', filename, '']);
+
+magic = fread(fp, 1, 'int32', 0, 'ieee-be');
+assert(magic == 2049, ['Bad magic number in ', filename, '']);
+
+numLabels = fread(fp, 1, 'int32', 0, 'ieee-be');
+
+labels = fread(fp, inf, 'unsigned char');
+
+assert(size(labels,1) == numLabels, 'Mismatch in label count');
+
+fclose(fp);
+
+end
