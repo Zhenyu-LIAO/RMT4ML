@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 3.5 Practical course material 2: Robust portfolio optimization via Tyler estimator</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-07-12"><meta name="DC.source" content="robust_portfolio.m"><style type="text/css">
+      --><title>Section 3.5 Practical course material 2: Robust portfolio optimization via Tyler estimator</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-07-05"><meta name="DC.source" content="robust_portfolio.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +52,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -66,19 +67,20 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 3.5 Practical course material 2: Robust portfolio optimization via Tyler estimator</h1><!--introduction--><p>This page contains simulations in Section 3.5 Practical course material 2</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Random equivalent asymptotics between <img src="robust_portfolio_eq18121563191542547938.png" alt="$\hat C$"> and <img src="robust_portfolio_eq11663486039913039363.png" alt="$\hat S$"></a></li><li><a href="#2">Portfolio risk, the asymptotic approximation <img src="robust_portfolio_eq10202059542358066469.png" alt="$\sigma^2(\gamma)$">, and the estimate <img src="robust_portfolio_eq15732739800316463266.png" alt="$\hat \sigma^2(\gamma)$"> versus the regularization <img src="robust_portfolio_eq17096441642737911057.png" alt="$\gamma$"></a></li></ul></div><h2 id="1">Random equivalent asymptotics between <img src="robust_portfolio_eq18121563191542547938.png" alt="$\hat C$"> and <img src="robust_portfolio_eq11663486039913039363.png" alt="$\hat S$"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 3.5 Practical course material 2: Robust portfolio optimization via Tyler estimator</h1><!--introduction--><p>This page contains simulations of Practical course material 2 in Section 3.5.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Random equivalent asymptotics between <img src="robust_portfolio_eq18121563191542547938.png" alt="$\hat C$" style="width:4px;height:6px;"> and <img src="robust_portfolio_eq11663486039913039363.png" alt="$\hat S$" style="width:4px;height:6px;"></a></li><li><a href="#2">Portfolio risk, the asymptotic approximation <img src="robust_portfolio_eq10202059542358066469.png" alt="$\sigma^2(\gamma)$" style="width:13px;height:6px;">, and the estimate <img src="robust_portfolio_eq15732739800316463266.png" alt="$\hat \sigma^2(\gamma)$" style="width:13px;height:6px;"> for different <img src="robust_portfolio_eq17096441642737911057.png" alt="$\gamma$" style="width:3px;height:4px;"></a></li></ul></div><h2 id="1">Random equivalent asymptotics between <img src="robust_portfolio_eq18121563191542547938.png" alt="$\hat C$" style="width:4px;height:6px;"> and <img src="robust_portfolio_eq11663486039913039363.png" alt="$\hat S$" style="width:4px;height:6px;"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 5;
 p = 100*coeff;
 n = 500*coeff;
 c = p/n;
 
-rng(928);
 eigs_C = [ones(p/4,1); 3*ones(p/4,1); 10*ones(p/2,1)];
 C = diag(eigs_C); <span class="comment">% population covariance</span>
 tau = gamrnd(.5,2,n,1);
 
 Z = randn(p,n);
+inv_norm_Z = p./diag(Z'*Z);
+Z = Z*diag(sqrt(inv_norm_Z)); <span class="comment">% uniformly distribution on the sphere</span>
 X = sqrtm(C)*Z*diag(sqrt(tau));
 
 gamma = 0.5;
@@ -107,22 +109,20 @@ hat_S = (1-gamma)/( 1-(1-gamma)*c )/delta*sqrtm(C)*Z*(Z')*sqrtm(C)/n + gamma*eye
 eigs_hat_S = eig(hat_S);
 
 figure
-subplot(1,2,1)
-histogram(eigs_hat_C, 50, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
-legend(<span class="string">'Empirical eigs of $\hat C$'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+histogram(eigs_hat_C, 40, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>, <span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
+legend(<span class="string">'Empirical eigenvalues of $\hat C$'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 
-subplot(1,2,2)
-histogram(eigs_hat_S, 50, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
-legend(<span class="string">'Empirical eigs of $\hat S$'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
-</pre><img vspace="5" hspace="5" src="robust_portfolio_01.png" alt=""> <h2 id="2">Portfolio risk, the asymptotic approximation <img src="robust_portfolio_eq10202059542358066469.png" alt="$\sigma^2(\gamma)$">, and the estimate <img src="robust_portfolio_eq15732739800316463266.png" alt="$\hat \sigma^2(\gamma)$"> versus the regularization <img src="robust_portfolio_eq17096441642737911057.png" alt="$\gamma$"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+figure
+histogram(eigs_hat_S, 40, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>, <span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
+legend(<span class="string">'Empirical eigenvalues of $\hat S$'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+</pre><img vspace="5" hspace="5" src="robust_portfolio_01.png" alt=""> <img vspace="5" hspace="5" src="robust_portfolio_02.png" alt=""> <h2 id="2">Portfolio risk, the asymptotic approximation <img src="robust_portfolio_eq10202059542358066469.png" alt="$\sigma^2(\gamma)$" style="width:13px;height:6px;">, and the estimate <img src="robust_portfolio_eq15732739800316463266.png" alt="$\hat \sigma^2(\gamma)$" style="width:13px;height:6px;"> for different <img src="robust_portfolio_eq17096441642737911057.png" alt="$\gamma$" style="width:3px;height:4px;"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 1;
 p = 256*coeff;
 n = 512*coeff;
 c = p/n;
 
-rng(928);
-u = (.5+ rand(p,1))/sqrt(p);
+u = (0.5+ rand(p,1))/sqrt(p);
 C = 5*u*(u') + eye(p);
 eigs_C = eig(C);
 
@@ -139,9 +139,11 @@ store_output = zeros(length(gamma_loop),3);
 
     tmp = zeros(1,3);
     <span class="keyword">for</span> average_loop = 1:nb_average_loop
-        nu_student = 100; <span class="comment">%%% degrees of freedom nu of Student's t distribution</span>
-        Z = trnd(nu_student,p,n)/sqrt(nu_student/(nu_student-2));
-        <span class="comment">%Z = randn(p,n);</span>
+        <span class="comment">%nu_student = 100; %%% degrees of freedom nu of Student's t distribution</span>
+        <span class="comment">%Z = trnd(nu_student,p,n)/sqrt(nu_student/(nu_student-2));</span>
+        Z = randn(p,n);
+        inv_norm_Z = p./diag(Z'*Z);
+        Z = Z*diag(sqrt(inv_norm_Z)); <span class="comment">% uniformly distribution on the sphere</span>
 
         d = 3;
         tau = chi2rnd(d,n,1)/d;
@@ -190,11 +192,12 @@ hold <span class="string">on</span>
 plot(gamma_loop,store_output(:,1),<span class="string">'k--'</span>)
 plot(gamma_loop,store_output(:,2),<span class="string">'ro'</span>)
 plot(gamma_loop,store_output(:,3),<span class="string">'bx'</span>)
-legend(<span class="string">'Risk'</span>, <span class="string">'Asymptotic approx $\sigma^2$'</span>, <span class="string">'Proposed estimator $\frac1p tr(C) \cdot \hat \sigma^2$'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
-</pre><img vspace="5" hspace="5" src="robust_portfolio_02.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+legend(<span class="string">'Portfolio Risk'</span>, <span class="string">'$\sigma^2$'</span>, <span class="string">'$\frac1p tr(C) \cdot \hat \sigma^2$'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+xlabel(<span class="string">'$\gamma$'</span>,  <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+</pre><img vspace="5" hspace="5" src="robust_portfolio_03.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Section 3.5 Practical course material 2: Robust portfolio optimization via Tyler estimator
-% This page contains simulations in Section 3.5 Practical course material 2
+% This page contains simulations of Practical course material 2 in Section 3.5.
 
 %% Random equivalent asymptotics between $\hat C$ and $\hat S$
 close all; clear; clc
@@ -204,12 +207,13 @@ p = 100*coeff;
 n = 500*coeff;
 c = p/n;
 
-rng(928);
 eigs_C = [ones(p/4,1); 3*ones(p/4,1); 10*ones(p/2,1)];
 C = diag(eigs_C); % population covariance
 tau = gamrnd(.5,2,n,1);
 
 Z = randn(p,n);
+inv_norm_Z = p./diag(Z'*Z);
+Z = Z*diag(sqrt(inv_norm_Z)); % uniformly distribution on the sphere
 X = sqrtm(C)*Z*diag(sqrt(tau));
 
 gamma = 0.5;
@@ -238,15 +242,14 @@ hat_S = (1-gamma)/( 1-(1-gamma)*c )/delta*sqrtm(C)*Z*(Z')*sqrtm(C)/n + gamma*eye
 eigs_hat_S = eig(hat_S);
 
 figure
-subplot(1,2,1)
-histogram(eigs_hat_C, 50, 'Normalization', 'pdf');
-legend('Empirical eigs of $\hat C$', 'FontSize', 15, 'Interpreter', 'latex')
+histogram(eigs_hat_C, 40, 'Normalization', 'pdf', 'EdgeColor', 'white');
+legend('Empirical eigenvalues of $\hat C$', 'FontSize', 15, 'Interpreter', 'latex')
 
-subplot(1,2,2)
-histogram(eigs_hat_S, 50, 'Normalization', 'pdf');
-legend('Empirical eigs of $\hat S$', 'FontSize', 15, 'Interpreter', 'latex')
+figure
+histogram(eigs_hat_S, 40, 'Normalization', 'pdf', 'EdgeColor', 'white');
+legend('Empirical eigenvalues of $\hat S$', 'FontSize', 15, 'Interpreter', 'latex')
 
-%% Portfolio risk, the asymptotic approximation $\sigma^2(\gamma)$, and the estimate $\hat \sigma^2(\gamma)$ versus the regularization $\gamma$
+%% Portfolio risk, the asymptotic approximation $\sigma^2(\gamma)$, and the estimate $\hat \sigma^2(\gamma)$ for different $\gamma$
 close all; clear; clc
 
 coeff = 1;
@@ -254,8 +257,7 @@ p = 256*coeff;
 n = 512*coeff;
 c = p/n;
 
-rng(928);
-u = (.5+ rand(p,1))/sqrt(p);
+u = (0.5+ rand(p,1))/sqrt(p);
 C = 5*u*(u') + eye(p);
 eigs_C = eig(C);
 
@@ -272,9 +274,11 @@ for gamma_index = 1:length(gamma_loop)
     
     tmp = zeros(1,3);
     for average_loop = 1:nb_average_loop
-        nu_student = 100; %%% degrees of freedom nu of Student's t distribution
-        Z = trnd(nu_student,p,n)/sqrt(nu_student/(nu_student-2));
-        %Z = randn(p,n);
+        %nu_student = 100; %%% degrees of freedom nu of Student's t distribution
+        %Z = trnd(nu_student,p,n)/sqrt(nu_student/(nu_student-2));
+        Z = randn(p,n);
+        inv_norm_Z = p./diag(Z'*Z);
+        Z = Z*diag(sqrt(inv_norm_Z)); % uniformly distribution on the sphere
         
         d = 3;
         tau = chi2rnd(d,n,1)/d;
@@ -323,7 +327,9 @@ hold on
 plot(gamma_loop,store_output(:,1),'kREPLACE_WITH_DASH_DASH')
 plot(gamma_loop,store_output(:,2),'ro')
 plot(gamma_loop,store_output(:,3),'bx')
-legend('Risk', 'Asymptotic approx $\sigma^2$', 'Proposed estimator $\frac1p tr(C) \cdot \hat \sigma^2$', 'FontSize', 15, 'Interpreter', 'latex')
+legend('Portfolio Risk', '$\sigma^2$', '$\frac1p tr(C) \cdot \hat \sigma^2$', 'FontSize', 15, 'Interpreter', 'latex')
+xlabel('$\gamma$',  'Interpreter', 'latex')
+
 
 ##### SOURCE END #####
 --></body></html>

@@ -1,6 +1,5 @@
 %% Section 3.2: Covariance distance estimation
-% This page contains simulations in Section 3.2: estimation of various
-% distance between covariance matrices in large dimension
+% This page contains simulations in Section 3.2.
 
 %% Visualization of behavior of $x \mapsto x m_\mu(x)$
 close all; clear; clc
@@ -60,28 +59,27 @@ yline( -1/c1,'--k');
 yline(0,'--k');
 axis([eigs_SCM(index_eigs_SCM)-tol1 eigs_SCM(index_eigs_SCM+1)+tol1 -10 10])
 
-xlabel('x', 'Interpreter', 'latex')
+xlabel('$x$', 'Interpreter', 'latex')
 ylabel('$x m_{\mu}(x)$', 'Interpreter', 'latex')
 plot(eigs_SCM(index_eigs_SCM),0,'ob');
 text(eigs_SCM(index_eigs_SCM)+1e-5,.5,'$\lambda_i$', 'Interpreter', 'latex', 'FontSize',12)
 plot(eigs_SCM(index_eigs_SCM+1),0,'ob');
 text(eigs_SCM(index_eigs_SCM+1)+1e-5,.5,'$\lambda_{i+1}$', 'Interpreter', 'latex', 'FontSize',12)
 
-plot(eta, 0,'xr');
+plot(eta, 0,'^r');
 plot(zeta, 0,'xr');
 text(eta-1e-4, .5,'$\eta_i$', 'Interpreter', 'latex', 'FontSize',12)
 text(zeta-1e-4, .5,'$\zeta_i$', 'Interpreter', 'latex', 'FontSize',12)
 xline(eta,':k');
 xline(zeta,':k');
 
-%% Classical versus random matrix improved covariance distance estimator
+%% Classical plug-in versus random matrix improved covariance distance estimator
 close all; clear; clc
 
 p_loop = 2.^(1:9);
 n1 = 1024;
 n2 = 2048;
 
-rng(928);
 nb_average_loop = 30;
 store_output = zeros(length(p_loop),3); % [population distance, RMT estimator, classical estimator]
 
@@ -105,7 +103,8 @@ for i = 1:length(p_loop)
 end        
 
 disp('Performance of different estimators:')
-disp([p_loop', store_output])
+output_str = sprintf('%d \t %f \t %f \t % f \n',[p_loop', store_output]');
+disp(output_str)
 
 %% FUNCTIONS
 % Code from https://github.com/maliktiomoko/RMTEstimCovDist

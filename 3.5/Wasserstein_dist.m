@@ -1,5 +1,5 @@
 %% Section 3.5 Practical course material 1: The Wasserstein covariacne distance estimation
-% This page contains simulations in Section 3.5 Practical course material 1
+% This page contains simulations of Practical course material 1 in Section 3.5.
 
 %% Visualization of behavior of $x \mapsto x m_\mu(x)$
 close all; clear; clc
@@ -42,12 +42,11 @@ tol2 = 1e-4;
 zoom_eigs_SCM(zoom_eigs_SCM<=eigs_SCM(index_eigs_SCM)+tol2 & zoom_eigs_SCM>=eigs_SCM(index_eigs_SCM)-tol2)=NaN;
 zoom_eigs_SCM(zoom_eigs_SCM<=eigs_SCM(index_eigs_SCM+1)+tol2 & zoom_eigs_SCM>=eigs_SCM(index_eigs_SCM+1)-tol2)=NaN;
 
-% numerical evaluation of eta and zeta
+% numerical evaluation of xi and eta
 xi = real(eig(diag(eigs_SCM) - sqrt(eigs_SCM)*sqrt(eigs_SCM')/n1 ));
 xi = xi(xi<eigs_SCM(index_eigs_SCM+1) & xi>eigs_SCM(index_eigs_SCM));
 eta = real(eig(diag(eigs_SCM) - sqrt(eigs_SCM)*sqrt(eigs_SCM')/n2 ));
 eta = eta(eta<eigs_SCM(index_eigs_SCM+1) & eta>eigs_SCM(index_eigs_SCM));
-
 
 figure
 hold on
@@ -60,31 +59,31 @@ yline( (1-c2)/c2,'--k');
 yline(0,'--k');
 axis([eigs_SCM(index_eigs_SCM)-tol1 eigs_SCM(index_eigs_SCM+1)+tol1 -10 10])
 
-xlabel('x', 'Interpreter', 'latex')
+xlabel('$x$', 'Interpreter', 'latex')
 ylabel('$x m_{\mu}(x)$', 'Interpreter', 'latex')
 plot(eigs_SCM(index_eigs_SCM),0,'ob');
-text(eigs_SCM(index_eigs_SCM)+1e-5,.5,'$\lambda_i$', 'Interpreter', 'latex', 'FontSize',12)
+text(eigs_SCM(index_eigs_SCM)+1e-5,.5,'$\lambda_{i-1}$', 'Interpreter', 'latex', 'FontSize',12)
 plot(eigs_SCM(index_eigs_SCM+1),0,'ob');
-text(eigs_SCM(index_eigs_SCM+1)+1e-5,.5,'$\lambda_{i+1}$', 'Interpreter', 'latex', 'FontSize',12)
+text(eigs_SCM(index_eigs_SCM+1)+1e-5,.5,'$\lambda_{i}$', 'Interpreter', 'latex', 'FontSize',12)
 
 plot(xi, 0,'xr');
-plot(eta, 0,'xr');
-text(xi-2e-4, -.5,'$\xi_{i+1}$', 'Interpreter', 'latex', 'FontSize',12)
-text(eta-2e-4, -.5,'$\eta_{i+1}$', 'Interpreter', 'latex', 'FontSize',12)
+plot(eta, 0,'^r');
+text(xi-2e-4, -.5,'$\xi_{i}$', 'Interpreter', 'latex', 'FontSize',12)
+text(eta-2e-4, -.5,'$\eta_{i}$', 'Interpreter', 'latex', 'FontSize',12)
 xline(xi,':k');
 xline(eta,':k');
 
-%% Classical versus random matrix improved covariance distance estimator
+%% Classical versus random matrix improved Wasserstein covariance distance estimator
 close all; clear; clc
 
 p_loop = 2.^(1:9);
 n1 = 1024;
 n2 = 2048;
 
-rng(928);
 nb_average_loop = 30;
 store_output = zeros(length(p_loop),3); % [population distance, RMT estimator, classical estimator]
 
+warning('off')
 for i = 1:length(p_loop)
     p = p_loop(i);
     
@@ -103,7 +102,8 @@ for i = 1:length(p_loop)
 end
 
 disp('Performance of different estimators:')
-disp([p_loop', store_output])
+output_str = sprintf('%d \t %f \t %f \t % f \n',[p_loop', store_output]');
+disp(output_str)
 
 
 %% FUNCTIONS

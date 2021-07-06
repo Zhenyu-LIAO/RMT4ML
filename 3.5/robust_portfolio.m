@@ -1,5 +1,5 @@
 %% Section 3.5 Practical course material 2: Robust portfolio optimization via Tyler estimator
-% This page contains simulations in Section 3.5 Practical course material 2
+% This page contains simulations of Practical course material 2 in Section 3.5.
 
 %% Random equivalent asymptotics between $\hat C$ and $\hat S$
 close all; clear; clc
@@ -9,12 +9,13 @@ p = 100*coeff;
 n = 500*coeff;
 c = p/n;
 
-rng(928);
 eigs_C = [ones(p/4,1); 3*ones(p/4,1); 10*ones(p/2,1)];
 C = diag(eigs_C); % population covariance
 tau = gamrnd(.5,2,n,1);
 
 Z = randn(p,n);
+inv_norm_Z = p./diag(Z'*Z);
+Z = Z*diag(sqrt(inv_norm_Z)); % uniformly distribution on the sphere
 X = sqrtm(C)*Z*diag(sqrt(tau));
 
 gamma = 0.5;
@@ -43,15 +44,14 @@ hat_S = (1-gamma)/( 1-(1-gamma)*c )/delta*sqrtm(C)*Z*(Z')*sqrtm(C)/n + gamma*eye
 eigs_hat_S = eig(hat_S);
 
 figure
-subplot(1,2,1)
-histogram(eigs_hat_C, 50, 'Normalization', 'pdf');
-legend('Empirical eigs of $\hat C$', 'FontSize', 15, 'Interpreter', 'latex')
+histogram(eigs_hat_C, 40, 'Normalization', 'pdf', 'EdgeColor', 'white');
+legend('Empirical eigenvalues of $\hat C$', 'FontSize', 15, 'Interpreter', 'latex')
 
-subplot(1,2,2)
-histogram(eigs_hat_S, 50, 'Normalization', 'pdf');
-legend('Empirical eigs of $\hat S$', 'FontSize', 15, 'Interpreter', 'latex')
+figure
+histogram(eigs_hat_S, 40, 'Normalization', 'pdf', 'EdgeColor', 'white');
+legend('Empirical eigenvalues of $\hat S$', 'FontSize', 15, 'Interpreter', 'latex')
 
-%% Portfolio risk, the asymptotic approximation $\sigma^2(\gamma)$, and the estimate $\hat \sigma^2(\gamma)$ versus the regularization $\gamma$
+%% Portfolio risk, the asymptotic approximation $\sigma^2(\gamma)$, and the estimate $\hat \sigma^2(\gamma)$ for different $\gamma$
 close all; clear; clc
 
 coeff = 1;
@@ -59,8 +59,7 @@ p = 256*coeff;
 n = 512*coeff;
 c = p/n;
 
-rng(928);
-u = (.5+ rand(p,1))/sqrt(p);
+u = (0.5+ rand(p,1))/sqrt(p);
 C = 5*u*(u') + eye(p);
 eigs_C = eig(C);
 
@@ -77,9 +76,11 @@ for gamma_index = 1:length(gamma_loop)
     
     tmp = zeros(1,3);
     for average_loop = 1:nb_average_loop
-        nu_student = 100; %%% degrees of freedom nu of Student's t distribution
-        Z = trnd(nu_student,p,n)/sqrt(nu_student/(nu_student-2));
-        %Z = randn(p,n);
+        %nu_student = 100; %%% degrees of freedom nu of Student's t distribution
+        %Z = trnd(nu_student,p,n)/sqrt(nu_student/(nu_student-2));
+        Z = randn(p,n);
+        inv_norm_Z = p./diag(Z'*Z);
+        Z = Z*diag(sqrt(inv_norm_Z)); % uniformly distribution on the sphere
         
         d = 3;
         tau = chi2rnd(d,n,1)/d;
@@ -128,4 +129,6 @@ hold on
 plot(gamma_loop,store_output(:,1),'k--')
 plot(gamma_loop,store_output(:,2),'ro')
 plot(gamma_loop,store_output(:,3),'bx')
-legend('Risk', 'Asymptotic approx $\sigma^2$', 'Proposed estimator $\frac1p tr(C) \cdot \hat \sigma^2$', 'FontSize', 15, 'Interpreter', 'latex')
+legend('Portfolio Risk', '$\sigma^2$', '$\frac1p tr(C) \cdot \hat \sigma^2$', 'FontSize', 15, 'Interpreter', 'latex')
+xlabel('$\gamma$',  'Interpreter', 'latex')
+

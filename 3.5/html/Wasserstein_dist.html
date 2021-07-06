@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 3.5 Practical course material 1: The Wasserstein covariacne distance estimation</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-07-11"><meta name="DC.source" content="Wasserstein_dist.m"><style type="text/css">
+      --><title>Section 3.5 Practical course material 1: The Wasserstein covariacne distance estimation</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-07-05"><meta name="DC.source" content="Wasserstein_dist.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +52,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -66,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 3.5 Practical course material 1: The Wasserstein covariacne distance estimation</h1><!--introduction--><p>This page contains simulations in Section 3.5 Practical course material 1</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Visualization of behavior of <img src="Wasserstein_dist_eq17534740922011065178.png" alt="$x \mapsto x m_\mu(x)$"></a></li><li><a href="#2">Classical versus random matrix improved covariance distance estimator</a></li><li><a href="#3">FUNCTIONS</a></li></ul></div><h2 id="1">Visualization of behavior of <img src="Wasserstein_dist_eq17534740922011065178.png" alt="$x \mapsto x m_\mu(x)$"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 3.5 Practical course material 1: The Wasserstein covariacne distance estimation</h1><!--introduction--><p>This page contains simulations of Practical course material 1 in Section 3.5.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Visualization of behavior of <img src="Wasserstein_dist_eq17534740922011065178.png" alt="$x \mapsto x m_\mu(x)$" style="width:30px;height:7px;"></a></li><li><a href="#2">Classical versus random matrix improved Wasserstein covariance distance estimator</a></li><li><a href="#3">FUNCTIONS</a></li></ul></div><h2 id="1">Visualization of behavior of <img src="Wasserstein_dist_eq17534740922011065178.png" alt="$x \mapsto x m_\mu(x)$" style="width:30px;height:7px;"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 3;
 p = 100*coeff;
@@ -112,7 +113,6 @@ xi = xi(xi&lt;eigs_SCM(index_eigs_SCM+1) &amp; xi&gt;eigs_SCM(index_eigs_SCM));
 eta = real(eig(diag(eigs_SCM) - sqrt(eigs_SCM)*sqrt(eigs_SCM')/n2 ));
 eta = eta(eta&lt;eigs_SCM(index_eigs_SCM+1) &amp; eta&gt;eigs_SCM(index_eigs_SCM));
 
-
 figure
 hold <span class="string">on</span>
 plot(zoom_eigs_SCM, x_m(zoom_eigs_SCM));
@@ -124,29 +124,29 @@ yline( (1-c2)/c2,<span class="string">'--k'</span>);
 yline(0,<span class="string">'--k'</span>);
 axis([eigs_SCM(index_eigs_SCM)-tol1 eigs_SCM(index_eigs_SCM+1)+tol1 -10 10])
 
-xlabel(<span class="string">'x'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+xlabel(<span class="string">'$x$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 ylabel(<span class="string">'$x m_{\mu}(x)$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 plot(eigs_SCM(index_eigs_SCM),0,<span class="string">'ob'</span>);
-text(eigs_SCM(index_eigs_SCM)+1e-5,.5,<span class="string">'$\lambda_i$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>,12)
+text(eigs_SCM(index_eigs_SCM)+1e-5,.5,<span class="string">'$\lambda_{i-1}$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>,12)
 plot(eigs_SCM(index_eigs_SCM+1),0,<span class="string">'ob'</span>);
-text(eigs_SCM(index_eigs_SCM+1)+1e-5,.5,<span class="string">'$\lambda_{i+1}$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>,12)
+text(eigs_SCM(index_eigs_SCM+1)+1e-5,.5,<span class="string">'$\lambda_{i}$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>,12)
 
 plot(xi, 0,<span class="string">'xr'</span>);
-plot(eta, 0,<span class="string">'xr'</span>);
-text(xi-2e-4, -.5,<span class="string">'$\xi_{i+1}$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>,12)
-text(eta-2e-4, -.5,<span class="string">'$\eta_{i+1}$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>,12)
+plot(eta, 0,<span class="string">'^r'</span>);
+text(xi-2e-4, -.5,<span class="string">'$\xi_{i}$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>,12)
+text(eta-2e-4, -.5,<span class="string">'$\eta_{i}$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>,12)
 xline(xi,<span class="string">':k'</span>);
 xline(eta,<span class="string">':k'</span>);
-</pre><img vspace="5" hspace="5" src="Wasserstein_dist_01.png" alt=""> <h2 id="2">Classical versus random matrix improved covariance distance estimator</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+</pre><img vspace="5" hspace="5" src="Wasserstein_dist_01.png" alt=""> <h2 id="2">Classical versus random matrix improved Wasserstein covariance distance estimator</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 p_loop = 2.^(1:9);
 n1 = 1024;
 n2 = 2048;
 
-rng(928);
 nb_average_loop = 30;
 store_output = zeros(length(p_loop),3); <span class="comment">% [population distance, RMT estimator, classical estimator]</span>
 
+warning(<span class="string">'off'</span>)
 <span class="keyword">for</span> i = 1:length(p_loop)
     p = p_loop(i);
 
@@ -165,8 +165,9 @@ store_output = zeros(length(p_loop),3); <span class="comment">% [population dist
 <span class="keyword">end</span>
 
 disp(<span class="string">'Performance of different estimators:'</span>)
-disp([p_loop', store_output])
-</pre><h2 id="3">FUNCTIONS</h2><p>Code from https://github.com/maliktiomoko/RMTWasserstein</p><pre class="codeinput"><span class="keyword">function</span> [RMTDistEst,ClassDistEst] = RMTWassDist(X,Y)
+output_str = sprintf(<span class="string">'%d \t %f \t %f \t % f \n'</span>,[p_loop', store_output]');
+disp(output_str)
+</pre><h2 id="3">FUNCTIONS</h2><p>Code from <a href="https://github.com/maliktiomoko/RMTWasserstein">https://github.com/maliktiomoko/RMTWasserstein</a></p><pre class="codeinput"><span class="keyword">function</span> [RMTDistEst,ClassDistEst] = RMTWassDist(X,Y)
 <span class="comment">%Function that compute the Wasserstein distance between Gaussian centered</span>
 <span class="comment">%distribution based on the article Random  Matrix-Improved  Estimation  of  the  Wasserstein  Distance</span>
 <span class="comment">%between  two  Centered  Gaussian  Distribution (Malik TIOMOKO &amp; Romain Couillet)</span>
@@ -221,33 +222,21 @@ RMTDistEst=(1/p)*trace(hatC1+hatC2)-2*esty;
 <span class="comment">%Classical estimate</span>
 ClassDistEst=trace(hatC1 + hatC2 - 2*sqrtm( sqrtm(hatC1)*hatC2*sqrtm(hatC1) ))/p;
 <span class="keyword">end</span>
-</pre><pre class="codeoutput">Warning: Minimum step size reached near x = 0.581016. There may be
-a singularity, or the tolerances may be too tight for this
-problem. 
-Warning: Minimum step size reached near x = 1.52537. There may be
-a singularity, or the tolerances may be too tight for this
-problem. 
-Warning: Minimum step size reached near x = 2.41702. There may be
-a singularity, or the tolerances may be too tight for this
-problem. 
-Warning: Minimum step size reached near x = 0.103791. There may be
-a singularity, or the tolerances may be too tight for this
-problem. 
-Performance of different estimators:
-    2.0000    0.0110    0.0109    0.0115
-    4.0000    0.0175    0.0189    0.0203
-    8.0000    0.0208    0.0213    0.0240
-   16.0000    0.0225    0.0232    0.0286
-   32.0000    0.0233    0.0237    0.0343
-   64.0000    0.0237    0.0243    0.0454
-  128.0000    0.0239    0.0240    0.0663
-  256.0000    0.0240    0.0243    0.1092
-  512.0000    0.0241    0.0245    0.1954
+</pre><pre class="codeoutput">Performance of different estimators:
+2 	 0.011032 	 0.010508 	  0.011200 
+4 	 0.017507 	 0.016482 	  0.017838 
+8 	 0.020819 	 0.021396 	  0.024074 
+16 	 0.022476 	 0.023510 	  0.028822 
+32 	 0.023304 	 0.023625 	  0.034208 
+64 	 0.023718 	 0.024022 	  0.045175 
+128 	 0.023925 	 0.024155 	  0.066442 
+256 	 0.024029 	 0.024285 	  0.109084 
+512 	 0.024081 	 0.024683 	  0.195589 
 
-</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Section 3.5 Practical course material 1: The Wasserstein covariacne distance estimation
-% This page contains simulations in Section 3.5 Practical course material 1
+% This page contains simulations of Practical course material 1 in Section 3.5.
 
 %% Visualization of behavior of $x \mapsto x m_\mu(x)$
 close all; clear; clc
@@ -296,7 +285,6 @@ xi = xi(xi<eigs_SCM(index_eigs_SCM+1) & xi>eigs_SCM(index_eigs_SCM));
 eta = real(eig(diag(eigs_SCM) - sqrt(eigs_SCM)*sqrt(eigs_SCM')/n2 ));
 eta = eta(eta<eigs_SCM(index_eigs_SCM+1) & eta>eigs_SCM(index_eigs_SCM));
 
-
 figure
 hold on
 plot(zoom_eigs_SCM, x_m(zoom_eigs_SCM));
@@ -308,31 +296,31 @@ yline( (1-c2)/c2,'REPLACE_WITH_DASH_DASHk');
 yline(0,'REPLACE_WITH_DASH_DASHk');
 axis([eigs_SCM(index_eigs_SCM)-tol1 eigs_SCM(index_eigs_SCM+1)+tol1 -10 10])
 
-xlabel('x', 'Interpreter', 'latex')
+xlabel('$x$', 'Interpreter', 'latex')
 ylabel('$x m_{\mu}(x)$', 'Interpreter', 'latex')
 plot(eigs_SCM(index_eigs_SCM),0,'ob');
-text(eigs_SCM(index_eigs_SCM)+1e-5,.5,'$\lambda_i$', 'Interpreter', 'latex', 'FontSize',12)
+text(eigs_SCM(index_eigs_SCM)+1e-5,.5,'$\lambda_{i-1}$', 'Interpreter', 'latex', 'FontSize',12)
 plot(eigs_SCM(index_eigs_SCM+1),0,'ob');
-text(eigs_SCM(index_eigs_SCM+1)+1e-5,.5,'$\lambda_{i+1}$', 'Interpreter', 'latex', 'FontSize',12)
+text(eigs_SCM(index_eigs_SCM+1)+1e-5,.5,'$\lambda_{i}$', 'Interpreter', 'latex', 'FontSize',12)
 
 plot(xi, 0,'xr');
-plot(eta, 0,'xr');
-text(xi-2e-4, -.5,'$\xi_{i+1}$', 'Interpreter', 'latex', 'FontSize',12)
-text(eta-2e-4, -.5,'$\eta_{i+1}$', 'Interpreter', 'latex', 'FontSize',12)
+plot(eta, 0,'^r');
+text(xi-2e-4, -.5,'$\xi_{i}$', 'Interpreter', 'latex', 'FontSize',12)
+text(eta-2e-4, -.5,'$\eta_{i}$', 'Interpreter', 'latex', 'FontSize',12)
 xline(xi,':k');
 xline(eta,':k');
 
-%% Classical versus random matrix improved covariance distance estimator
+%% Classical versus random matrix improved Wasserstein covariance distance estimator
 close all; clear; clc
 
 p_loop = 2.^(1:9);
 n1 = 1024;
 n2 = 2048;
 
-rng(928);
 nb_average_loop = 30;
 store_output = zeros(length(p_loop),3); % [population distance, RMT estimator, classical estimator]
 
+warning('off')
 for i = 1:length(p_loop)
     p = p_loop(i);
     
@@ -351,7 +339,8 @@ for i = 1:length(p_loop)
 end
 
 disp('Performance of different estimators:')
-disp([p_loop', store_output])
+output_str = sprintf('%d \t %f \t %f \t % f \n',[p_loop', store_output]');
+disp(output_str)
 
 
 %% FUNCTIONS

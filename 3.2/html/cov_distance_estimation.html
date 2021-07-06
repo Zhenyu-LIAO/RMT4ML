@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 3.2: Covariance distance estimation</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-07-07"><meta name="DC.source" content="cov_distance_estimation.m"><style type="text/css">
+      --><title>Section 3.2: Covariance distance estimation</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-06-26"><meta name="DC.source" content="cov_distance_estimation.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +52,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -66,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 3.2: Covariance distance estimation</h1><!--introduction--><p>This page contains simulations in Section 3.2: estimation of various distance between covariance matrices in large dimension</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Visualization of behavior of <img src="cov_distance_estimation_eq17534740922011065178.png" alt="$x \mapsto x m_\mu(x)$"></a></li><li><a href="#2">Classical versus random matrix improved covariance distance estimator</a></li><li><a href="#3">FUNCTIONS</a></li></ul></div><h2 id="1">Visualization of behavior of <img src="cov_distance_estimation_eq17534740922011065178.png" alt="$x \mapsto x m_\mu(x)$"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 3.2: Covariance distance estimation</h1><!--introduction--><p>This page contains simulations in Section 3.2.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Visualization of behavior of <img src="cov_distance_estimation_eq17534740922011065178.png" alt="$x \mapsto x m_\mu(x)$" style="width:30px;height:7px;"></a></li><li><a href="#2">Classical plug-in versus random matrix improved covariance distance estimator</a></li><li><a href="#3">FUNCTIONS</a></li></ul></div><h2 id="1">Visualization of behavior of <img src="cov_distance_estimation_eq17534740922011065178.png" alt="$x \mapsto x m_\mu(x)$" style="width:30px;height:7px;"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 3;
 p = 100*coeff;
@@ -123,26 +124,25 @@ yline( -1/c1,<span class="string">'--k'</span>);
 yline(0,<span class="string">'--k'</span>);
 axis([eigs_SCM(index_eigs_SCM)-tol1 eigs_SCM(index_eigs_SCM+1)+tol1 -10 10])
 
-xlabel(<span class="string">'x'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+xlabel(<span class="string">'$x$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 ylabel(<span class="string">'$x m_{\mu}(x)$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 plot(eigs_SCM(index_eigs_SCM),0,<span class="string">'ob'</span>);
 text(eigs_SCM(index_eigs_SCM)+1e-5,.5,<span class="string">'$\lambda_i$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>,12)
 plot(eigs_SCM(index_eigs_SCM+1),0,<span class="string">'ob'</span>);
 text(eigs_SCM(index_eigs_SCM+1)+1e-5,.5,<span class="string">'$\lambda_{i+1}$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>,12)
 
-plot(eta, 0,<span class="string">'xr'</span>);
+plot(eta, 0,<span class="string">'^r'</span>);
 plot(zeta, 0,<span class="string">'xr'</span>);
 text(eta-1e-4, .5,<span class="string">'$\eta_i$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>,12)
 text(zeta-1e-4, .5,<span class="string">'$\zeta_i$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>,12)
 xline(eta,<span class="string">':k'</span>);
 xline(zeta,<span class="string">':k'</span>);
-</pre><img vspace="5" hspace="5" src="cov_distance_estimation_01.png" alt=""> <h2 id="2">Classical versus random matrix improved covariance distance estimator</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+</pre><img vspace="5" hspace="5" src="cov_distance_estimation_01.png" alt=""> <h2 id="2">Classical plug-in versus random matrix improved covariance distance estimator</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 p_loop = 2.^(1:9);
 n1 = 1024;
 n2 = 2048;
 
-rng(928);
 nb_average_loop = 30;
 store_output = zeros(length(p_loop),3); <span class="comment">% [population distance, RMT estimator, classical estimator]</span>
 
@@ -166,8 +166,9 @@ store_output = zeros(length(p_loop),3); <span class="comment">% [population dist
 <span class="keyword">end</span>
 
 disp(<span class="string">'Performance of different estimators:'</span>)
-disp([p_loop', store_output])
-</pre><h2 id="3">FUNCTIONS</h2><p>Code from https://github.com/maliktiomoko/RMTEstimCovDist</p><pre class="codeinput"><span class="keyword">function</span> [RMTDistEst,ClassDistEst] = RMTCovDistEst(X1,X2,distance)
+output_str = sprintf(<span class="string">'%d \t %f \t %f \t % f \n'</span>,[p_loop', store_output]');
+disp(output_str)
+</pre><h2 id="3">FUNCTIONS</h2><p>Code from <a href="https://github.com/maliktiomoko/RMTEstimCovDist">https://github.com/maliktiomoko/RMTEstimCovDist</a></p><pre class="codeinput"><span class="keyword">function</span> [RMTDistEst,ClassDistEst] = RMTCovDistEst(X1,X2,distance)
 <span class="comment">%RMTCovDistEst: random matrix-based improved estimators of distances</span>
 <span class="comment">%between covariances</span>
 <span class="comment">%INPUT: X1 (input data of covriance C1), X2 (input data of covriance C2),</span>
@@ -325,21 +326,20 @@ RMTDistEst=(1/p)*trace(hatC1+hatC2)-2*esty;
 ClassDistEst=(1/p)*(trace(hatC1)+trace(hatC2)-2*trace((hatC1^(1/2)*hatC2*hatC1^(1/2))^(1/2)));
 <span class="keyword">end</span>
 </pre><pre class="codeoutput">Performance of different estimators:
-    2.0000    0.0533    0.0524    0.0568
-    4.0000    0.0796    0.0840    0.0913
-    8.0000    0.0927    0.0917    0.1048
-   16.0000    0.0992    0.1007    0.1253
-   32.0000    0.1025    0.1029    0.1509
-   64.0000    0.1042    0.1049    0.2009
-  128.0000    0.1050    0.1044    0.3023
-  256.0000    0.1054    0.1057    0.5341
-  512.0000    0.1056    0.1086    1.1556
+2 	 0.053262 	 0.049933 	  0.054384 
+4 	 0.079553 	 0.075288 	  0.082631 
+8 	 0.092681 	 0.093181 	  0.106273 
+16 	 0.099245 	 0.102397 	  0.127007 
+32 	 0.102527 	 0.102027 	  0.150000 
+64 	 0.104167 	 0.103545 	  0.199597 
+128 	 0.104988 	 0.104181 	  0.302178 
+256 	 0.105398 	 0.105231 	  0.533987 
+512 	 0.105603 	 0.108998 	  1.155930 
 
-</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Section 3.2: Covariance distance estimation
-% This page contains simulations in Section 3.2: estimation of various
-% distance between covariance matrices in large dimension
+% This page contains simulations in Section 3.2.
 
 %% Visualization of behavior of $x \mapsto x m_\mu(x)$
 close all; clear; clc
@@ -399,28 +399,27 @@ yline( -1/c1,'REPLACE_WITH_DASH_DASHk');
 yline(0,'REPLACE_WITH_DASH_DASHk');
 axis([eigs_SCM(index_eigs_SCM)-tol1 eigs_SCM(index_eigs_SCM+1)+tol1 -10 10])
 
-xlabel('x', 'Interpreter', 'latex')
+xlabel('$x$', 'Interpreter', 'latex')
 ylabel('$x m_{\mu}(x)$', 'Interpreter', 'latex')
 plot(eigs_SCM(index_eigs_SCM),0,'ob');
 text(eigs_SCM(index_eigs_SCM)+1e-5,.5,'$\lambda_i$', 'Interpreter', 'latex', 'FontSize',12)
 plot(eigs_SCM(index_eigs_SCM+1),0,'ob');
 text(eigs_SCM(index_eigs_SCM+1)+1e-5,.5,'$\lambda_{i+1}$', 'Interpreter', 'latex', 'FontSize',12)
 
-plot(eta, 0,'xr');
+plot(eta, 0,'^r');
 plot(zeta, 0,'xr');
 text(eta-1e-4, .5,'$\eta_i$', 'Interpreter', 'latex', 'FontSize',12)
 text(zeta-1e-4, .5,'$\zeta_i$', 'Interpreter', 'latex', 'FontSize',12)
 xline(eta,':k');
 xline(zeta,':k');
 
-%% Classical versus random matrix improved covariance distance estimator
+%% Classical plug-in versus random matrix improved covariance distance estimator
 close all; clear; clc
 
 p_loop = 2.^(1:9);
 n1 = 1024;
 n2 = 2048;
 
-rng(928);
 nb_average_loop = 30;
 store_output = zeros(length(p_loop),3); % [population distance, RMT estimator, classical estimator]
 
@@ -444,7 +443,8 @@ for i = 1:length(p_loop)
 end        
 
 disp('Performance of different estimators:')
-disp([p_loop', store_output])
+output_str = sprintf('%d \t %f \t %f \t % f \n',[p_loop', store_output]');
+disp(output_str)
 
 %% FUNCTIONS
 % Code from https://github.com/maliktiomoko/RMTEstimCovDist
