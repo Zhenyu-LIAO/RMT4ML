@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 4.3 The  random kernel model</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-08-09"><meta name="DC.source" content="alpha_beta_kernel.m"><style type="text/css">
+      --><title>Section 4.3 The  random kernel matrix</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-07-16"><meta name="DC.source" content="alpha_beta_kernel.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +52,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -66,14 +67,13 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 4.3 The <img src="alpha_beta_kernel_eq16358489609969597442.png" alt="$\alpha-\beta$"> random kernel model</h1><!--introduction--><p>This page contains simulations in Section 4.3.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Eigenspectrum of <img src="alpha_beta_kernel_eq01908532921846404702.png" alt="$\Phi$"></a></li><li><a href="#2">Limiting spectra of <img src="alpha_beta_kernel_eq16358489609969597442.png" alt="$\alpha-\beta$"> kernel</a></li></ul></div><h2 id="1">Eigenspectrum of <img src="alpha_beta_kernel_eq01908532921846404702.png" alt="$\Phi$"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 4.3 The <img src="alpha_beta_kernel_eq16358489609969597442.png" alt="$\alpha-\beta$" style="width:14px;height:6px;"> random kernel matrix</h1><!--introduction--><p>This page contains simulations in Section 4.3.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Eigenspectrum of <img src="alpha_beta_kernel_eq01908532921846404702.png" alt="$\Phi$" style="width:4px;height:4px;"></a></li><li><a href="#2">Limiting spectrum of <img src="alpha_beta_kernel_eq16358489609969597442.png" alt="$\alpha-\beta$" style="width:14px;height:6px;"> kernel with different <img src="alpha_beta_kernel_eq14221827199139923399.png" alt="$\alpha$" style="width:7px;height:6px;"> and <img src="alpha_beta_kernel_eq17331442575217596290.png" alt="$\beta$" style="width:7px;height:10px;"></a></li></ul></div><h2 id="1">Eigenspectrum of <img src="alpha_beta_kernel_eq01908532921846404702.png" alt="$\Phi$" style="width:4px;height:4px;"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 2;
 p = 400*coeff;
 n = 1200*coeff;
 c = p/n;
 
-rng(928);
 W = randn(p,n); <span class="comment">% population covariance = identity</span>
 
 Phi = sqrt(p)*( (W'*W/p).^2 - 1/p);
@@ -87,14 +87,32 @@ spike_location = Omega/c+omega^2/Omega;
 edges = linspace(-2*omega/sqrt(c), 2*omega/sqrt(c), 100);
 mu = sqrt( 4*omega^2/c - edges.^2 )*c/2/pi/omega^2;
 
+
 figure
 hold <span class="string">on</span>
-histogram(eigs_Phi, 50, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
-plot(edges,mu, <span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
-plot([-spike_location, spike_location],[0,0],<span class="string">'x'</span>, <span class="string">'LineWidth'</span>, 2);
+histogram(eigs_Phi, 50, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>, <span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
+plot(edges,mu, <span class="string">'r'</span>, <span class="string">'Linewidth'</span>, 2);
+plot([-spike_location, spike_location],[0,0],<span class="string">'rx'</span>, <span class="string">'LineWidth'</span>, 2);
 legend(<span class="string">'Empirical eigenvalues'</span>, <span class="string">'Rescaled semi-circle law'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
 axis([-7 7 0 0.16]);
-</pre><img vspace="5" hspace="5" src="alpha_beta_kernel_01.png" alt=""> <h2 id="2">Limiting spectra of <img src="alpha_beta_kernel_eq16358489609969597442.png" alt="$\alpha-\beta$"> kernel</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+[V,eigs_Phi] = eig(Phi,<span class="string">'vector'</span>);
+[~,ind] = sort(eigs_Phi);
+eigs_Phi = eigs_Phi(ind);
+V = V(:,ind);
+
+step_size = 5;
+
+figure
+subplot(2,1,1)
+plot(V(1:step_size:end,1))
+yline(mean(V(:,1)),<span class="string">'--'</span>);
+title(<span class="string">'Bottom eigenvector'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
+subplot(2,1,2)
+plot(V(1:step_size:end,n))
+yline(mean(V(:,n)),<span class="string">'--'</span>);
+title(<span class="string">'Top eigenvector'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
+</pre><img vspace="5" hspace="5" src="alpha_beta_kernel_01.png" alt=""> <img vspace="5" hspace="5" src="alpha_beta_kernel_02.png" alt=""> <h2 id="2">Limiting spectrum of <img src="alpha_beta_kernel_eq16358489609969597442.png" alt="$\alpha-\beta$" style="width:14px;height:6px;"> kernel with different <img src="alpha_beta_kernel_eq14221827199139923399.png" alt="$\alpha$" style="width:7px;height:6px;"> and <img src="alpha_beta_kernel_eq17331442575217596290.png" alt="$\beta$" style="width:7px;height:10px;"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 1;
 p = 512*coeff;
@@ -105,7 +123,7 @@ cs = [1/2, 1/2];
 n_cs = n*cs;
 k = length(cs); <span class="comment">% number of classes</span>
 
-alpha = 8; beta = 1;
+alpha = 8; beta = 1; <span class="comment">% to change to see from a MP tp SC transition</span>
 f = @(t) beta*(t+alpha/2/beta/sqrt(p)).^2;
 f_d = @(t) 2*beta*(t+alpha/2/beta/sqrt(p));
 
@@ -133,7 +151,6 @@ covs_mean = cs(1)*covs(1) + cs(2)*covs(2);
 eigs_covs_mean = eig(covs_mean);
 tau = trace(covs_mean)/p;
 
-rng(928);
 W=zeros(p,n);
 <span class="keyword">for</span> i=1:k
     W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=sqrtm(covs(i))*randn(p,cs(i)*n);
@@ -179,13 +196,13 @@ m=0;
 <span class="keyword">end</span>
 
 figure
-histogram(eigs_rescale_PKP, 40, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+histogram(eigs_rescale_PKP, 40, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>, <span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
 hold <span class="string">on</span>;
 plot(edges,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
 legend(<span class="string">'Empirical spectrum of $\check K$'</span>, <span class="string">'Limiting law'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
-</pre><img vspace="5" hspace="5" src="alpha_beta_kernel_02.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="alpha_beta_kernel_03.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% Section 4.3 The $\alpha-\beta$ random kernel model
+%% Section 4.3 The $\alpha-\beta$ random kernel matrix
 % This page contains simulations in Section 4.3.
 
 %% Eigenspectrum of $\Phi$
@@ -196,7 +213,6 @@ p = 400*coeff;
 n = 1200*coeff;
 c = p/n;
 
-rng(928);
 W = randn(p,n); % population covariance = identity
 
 Phi = sqrt(p)*( (W'*W/p).^2 - 1/p);
@@ -210,15 +226,33 @@ spike_location = Omega/c+omega^2/Omega;
 edges = linspace(-2*omega/sqrt(c), 2*omega/sqrt(c), 100);
 mu = sqrt( 4*omega^2/c - edges.^2 )*c/2/pi/omega^2;
 
+
 figure
 hold on
-histogram(eigs_Phi, 50, 'Normalization', 'pdf');
-plot(edges,mu, 'r', 'Linewidth',2);
-plot([-spike_location, spike_location],[0,0],'x', 'LineWidth', 2);
+histogram(eigs_Phi, 50, 'Normalization', 'pdf', 'EdgeColor', 'white');
+plot(edges,mu, 'r', 'Linewidth', 2);
+plot([-spike_location, spike_location],[0,0],'rx', 'LineWidth', 2);
 legend('Empirical eigenvalues', 'Rescaled semi-circle law', 'FontSize', 15, 'Interpreter', 'latex');
 axis([-7 7 0 0.16]);
 
-%% Limiting spectra of $\alpha-\beta$ kernel
+[V,eigs_Phi] = eig(Phi,'vector');
+[~,ind] = sort(eigs_Phi);
+eigs_Phi = eigs_Phi(ind);
+V = V(:,ind);
+
+step_size = 5;
+
+figure
+subplot(2,1,1)
+plot(V(1:step_size:end,1))
+yline(mean(V(:,1)),'REPLACE_WITH_DASH_DASH');
+title('Bottom eigenvector', 'Interpreter', 'latex');
+subplot(2,1,2)
+plot(V(1:step_size:end,n))
+yline(mean(V(:,n)),'REPLACE_WITH_DASH_DASH');
+title('Top eigenvector', 'Interpreter', 'latex');
+
+%% Limiting spectrum of $\alpha-\beta$ kernel with different $\alpha$ and $\beta$
 close all; clear; clc
 
 coeff = 1;
@@ -230,7 +264,7 @@ cs = [1/2, 1/2];
 n_cs = n*cs;
 k = length(cs); % number of classes
 
-alpha = 8; beta = 1;
+alpha = 8; beta = 1; % to change to see from a MP tp SC transition
 f = @(t) beta*(t+alpha/2/beta/sqrt(p)).^2;
 f_d = @(t) 2*beta*(t+alpha/2/beta/sqrt(p));
 
@@ -258,7 +292,6 @@ covs_mean = cs(1)*covs(1) + cs(2)*covs(2);
 eigs_covs_mean = eig(covs_mean);
 tau = trace(covs_mean)/p;
 
-rng(928);
 W=zeros(p,n);
 for i=1:k
     W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=sqrtm(covs(i))*randn(p,cs(i)*n);
@@ -304,7 +337,7 @@ for j=1:length(zs)
 end
 
 figure
-histogram(eigs_rescale_PKP, 40, 'Normalization', 'pdf');
+histogram(eigs_rescale_PKP, 40, 'Normalization', 'pdf', 'EdgeColor', 'white');
 hold on;
 plot(edges,mu,'r', 'Linewidth',2);
 legend('Empirical spectrum of $\check K$', 'Limiting law', 'FontSize', 15, 'Interpreter', 'latex');

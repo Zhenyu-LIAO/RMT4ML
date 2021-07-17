@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 4.2 Distance and inner-product random kernel matrices</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-08-09"><meta name="DC.source" content="dist_kernel.m"><style type="text/css">
+      --><title>Section 4.2 Distance and inner-product random kernel matrices</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-07-15"><meta name="DC.source" content="dist_kernel.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +52,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -66,7 +67,62 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 4.2 Distance and inner-product random kernel matrices</h1><!--introduction--><p>This page contains simulations in Section 4.2.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classification of two nested balls with distance and inner-product kernels</a></li></ul></div><h2 id="1">Classification of two nested balls with distance and inner-product kernels</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 4.2 Distance and inner-product random kernel matrices</h1><!--introduction--><p>This page contains simulations in Section 4.2.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classification of a two-class Gaussian mixture with equal means and covariance traces</a></li><li><a href="#2">Classification of two "nested balls" with distance and inner-product kernels</a></li></ul></div><h2 id="1">Classification of a two-class Gaussian mixture with equal means and covariance traces</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+coeff = 4;
+p = 256*coeff;
+n = 128*coeff;
+
+cs = [1/2, 1/2];
+k = length(cs); <span class="comment">% nb of classes</span>
+
+testcase_option = <span class="string">'orth'</span>;
+
+<span class="keyword">switch</span> testcase_option
+    <span class="keyword">case</span> <span class="string">'means'</span>
+        means = @(i) [zeros(i-1,1);1;zeros(p-i,1)]*5;
+        covs  = @(i) eye(p);
+    <span class="keyword">case</span> <span class="string">'var'</span>
+        means = @(i) zeros(p,1);
+        covs  = @(i) eye(p)*(1+(-1)^(i)/sqrt(p)*5);
+    <span class="keyword">case</span> <span class="string">'orth'</span>
+        means = @(i) zeros(p,1);
+        covs = @(i) toeplitz((4*(i-1)/10).^(0:(p-1)));
+    <span class="keyword">case</span> <span class="string">'mixed'</span>
+        means = @(i) [-ones(p/2,1);ones(p/2,1)]/sqrt(p);
+        covs  = @(i) eye(p)*(1+(i-1)/sqrt(p)*10);
+<span class="keyword">end</span>
+
+W=zeros(p,n);
+<span class="keyword">for</span> i=1:k
+    W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=sqrtm(covs(i))*randn(p,cs(i)*n);
+<span class="keyword">end</span>
+
+X=zeros(p,n);
+<span class="keyword">for</span> i=1:k
+    X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)+means(i)*ones(1,cs(i)*n);
+<span class="keyword">end</span>
+
+XX = X'*X;
+
+f = @(t) t;
+K = f((-2*(XX)+diag(XX)*ones(1,n)+ones(n,1)*diag(XX)')/p); <span class="comment">% linear (distance) kernel</span>
+
+P = eye(n) - ones(n,n)/n;
+[V,eigs_K] = eig(P*K*P,<span class="string">'vector'</span>);
+[~,ind] = sort(eigs_K);
+eigs_K = eigs_K(ind);
+V = V(:,ind);
+
+figure
+histogram(eigs_K,30,<span class="string">'Normalization'</span>,<span class="string">'pdf'</span>, <span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
+title(<span class="string">'Eigenvalues of linear (distance) kernel'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+
+figure
+plot(V(1:2:n,n),<span class="string">'b'</span>)
+axis([1 250, min(V(1:2:n,n)), max(V(1:2:n,n))])
+title(<span class="string">'Top eigenvector'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+</pre><img vspace="5" hspace="5" src="dist_kernel_01.png" alt=""> <img vspace="5" hspace="5" src="dist_kernel_02.png" alt=""> <h2 id="2">Classification of two "nested balls" with distance and inner-product kernels</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 4;
 p = 256*coeff;
@@ -92,7 +148,6 @@ testcase_option = <span class="string">'var'</span>;
         covs  = @(i) eye(p)*(1+(i-1)/sqrt(p)*10);
 <span class="keyword">end</span>
 
-rng(928);
 W=zeros(p,n);
 <span class="keyword">for</span> i=1:k
     W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=sqrtm(covs(i))*randn(p,cs(i)*n);
@@ -108,8 +163,8 @@ X_center = X*P;
 XX = X_center'*X_center;
 
 f = @(t) exp(-t/2);
-K1 = f((-2*(XX)+diag(XX)*ones(1,n)+ones(n,1)*diag(XX)')/p);
-K2 = f(XX/p);
+K1 = f((-2*(XX)+diag(XX)*ones(1,n)+ones(n,1)*diag(XX)')/p); <span class="comment">% distance kernel</span>
+K2 = f(XX/p); <span class="comment">% inner-product kernel</span>
 
 [V1,eigs_K1] = eig(P*K1*P,<span class="string">'vector'</span>);
 [V2,eigs_K2] = eig(P*K2*P, <span class="string">'vector'</span>);
@@ -120,28 +175,86 @@ V1 = V1(:,ind);
 eigs_K2 = eigs_K2(ind);
 V2 = V2(:,ind);
 
-
 figure
 subplot(1,2,1)
-histogram(eigs_K1,30,<span class="string">'Normalization'</span>,<span class="string">'pdf'</span>)
+histogram(eigs_K1,30,<span class="string">'Normalization'</span>,<span class="string">'pdf'</span>, <span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
 title(<span class="string">'Eigenvalues of distance kernel'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 subplot(1,2,2)
-histogram(eigs_K2,30,<span class="string">'Normalization'</span>,<span class="string">'pdf'</span>)
+histogram(eigs_K2,30,<span class="string">'Normalization'</span>,<span class="string">'pdf'</span>, <span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
 title(<span class="string">'Eigenvalues of inner-product kernel'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 
 figure
 subplot(2,1,1)
 plot(V1(1:2:n,n),<span class="string">'b'</span>)
+axis([1 250, min(V1(1:2:n,n)), max(V1(1:2:n,n))])
 title(<span class="string">'Top eigenvector of distance kernel'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 subplot(2,1,2)
 plot(V2(1:2:n,n),<span class="string">'b'</span>)
+axis([1 250, min(V2(1:2:n,n)), max(V2(1:2:n,n))])
 title(<span class="string">'Top eigenvector of inner-product kernel'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
-</pre><img vspace="5" hspace="5" src="dist_kernel_01.png" alt=""> <img vspace="5" hspace="5" src="dist_kernel_02.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="dist_kernel_03.png" alt=""> <img vspace="5" hspace="5" src="dist_kernel_04.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Section 4.2 Distance and inner-product random kernel matrices
 % This page contains simulations in Section 4.2.
 
-%% Classification of two nested balls with distance and inner-product kernels
+%% Classification of a two-class Gaussian mixture with equal means and covariance traces
+close all; clear; clc
+
+coeff = 4;
+p = 256*coeff;
+n = 128*coeff;
+
+cs = [1/2, 1/2];
+k = length(cs); % nb of classes
+
+testcase_option = 'orth';
+
+switch testcase_option
+    case 'means'
+        means = @(i) [zeros(i-1,1);1;zeros(p-i,1)]*5;
+        covs  = @(i) eye(p);
+    case 'var'
+        means = @(i) zeros(p,1);
+        covs  = @(i) eye(p)*(1+(-1)^(i)/sqrt(p)*5);
+    case 'orth'
+        means = @(i) zeros(p,1);
+        covs = @(i) toeplitz((4*(i-1)/10).^(0:(p-1)));
+    case 'mixed'
+        means = @(i) [-ones(p/2,1);ones(p/2,1)]/sqrt(p);
+        covs  = @(i) eye(p)*(1+(i-1)/sqrt(p)*10);
+end
+
+W=zeros(p,n);
+for i=1:k
+    W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=sqrtm(covs(i))*randn(p,cs(i)*n);
+end
+
+X=zeros(p,n);
+for i=1:k
+    X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)+means(i)*ones(1,cs(i)*n);
+end
+
+XX = X'*X;
+
+f = @(t) t;
+K = f((-2*(XX)+diag(XX)*ones(1,n)+ones(n,1)*diag(XX)')/p); % linear (distance) kernel
+
+P = eye(n) - ones(n,n)/n;
+[V,eigs_K] = eig(P*K*P,'vector');
+[~,ind] = sort(eigs_K);
+eigs_K = eigs_K(ind);
+V = V(:,ind);
+
+figure
+histogram(eigs_K,30,'Normalization','pdf', 'EdgeColor', 'white');
+title('Eigenvalues of linear (distance) kernel', 'Interpreter', 'latex')
+
+figure
+plot(V(1:2:n,n),'b')
+axis([1 250, min(V(1:2:n,n)), max(V(1:2:n,n))])
+title('Top eigenvector', 'Interpreter', 'latex')
+
+%% Classification of two "nested balls" with distance and inner-product kernels
 close all; clear; clc
 
 coeff = 4;
@@ -168,7 +281,6 @@ switch testcase_option
         covs  = @(i) eye(p)*(1+(i-1)/sqrt(p)*10);
 end
 
-rng(928);
 W=zeros(p,n);
 for i=1:k
     W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=sqrtm(covs(i))*randn(p,cs(i)*n);
@@ -184,8 +296,8 @@ X_center = X*P;
 XX = X_center'*X_center;
 
 f = @(t) exp(-t/2);
-K1 = f((-2*(XX)+diag(XX)*ones(1,n)+ones(n,1)*diag(XX)')/p);
-K2 = f(XX/p);
+K1 = f((-2*(XX)+diag(XX)*ones(1,n)+ones(n,1)*diag(XX)')/p); % distance kernel
+K2 = f(XX/p); % inner-product kernel
 
 [V1,eigs_K1] = eig(P*K1*P,'vector');
 [V2,eigs_K2] = eig(P*K2*P, 'vector');
@@ -196,23 +308,23 @@ V1 = V1(:,ind);
 eigs_K2 = eigs_K2(ind);
 V2 = V2(:,ind);
 
-
 figure
 subplot(1,2,1)
-histogram(eigs_K1,30,'Normalization','pdf')
+histogram(eigs_K1,30,'Normalization','pdf', 'EdgeColor', 'white');
 title('Eigenvalues of distance kernel', 'Interpreter', 'latex')
 subplot(1,2,2)
-histogram(eigs_K2,30,'Normalization','pdf')
+histogram(eigs_K2,30,'Normalization','pdf', 'EdgeColor', 'white');
 title('Eigenvalues of inner-product kernel', 'Interpreter', 'latex')
 
 figure
 subplot(2,1,1)
 plot(V1(1:2:n,n),'b')
+axis([1 250, min(V1(1:2:n,n)), max(V1(1:2:n,n))])
 title('Top eigenvector of distance kernel', 'Interpreter', 'latex')
 subplot(2,1,2)
 plot(V2(1:2:n,n),'b')
+axis([1 250, min(V2(1:2:n,n)), max(V2(1:2:n,n))])
 title('Top eigenvector of inner-product kernel', 'Interpreter', 'latex')
-
 
 ##### SOURCE END #####
 --></body></html>
