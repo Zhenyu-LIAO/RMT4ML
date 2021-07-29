@@ -1,7 +1,7 @@
 %% Section 4.4 Properly scaling kernels
 % This page contains simulations in Section 4.4.
 
-%% Limiting spectrum of properly scaling kernel
+%% Eigenspectrum of properly scaling kernel: "null model"
 close all; clear; clc
 
 coeff = 4;
@@ -22,22 +22,17 @@ nu = integral(@(t) f(t).^2.*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max
 
 Z_dist = 'gauss';
 
-rng(928);
 switch Z_dist
     case 'gauss'
         Z = randn(p,n);
-        m4 = 3;
-    case 'bern'        %%% Bernoulli with pairs (1,.5),(-1,.5)
+        kappa = 3;
+    case 'bern' % Bernoulli with pairs (1,.5),(-1,.5)
         Z = sign(randn(p,n));
-        m4 = 2;
-    case 'skewed_bern' %%% Bernoulli with pairs (1/sqrt(3),.75),(-sqrt(3),.25)
-        tmp = rand(p,n);
-        Z = (tmp<3/4)*(1/sqrt(3))+(tmp>3/4)*(-sqrt(3));
-        m4 = 7/3;
-    case 'student' %%% student-t with param nu_student
+        kappa = 2;
+    case 'student' % student-t with param nu_student
         nu_student = 7;
         Z = trnd(nu_student,p,n)/sqrt(nu_student/(nu_student-2));
-        m4 = 6/(nu_student-4)+3;  
+        kappa = 6/(nu_student-4)+3;  
 end
 
 K_N = f(Z'*Z/sqrt(p))/sqrt(p);
@@ -75,13 +70,12 @@ else
 end
 
 figure
-histogram(eigs_K_N, 50, 'Normalization', 'pdf');
+histogram(eigs_K_N, 50, 'Normalization', 'pdf', 'EdgeColor', 'white');
 hold on;
 plot(edges,mu,'r', 'Linewidth',2);
 legend('Empirical spectrum of $K_N$', 'Limiting law', 'FontSize', 15, 'Interpreter', 'latex');
 
-
-%% Limiting spectrum and possible noisy spikes
+%% Possible non-informative spikes
 close all; clear; clc
 
 coeff = 4;
@@ -90,6 +84,7 @@ n = 512*coeff;
 c = p/n;
 
 f0 = @(t) max(t,0);
+%f0 = @(t) (t.^2-1)/sqrt(2) + t;
 
 integral_max = Inf;
 a0 = integral(@(t) f0(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max);
@@ -99,24 +94,19 @@ a1 = integral(@(t) t.*f(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max
 a2 = integral(@(t) (t.^2-1).*f(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max)/sqrt(2);
 nu = integral(@(t) f(t).^2.*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max);
 
-Z_dist = 'student';
+Z_dist = 'gauss';
 
-rng(928);
 switch Z_dist
     case 'gauss'
         Z = randn(p,n);
-        m4 = 3;
-    case 'bern'        %%% Bernoulli with pairs (1,.5),(-1,.5)
+        kappa = 3;
+    case 'bern' % Bernoulli with pairs (1,.5),(-1,.5)
         Z = sign(randn(p,n));
-        m4 = 2;
-    case 'skewed_bern' %%% Bernoulli with pairs (1/sqrt(3),.75),(-sqrt(3),.25)
-        tmp = rand(p,n);
-        Z = (tmp<3/4)*(1/sqrt(3))+(tmp>3/4)*(-sqrt(3));
-        m4 = 7/3;
-    case 'student' %%% student-t with param nu_student
+        kappa = 2;
+    case 'student' % student-t with param nu_student
         nu_student = 7;
         Z = trnd(nu_student,p,n)/sqrt(nu_student/(nu_student-2));
-        m4 = 6/(nu_student-4)+3;  
+        kappa = 6/(nu_student-4)+3;  
 end
 
 K_N = f(Z'*Z/sqrt(p))/sqrt(p);
@@ -154,14 +144,27 @@ else
 end
 
 figure
-histogram(eigs_K_N, 50, 'Normalization', 'pdf');
+histogram(eigs_K_N, 60, 'Normalization', 'pdf', 'EdgeColor', 'white');
 hold on;
 plot(edges,mu,'r', 'Linewidth',2);
-if and(m4~=1,abs(a2)>1e-5)
-    delta = sqrt(2/(m4-1));
-    spike_1 = -a2/c/delta-(a2*nu*delta+a1*(nu-a1^2)*delta^2)/(a2*(a2+a1*delta));
-    spike_2 = a2/c/delta+(a2*nu*delta-a1*(nu-a1^2)*delta^2)/(a2*(a2-a1*delta)); 
-    plot([spike_1, spike_2],[0,0],'x', 'LineWidth', 2);
+if and(kappa~=1,abs(a2)>1e-5)
+    delta = sqrt(2/(kappa-1))/a2;
+    if and(abs(a1)>1e-5, abs(abs(delta)-abs(1/a1))>1e-5)
+        spike1 = -1/c/delta - a1^2*delta/(1+a1*delta) - (nu-a1^2)*delta;
+        spike2 =  1/c/delta + a1^2*delta/(1-a1*delta) + (nu-a1^2)*delta;
+        if (nu-a1^2)*delta^2+(a1*delta)^2/(1+a1*delta)^2 < 1/c
+            plot(spike1,0,'xr', 'LineWidth', 2);
+            disp(spike1)
+        end
+        if (nu-a1^2)*delta^2+(a1*delta)^2/(1-a1*delta)^2 < 1/c
+            plot(spike2,0,'xr', 'LineWidth', 2);
+            disp(spike2)
+        end
+    else 
+        spike = -nu/a1 - a1*(2-c)/2/c;
+        plot(spike,0,'xr', 'LineWidth', 2);
+        disp(spike)
+    end
 end
 legend('Empirical spectrum of $K_N$', 'Limiting law', 'FontSize', 15, 'Interpreter', 'latex');
 
@@ -219,22 +222,17 @@ switch testcase_option
         covs_dif  = @(i) eye(p)*((-1)^i/sqrt(p)*5);
 end
 
-rng(928);
 switch Z_dist
     case 'gauss'
         Z = randn(p,n);
-        m4 = 3;
-    case 'bern'        %%% Bernoulli with pairs (1,.5),(-1,.5)
+        kappa = 3;
+    case 'bern' % Bernoulli with pairs (1,.5),(-1,.5)
         Z = sign(randn(p,n));
-        m4 = 2;
-    case 'skewed_bern' %%% Bernoulli with pairs (1/sqrt(3),.75),(-sqrt(3),.25)
-        tmp = rand(p,n);
-        Z = (tmp<3/4)*(1/sqrt(3))+(tmp>3/4)*(-sqrt(3));
-        m4 = 7/3;
-    case 'student' %%% student-t with param nu_student
+        kappa = 2;
+    case 'student' % student-t with param nu_student
         nu_student = 7;
         Z = trnd(nu_student,p,n)/sqrt(nu_student/(nu_student-2));
-        m4 = 6/(nu_student-4)+3;  
+        kappa = 6/(nu_student-4)+3;  
 end
 
 J = @(i) [zeros(n*sum(cs(1:i-1)),1);ones(n*cs(i),1);zeros(n*sum(cs(i+1:k)),1)];
@@ -323,14 +321,13 @@ V_K_approx = V_K_approx(:,ind);
 figure
 subplot(1,2,1)
 hold on
-histogram(eigs_K, 50, 'Normalization', 'pdf');
+histogram(eigs_K, 50, 'Normalization', 'pdf', 'EdgeColor', 'white');
 plot(edges,mu,'r', 'Linewidth',1);
 axis([-2.1, 6.5, 0, 0.6]);
 title('eigvalues of $K$','Interpreter', 'latex');
 subplot(1,2,2)
 hold on
-histogram(eigs_K_approx, 50, 'Normalization', 'pdf');
+histogram(eigs_K_approx, 50, 'Normalization', 'pdf', 'EdgeColor', 'white');
 plot(edges,mu,'r', 'Linewidth',1);
 title('eigvalues of $\tilde K$', 'Interpreter', 'latex');
 axis([-2.1, 6.5, 0, 0.6]);
-
