@@ -5,7 +5,7 @@
 close all; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); % nb of classes
+k = length(cs); % number of classes
 
 n = 200;
 alpha = -1;
@@ -14,7 +14,6 @@ nu = n - nl;
 label_ind = zeros(nl,1);
 unlabel_ind = zeros(nu,1);
 
-rng(928);
 p = 20;
 means = @(i) [(-1)^i*2;zeros(p-1,1)];
 covs  = @(i) eye(p);
@@ -51,13 +50,19 @@ S(unlabel_ind,:) = hat_Su;
 figure
 hold on
 plot(S)
+xline(nl*cs(1),'--')
+xline(n*cs(1),'--')
+xline(n*cs(1)+nl*cs(2),'--')
+yline(0.5,'--')
 legend('scores for $\mathcal C_1$', 'scores for $\mathcal C_2$', 'Interpreter', 'latex', 'FontSize', 15);
+xlabel('Index', 'Interpreter', 'latex')
+ylabel('Score', 'Interpreter', 'latex')
 
 %% First intuitions on MNIST data
 close all; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); % nb of classes
+k = length(cs); % number of classes
 
 n = 200;
 alpha = -1;
@@ -66,8 +71,8 @@ nu = n - nl;
 label_ind = zeros(nl,1);
 unlabel_ind = zeros(nu,1);
 
-init_data = loadMNISTImages('../../datasets/MNIST/train-images-idx3-ubyte');
-init_labels = loadMNISTLabels('../../datasets/MNIST/train-labels-idx1-ubyte');
+init_data = loadMNISTImages('../datasets/MNIST/train-images-idx3-ubyte');
+init_labels = loadMNISTLabels('../datasets/MNIST/train-labels-idx1-ubyte');
 
 [labels,idx_init_labels]=sort(init_labels,'ascend');
 data=init_data(:,idx_init_labels);
@@ -81,7 +86,7 @@ if length(selected_labels) ~= k
     error('Error: selected labels and nb of classes not equal!')
 end
 
-%%% Data preprecessing
+% Data preprecessing
 data = data/max(data(:));
 mean_data=mean(data,2);
 norm2_data=0;
@@ -92,11 +97,9 @@ data=(data-mean_data*ones(1,size(data,2)))/sqrt(norm2_data)*sqrt(p);
 
 
 selected_data = cell(k,1);
-cascade_selected_data=[];
 j=1;
 for i=selected_labels
     selected_data{j}=data(:,labels==i);
-    cascade_selected_data = [cascade_selected_data, selected_data{j}];
     j = j+1;
 end
 
@@ -104,8 +107,8 @@ end
 X=zeros(p,n);
 S = zeros(n,k);
 for i = 1:k
-    data = selected_data{i};
-    %data = selected_data{i}(:,randperm(size(selected_data{i},2)));
+    %data = selected_data{i};
+    data = selected_data{i}(:,randperm(size(selected_data{i},2)));
     X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=data(:,1:n*cs(i));
     S(sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n,i) = ones(cs(i)*n,1);
     label_ind(sum(cs(1:(i-1)))*nl+1:sum(cs(1:i))*nl) = sum(cs(1:(i-1)))*n+1:sum(cs(1:(i-1)))*n+cs(i)*nl;
@@ -132,13 +135,19 @@ S(unlabel_ind,:) = hat_Su;
 figure
 hold on
 plot(S)
+xline(nl*cs(1),'--')
+xline(n*cs(1),'--')
+xline(n*cs(1)+nl*cs(2),'--')
+yline(0.5,'--')
 legend('scores for $\mathcal C_1$', 'scores for $\mathcal C_2$', 'Interpreter', 'latex', 'FontSize', 15);
+xlabel('Index', 'Interpreter', 'latex')
+ylabel('Score', 'Interpreter', 'latex')
 
-%% Empirical classification of "classical" Laplacian approach
+%% Empirical classification of "classical" Laplacian learning of two "nested balls"
 close all; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); % nb of classes
+k = length(cs); % number of classes
 
 n = 1024;
 p = 512;
@@ -153,7 +162,6 @@ kernel = 'poly2'; % 'gauss' or 'poly2'
 means = @(i) zeros(p,1);
 covs  = @(i) (1 + (i-1)*3/sqrt(p))*eye(p);
 
-rng(928);
 S = zeros(n,k);
 W=zeros(p,n);
 for i=1:k
@@ -227,10 +235,12 @@ switch kernel
     case 'gauss'
         semilogx(sigma2_loop,store_error, '^-');
         axis([min(sigma2_loop), max(sigma2_loop), 0.25, 0.75]);
+        yline(0.5)
         xlabel('$\sigma^2$', 'Interpreter', 'latex');
         ylabel('Misclassication rate', 'Interpreter', 'latex');
     case 'poly2'
         plot(fp_tau_loop,store_error, '^-');
+        yline(0.5)
         xlabel('$f^{\prime}(\tau_p)$', 'Interpreter', 'latex');
         ylabel('Misclassication rate', 'Interpreter', 'latex');
         xline(-1,'--');
@@ -247,7 +257,7 @@ Delta_mu = [2;zeros(p-1,1)];
 cs = [1/2 1/2];
 thetas = linspace(.05,1-eps,50);
 
-testcase = 'nu'; % nu or nl
+testcase = 'nl'; % nu or nl
 
 switch testcase
     case 'nu'
@@ -259,6 +269,7 @@ switch testcase
         nls = [400, 200, 100];
         params = nls;
 end
+
 
 store_output = zeros(length(params), length(thetas));
 for i = 1:length(params)
@@ -275,11 +286,11 @@ for i = 1:length(params)
         xi = fsolve( @(t)cs(1)*cs(2).*t*Delta_mu'*((eye(p) - t*covs)\Delta_mu) - theta, .5, options);
         
         inv_C_Delta_mu = (eye(p) - xi*covs)\Delta_mu;
-        eta = xi^2*norm( (eye(p) - xi*covs)\covs, 'fro')^2;
+        eta = xi^2*norm( (eye(p) - xi*covs)\covs, 'fro')^2/p;
         zeta = cs(1)*cs(2)*xi^2*inv_C_Delta_mu'*covs*inv_C_Delta_mu;
         
         E = 2*nl*theta/nu./(1-theta);
-        V = cs(1)*cs(2)*( (2*nl+E*nu)^2*zeta + (4*nl + E^2*nu)*eta )/( nu*(nu-eta) );
+        V = cs(1)*cs(2)*( (2*nl+E*nu)^2*zeta + (4*nl + E^2*nu)*p*eta )/( nu*(nu-p*eta) );
         
         store_output(i,iter) = cs(1)*qfunc((1-cs(1))*E/sqrt(V)) + cs(2)*qfunc((1-cs(2))*E/sqrt(V));
         iter = iter + 1;
@@ -310,7 +321,7 @@ ylabel( 'Misclassicaiton rate', 'Interpreter', 'latex');
 close all; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); % nb of classes
+k = length(cs); % number of classes
 p = 100;
 nl = 200;
 
@@ -322,8 +333,8 @@ nu_loop = 100:100:1000;
 store_error = zeros(length(nu_loop),3);
 
 iter = 1;
-nb_average_loop = 100;
-rng(1024);
+nb_average_loop = 50;
+%rng(1024);
 for nu = nu_loop
     n = nl + nu;
     label_ind = zeros(nl,1);
@@ -421,14 +432,14 @@ legend('RMT improved', 'Classical Laplacian', 'Spectral Clustering', 'Interprete
 close all; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); % nb of classes
+k = length(cs); % number of classes
 
 n = 4000;
 selected_labels=[8 9];
-noise_level_dB=3;
+noise_level_dB = -Inf;
 
-init_data = loadMNISTImages('../../datasets/MNIST/train-images-idx3-ubyte');
-init_labels = loadMNISTLabels('../../datasets/MNIST/train-labels-idx1-ubyte');
+init_data = loadMNISTImages('../datasets/MNIST/train-images-idx3-ubyte');
+init_labels = loadMNISTLabels('../datasets/MNIST/train-labels-idx1-ubyte');
 
 [labels,idx_init_labels]=sort(init_labels,'ascend');
 data=init_data(:,idx_init_labels);

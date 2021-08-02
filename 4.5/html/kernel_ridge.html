@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 4.5.3 Kernel ridge regression</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-09-27"><meta name="DC.source" content="kernel_ridge.m"><style type="text/css">
+      --><title>Section 4.5.3 Kernel ridge regression</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-08-02"><meta name="DC.source" content="kernel_ridge.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,10 +67,10 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 4.5.3 Kernel ridge regression</h1><!--introduction--><p>This page contains simulations in Section 4.5.3.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classification of two mixture with same mean and covariance trace</a></li><li><a href="#2">Normal approximation of soft decision function <img src="kernel_ridge_eq11695215030516304895.png" alt="$g(x)$"></a></li><li><a href="#3">Misclassification of real data as a function of decision threshold <img src="kernel_ridge_eq07512430879093679749.png" alt="$\xi$"></a></li></ul></div><h2 id="1">Classification of two mixture with same mean and covariance trace</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 4.5.3 Kernel ridge regression</h1><!--introduction--><p>This page contains simulations in Section 4.5.3.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classification of two mixture with same mean and covariance trace</a></li><li><a href="#2">Normal approximation of soft decision function <img src="kernel_ridge_eq11695215030516304895.png" alt="$g(x)$" style="width:10px;height:6px;"></a></li><li><a href="#3">Misclassification of real data as a function of decision threshold <img src="kernel_ridge_eq07512430879093679749.png" alt="$\xi$" style="width:3px;height:6px;"></a></li></ul></div><h2 id="1">Classification of two mixture with same mean and covariance trace</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); <span class="comment">% nb of classes</span>
+k = length(cs); <span class="comment">% number of classes</span>
 p = 512;
 n = 2048;
 n_test = 512;
@@ -88,7 +88,6 @@ fp_tau_loop = -3:.5:3;
 store_error = zeros(length(fp_tau_loop),3);
 
 iter = 1;
-rng(928);
 <span class="keyword">for</span> fp_tau = fp_tau_loop
 
     derivs=[4 fp_tau 2];
@@ -149,7 +148,7 @@ errorbar(fp_tau_loop, store_error(:,1), store_error(:,2))
 plot(fp_tau_loop, store_error(:,3), <span class="string">'r'</span>)
 xlabel( <span class="string">'$f^\prime(\tau_p)$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 ylabel(<span class="string">'Misclassification rate'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
-</pre><img vspace="5" hspace="5" src="kernel_ridge_01.png" alt=""> <h2 id="2">Normal approximation of soft decision function <img src="kernel_ridge_eq11695215030516304895.png" alt="$g(x)$"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+</pre><img vspace="5" hspace="5" src="kernel_ridge_01.png" alt=""> <h2 id="2">Normal approximation of soft decision function <img src="kernel_ridge_eq11695215030516304895.png" alt="$g(x)$" style="width:10px;height:6px;"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 cs = [1/2 1/2];
 k = length(cs); <span class="comment">% nb of classes</span>
@@ -159,25 +158,25 @@ n_test = 512;
 gamma = 1; <span class="comment">% regularization</span>
 f = @(t) exp(-t/2); <span class="comment">% RBF kernel</span>
 
-data_choice = <span class="string">'MNIST'</span>; <span class="comment">% MNIST or Fashion-MNIST</span>
+data_choice = <span class="string">'MNIST'</span>; <span class="comment">% 'MNIST', 'fashion',</span>
 
 <span class="keyword">switch</span> data_choice
     <span class="keyword">case</span> <span class="string">'MNIST'</span>
         selected_labels=[7 9]; <span class="comment">% mean [0 1], [5 6]</span>
-        init_data = loadMNISTImages(<span class="string">'../../datasets/MNIST/train-images-idx3-ubyte'</span>);
-        init_labels = loadMNISTLabels(<span class="string">'../../datasets/MNIST/train-labels-idx1-ubyte'</span>);
+        init_data = loadMNISTImages(<span class="string">'../datasets/MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../datasets/MNIST/train-labels-idx1-ubyte'</span>);
     <span class="keyword">case</span> <span class="string">'fashion'</span>
         selected_labels=[8 9];
-        init_data = loadMNISTImages(<span class="string">'../../datasets/fashion-MNIST/train-images-idx3-ubyte'</span>);
-        init_labels = loadMNISTLabels(<span class="string">'../../datasets/fashion-MNIST/train-labels-idx1-ubyte'</span>);
+        init_data = loadMNISTImages(<span class="string">'../datasets/fashion-MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../datasets/fashion-MNIST/train-labels-idx1-ubyte'</span>);
     <span class="keyword">case</span> <span class="string">'Kuzushiji'</span>
         selected_labels=[3 4];
-        init_data = loadMNISTImages(<span class="string">'../../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte'</span>);
-        init_labels = loadMNISTLabels(<span class="string">'../../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte'</span>);
+        init_data = loadMNISTImages(<span class="string">'../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte'</span>);
     <span class="keyword">case</span> <span class="string">'kannada'</span>
         selected_labels=[4 8];
-        init_data = loadMNISTImages(<span class="string">'../../datasets/kannada-MNIST/train-images-idx3-ubyte'</span>);
-        init_labels = loadMNISTLabels(<span class="string">'../../datasets/kannada-MNIST/train-labels-idx1-ubyte'</span>);
+        init_data = loadMNISTImages(<span class="string">'../datasets/kannada-MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../datasets/kannada-MNIST/train-labels-idx1-ubyte'</span>);
 <span class="keyword">end</span>
 
 
@@ -212,10 +211,10 @@ norm2_selected_images=mean(sum(abs(selected_images-mean_selected_images*ones(1,l
 <span class="keyword">end</span>
 
 means = @(i) mean(MNIST{i},2);
-covs = @(i) 1/length(MNIST{i})*(MNIST{i}*MNIST{i}')-means(i)*means(i)';
+MNIST_n = @(i) size(MNIST{i},2);
+emp_covs = @(i) 1/MNIST_n(i)*(MNIST{i}*MNIST{i}')-means(i)*means(i)';
 
-rng(928);
-nb_average_loop = 20;
+nb_average_loop = 30;
 
 tau_estim = 0;
 store_output = zeros(nb_average_loop,n_test);
@@ -249,12 +248,14 @@ store_output = zeros(nb_average_loop,n_test);
 
 <span class="comment">% theory</span>
 Delta_means = means(1) - means(2);
-Delta_covs = covs(1) - covs(2);
+Delta_covs = emp_covs(1) - emp_covs(2);
+trace_delta_covs2 = trace(emp_covs(1)*emp_covs(1) + emp_covs(2)*emp_covs(2)) - trace(emp_covs(1))^2/MNIST_n(1) - trace(emp_covs(1))^2/MNIST_n(1) -2*trace(emp_covs(1)*emp_covs(2));
 derivs = [f(tau_estim) -f(tau_estim)/2 f(tau_estim)/4];
 
-D = -2*derivs(2)*norm(Delta_means)^2 + derivs(3)*( trace(Delta_covs)^2 + 2*trace(Delta_covs*Delta_covs) )/p;
+<span class="comment">%D = -2*derivs(2)*norm(Delta_means)^2 + derivs(3)*( trace(Delta_covs)^2 + 2*trace(Delta_covs*Delta_covs) )/p;</span>
+D = -2*derivs(2)*norm(Delta_means)^2 + derivs(3)*( trace(Delta_covs)^2 + 2*trace_delta_covs2 )/p;
 E = @(a) cs(2) - cs(1) + 2*(-1)^a*(1-cs(a))*gamma*cs(1)*cs(2)*D/p;
-V = @(a) 8*gamma^2*cs(1)^2*cs(2)^2*( derivs(3)^2*(trace(Delta_covs))^2*trace(covs(a)*covs(a))/p/p + 2*derivs(2)^2*( Delta_means'*covs(a)*Delta_means + trace( covs(a)*( covs(1)/cs(1) + covs(2)/cs(2) ) )/n ) )/p/p;
+V = @(a) 8*gamma^2*cs(1)^2*cs(2)^2*( derivs(3)^2*(trace(Delta_covs))^2*(trace(emp_covs(a)*emp_covs(a)) - trace(emp_covs(a))^2/MNIST_n(a) )/p/p + 2*derivs(2)^2*( Delta_means'*emp_covs(a)*Delta_means + trace( emp_covs(a)*( emp_covs(1)/cs(1) + emp_covs(2)/cs(2) ) )/n - trace( emp_covs(a))^2/n/n ) )/p/p;
 
 xs = linspace(min(store_output(:)), max(store_output(:)), 200);
 
@@ -265,7 +266,7 @@ histogram(reshape(store_output(:,cs(1)*n_test+1:end),nb_average_loop*cs(2)*n_tes
 plot(xs,normpdf(xs,E(1),sqrt(V(1))),<span class="string">'b--'</span>,<span class="string">'LineWidth'</span>,2);
 plot(xs,normpdf(xs,E(2),sqrt(V(2))),<span class="string">'r--'</span>,<span class="string">'LineWidth'</span>,2);
 ylabel(<span class="string">'Histogram of $g(x)$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
-</pre><img vspace="5" hspace="5" src="kernel_ridge_02.png" alt=""> <h2 id="3">Misclassification of real data as a function of decision threshold <img src="kernel_ridge_eq07512430879093679749.png" alt="$\xi$"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+</pre><img vspace="5" hspace="5" src="kernel_ridge_02.png" alt=""> <h2 id="3">Misclassification of real data as a function of decision threshold <img src="kernel_ridge_eq07512430879093679749.png" alt="$\xi$" style="width:3px;height:6px;"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 cs = [7/16 9/16];
 k = length(cs); <span class="comment">% nb of classes</span>
@@ -283,20 +284,20 @@ data_choice = <span class="string">'MNIST'</span>; <span class="comment">% MNIST
 <span class="keyword">switch</span> data_choice
     <span class="keyword">case</span> <span class="string">'MNIST'</span>
         selected_labels=[7 9]; <span class="comment">% mean [0 1], [5 6]</span>
-        init_data = loadMNISTImages(<span class="string">'../../datasets/MNIST/train-images-idx3-ubyte'</span>);
-        init_labels = loadMNISTLabels(<span class="string">'../../datasets/MNIST/train-labels-idx1-ubyte'</span>);
+        init_data = loadMNISTImages(<span class="string">'../datasets/MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../datasets/MNIST/train-labels-idx1-ubyte'</span>);
     <span class="keyword">case</span> <span class="string">'fashion'</span>
         selected_labels=[8 9];
-        init_data = loadMNISTImages(<span class="string">'../../datasets/fashion-MNIST/train-images-idx3-ubyte'</span>);
-        init_labels = loadMNISTLabels(<span class="string">'../../datasets/fashion-MNIST/train-labels-idx1-ubyte'</span>);
+        init_data = loadMNISTImages(<span class="string">'../datasets/fashion-MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../datasets/fashion-MNIST/train-labels-idx1-ubyte'</span>);
     <span class="keyword">case</span> <span class="string">'Kuzushiji'</span>
         selected_labels=[3 4];
-        init_data = loadMNISTImages(<span class="string">'../../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte'</span>);
-        init_labels = loadMNISTLabels(<span class="string">'../../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte'</span>);
+        init_data = loadMNISTImages(<span class="string">'../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte'</span>);
     <span class="keyword">case</span> <span class="string">'kannada'</span>
         selected_labels=[4 8];
-        init_data = loadMNISTImages(<span class="string">'../../datasets/kannada-MNIST/train-images-idx3-ubyte'</span>);
-        init_labels = loadMNISTLabels(<span class="string">'../../datasets/kannada-MNIST/train-labels-idx1-ubyte'</span>);
+        init_data = loadMNISTImages(<span class="string">'../datasets/kannada-MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../datasets/kannada-MNIST/train-labels-idx1-ubyte'</span>);
 <span class="keyword">end</span>
 
 [labels,idx_init_labels]=sort(init_labels,<span class="string">'ascend'</span>);
@@ -331,7 +332,6 @@ norm2_selected_images=mean(sum(abs(selected_images-mean_selected_images*ones(1,l
 
 
 iter = 1;
-rng(928);
 <span class="keyword">for</span> xi = xi_loop
 
     nb_average_loop = 30;
@@ -383,7 +383,7 @@ ylabel(<span class="string">'Misclassification rate'</span>, <span class="string
 close all; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); % nb of classes
+k = length(cs); % number of classes
 p = 512;
 n = 2048;
 n_test = 512;
@@ -401,7 +401,6 @@ fp_tau_loop = -3:.5:3;
 store_error = zeros(length(fp_tau_loop),3);
 
 iter = 1;
-rng(928);
 for fp_tau = fp_tau_loop
     
     derivs=[4 fp_tau 2];
@@ -474,25 +473,25 @@ n_test = 512;
 gamma = 1; % regularization
 f = @(t) exp(-t/2); % RBF kernel
 
-data_choice = 'MNIST'; % MNIST or Fashion-MNIST
+data_choice = 'MNIST'; % 'MNIST', 'fashion',
 
 switch data_choice
     case 'MNIST'
         selected_labels=[7 9]; % mean [0 1], [5 6]
-        init_data = loadMNISTImages('../../datasets/MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/MNIST/train-labels-idx1-ubyte');
     case 'fashion'
         selected_labels=[8 9];
-        init_data = loadMNISTImages('../../datasets/fashion-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/fashion-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/fashion-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/fashion-MNIST/train-labels-idx1-ubyte');
     case 'Kuzushiji'
         selected_labels=[3 4];
-        init_data = loadMNISTImages('../../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte');
     case 'kannada'
         selected_labels=[4 8];
-        init_data = loadMNISTImages('../../datasets/kannada-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/kannada-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/kannada-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/kannada-MNIST/train-labels-idx1-ubyte');
 end
 
 
@@ -527,10 +526,10 @@ for j=1:length(selected_labels)
 end
 
 means = @(i) mean(MNIST{i},2);
-covs = @(i) 1/length(MNIST{i})*(MNIST{i}*MNIST{i}')-means(i)*means(i)';
+MNIST_n = @(i) size(MNIST{i},2);
+emp_covs = @(i) 1/MNIST_n(i)*(MNIST{i}*MNIST{i}')-means(i)*means(i)';
 
-rng(928);
-nb_average_loop = 20;
+nb_average_loop = 30;
 
 tau_estim = 0;
 store_output = zeros(nb_average_loop,n_test);
@@ -564,12 +563,14 @@ end
 
 % theory
 Delta_means = means(1) - means(2);
-Delta_covs = covs(1) - covs(2);
+Delta_covs = emp_covs(1) - emp_covs(2);
+trace_delta_covs2 = trace(emp_covs(1)*emp_covs(1) + emp_covs(2)*emp_covs(2)) - trace(emp_covs(1))^2/MNIST_n(1) - trace(emp_covs(1))^2/MNIST_n(1) -2*trace(emp_covs(1)*emp_covs(2));
 derivs = [f(tau_estim) -f(tau_estim)/2 f(tau_estim)/4];
 
-D = -2*derivs(2)*norm(Delta_means)^2 + derivs(3)*( trace(Delta_covs)^2 + 2*trace(Delta_covs*Delta_covs) )/p;
+%D = -2*derivs(2)*norm(Delta_means)^2 + derivs(3)*( trace(Delta_covs)^2 + 2*trace(Delta_covs*Delta_covs) )/p;
+D = -2*derivs(2)*norm(Delta_means)^2 + derivs(3)*( trace(Delta_covs)^2 + 2*trace_delta_covs2 )/p;
 E = @(a) cs(2) - cs(1) + 2*(-1)^a*(1-cs(a))*gamma*cs(1)*cs(2)*D/p;
-V = @(a) 8*gamma^2*cs(1)^2*cs(2)^2*( derivs(3)^2*(trace(Delta_covs))^2*trace(covs(a)*covs(a))/p/p + 2*derivs(2)^2*( Delta_means'*covs(a)*Delta_means + trace( covs(a)*( covs(1)/cs(1) + covs(2)/cs(2) ) )/n ) )/p/p;
+V = @(a) 8*gamma^2*cs(1)^2*cs(2)^2*( derivs(3)^2*(trace(Delta_covs))^2*(trace(emp_covs(a)*emp_covs(a)) - trace(emp_covs(a))^2/MNIST_n(a) )/p/p + 2*derivs(2)^2*( Delta_means'*emp_covs(a)*Delta_means + trace( emp_covs(a)*( emp_covs(1)/cs(1) + emp_covs(2)/cs(2) ) )/n - trace( emp_covs(a))^2/n/n ) )/p/p;
 
 xs = linspace(min(store_output(:)), max(store_output(:)), 200);
 
@@ -601,20 +602,20 @@ data_choice = 'MNIST'; % MNIST or Fashion-MNIST
 switch data_choice
     case 'MNIST'
         selected_labels=[7 9]; % mean [0 1], [5 6]
-        init_data = loadMNISTImages('../../datasets/MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/MNIST/train-labels-idx1-ubyte');
     case 'fashion'
         selected_labels=[8 9];
-        init_data = loadMNISTImages('../../datasets/fashion-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/fashion-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/fashion-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/fashion-MNIST/train-labels-idx1-ubyte');
     case 'Kuzushiji'
         selected_labels=[3 4];
-        init_data = loadMNISTImages('../../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte');
     case 'kannada'
         selected_labels=[4 8];
-        init_data = loadMNISTImages('../../datasets/kannada-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/kannada-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/kannada-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/kannada-MNIST/train-labels-idx1-ubyte');
 end
 
 [labels,idx_init_labels]=sort(init_labels,'ascend');
@@ -649,7 +650,6 @@ end
 
 
 iter = 1;
-rng(928);
 for xi = xi_loop
     
     nb_average_loop = 30;

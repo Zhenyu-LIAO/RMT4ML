@@ -436,6 +436,8 @@ a1_over_a2_range = 0:25;
 nb_average_loop = 50;
 nb_eigs = 2;
 
+P = eye(n) - ones(n,n)/n;
+
 K_gauss_error = zeros(nb_average_loop,1);
 K_proper_error = zeros(length(a1_over_a2_range),nb_average_loop);
 
@@ -446,10 +448,7 @@ for loop = 1:nb_average_loop
         data = selected_data{i}(:,randperm(size(selected_data{i},2)));
         X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=data(:,1:n*cs(i));
     end
-    
-    P = eye(n) - ones(n,n)/n;
     X = X*P;
-    y = [-ones(1,cs(1)*n),ones(1,cs(2)*n)];
     
     XX=X'*X;
     dist_matrix = (-2*XX+diag(XX)*ones(1,n)+ones(n,1)*(diag(XX)'))/p;

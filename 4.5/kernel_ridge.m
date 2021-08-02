@@ -5,7 +5,7 @@
 close all; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); % nb of classes
+k = length(cs); % number of classes
 p = 512;
 n = 2048;
 n_test = 512;
@@ -23,7 +23,6 @@ fp_tau_loop = -3:.5:3;
 store_error = zeros(length(fp_tau_loop),3);
 
 iter = 1;
-rng(928);
 for fp_tau = fp_tau_loop
     
     derivs=[4 fp_tau 2];
@@ -96,25 +95,25 @@ n_test = 512;
 gamma = 1; % regularization
 f = @(t) exp(-t/2); % RBF kernel
 
-data_choice = 'MNIST'; % MNIST or Fashion-MNIST
+data_choice = 'MNIST'; % 'MNIST', 'fashion',
 
 switch data_choice
     case 'MNIST'
         selected_labels=[7 9]; % mean [0 1], [5 6]
-        init_data = loadMNISTImages('../../datasets/MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/MNIST/train-labels-idx1-ubyte');
     case 'fashion'
         selected_labels=[8 9];
-        init_data = loadMNISTImages('../../datasets/fashion-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/fashion-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/fashion-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/fashion-MNIST/train-labels-idx1-ubyte');
     case 'Kuzushiji'
         selected_labels=[3 4];
-        init_data = loadMNISTImages('../../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte');
     case 'kannada'
         selected_labels=[4 8];
-        init_data = loadMNISTImages('../../datasets/kannada-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/kannada-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/kannada-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/kannada-MNIST/train-labels-idx1-ubyte');
 end
 
 
@@ -149,10 +148,10 @@ for j=1:length(selected_labels)
 end
 
 means = @(i) mean(MNIST{i},2);
-covs = @(i) 1/length(MNIST{i})*(MNIST{i}*MNIST{i}')-means(i)*means(i)';
+MNIST_n = @(i) size(MNIST{i},2);
+emp_covs = @(i) 1/MNIST_n(i)*(MNIST{i}*MNIST{i}')-means(i)*means(i)';
 
-rng(928);
-nb_average_loop = 20;
+nb_average_loop = 30;
 
 tau_estim = 0;
 store_output = zeros(nb_average_loop,n_test);
@@ -186,12 +185,14 @@ end
 
 % theory
 Delta_means = means(1) - means(2);
-Delta_covs = covs(1) - covs(2);
+Delta_covs = emp_covs(1) - emp_covs(2);
+trace_delta_covs2 = trace(emp_covs(1)*emp_covs(1) + emp_covs(2)*emp_covs(2)) - trace(emp_covs(1))^2/MNIST_n(1) - trace(emp_covs(1))^2/MNIST_n(1) -2*trace(emp_covs(1)*emp_covs(2));
 derivs = [f(tau_estim) -f(tau_estim)/2 f(tau_estim)/4];
 
-D = -2*derivs(2)*norm(Delta_means)^2 + derivs(3)*( trace(Delta_covs)^2 + 2*trace(Delta_covs*Delta_covs) )/p;
+%D = -2*derivs(2)*norm(Delta_means)^2 + derivs(3)*( trace(Delta_covs)^2 + 2*trace(Delta_covs*Delta_covs) )/p;
+D = -2*derivs(2)*norm(Delta_means)^2 + derivs(3)*( trace(Delta_covs)^2 + 2*trace_delta_covs2 )/p;
 E = @(a) cs(2) - cs(1) + 2*(-1)^a*(1-cs(a))*gamma*cs(1)*cs(2)*D/p;
-V = @(a) 8*gamma^2*cs(1)^2*cs(2)^2*( derivs(3)^2*(trace(Delta_covs))^2*trace(covs(a)*covs(a))/p/p + 2*derivs(2)^2*( Delta_means'*covs(a)*Delta_means + trace( covs(a)*( covs(1)/cs(1) + covs(2)/cs(2) ) )/n ) )/p/p;
+V = @(a) 8*gamma^2*cs(1)^2*cs(2)^2*( derivs(3)^2*(trace(Delta_covs))^2*(trace(emp_covs(a)*emp_covs(a)) - trace(emp_covs(a))^2/MNIST_n(a) )/p/p + 2*derivs(2)^2*( Delta_means'*emp_covs(a)*Delta_means + trace( emp_covs(a)*( emp_covs(1)/cs(1) + emp_covs(2)/cs(2) ) )/n - trace( emp_covs(a))^2/n/n ) )/p/p;
 
 xs = linspace(min(store_output(:)), max(store_output(:)), 200);
 
@@ -223,20 +224,20 @@ data_choice = 'MNIST'; % MNIST or Fashion-MNIST
 switch data_choice
     case 'MNIST'
         selected_labels=[7 9]; % mean [0 1], [5 6]
-        init_data = loadMNISTImages('../../datasets/MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/MNIST/train-labels-idx1-ubyte');
     case 'fashion'
         selected_labels=[8 9];
-        init_data = loadMNISTImages('../../datasets/fashion-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/fashion-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/fashion-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/fashion-MNIST/train-labels-idx1-ubyte');
     case 'Kuzushiji'
         selected_labels=[3 4];
-        init_data = loadMNISTImages('../../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte');
     case 'kannada'
         selected_labels=[4 8];
-        init_data = loadMNISTImages('../../datasets/kannada-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/kannada-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/kannada-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/kannada-MNIST/train-labels-idx1-ubyte');
 end
 
 [labels,idx_init_labels]=sort(init_labels,'ascend');
@@ -271,7 +272,6 @@ end
 
 
 iter = 1;
-rng(928);
 for xi = xi_loop
     
     nb_average_loop = 30;

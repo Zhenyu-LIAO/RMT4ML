@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 4.5.2 Semi-supervised kernel learning</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-09-20"><meta name="DC.source" content="semi_supervised_kernel.m"><style type="text/css">
+      --><title>Section 4.5.2 Semi-supervised kernel learning</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-08-02"><meta name="DC.source" content="semi_supervised_kernel.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,10 +67,10 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 4.5.2 Semi-supervised kernel learning</h1><!--introduction--><p>This page contains simulations in Section 4.5.2.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">First intuitions on Gaussian mixture</a></li><li><a href="#2">First intuitions on MNIST data</a></li><li><a href="#3">Data preprecessing</a></li><li><a href="#4">Empirical classification of "classical" Laplacian approach</a></li><li><a href="#5">Improved semi-supervised learning: theoretical misclassification rate on function of <img src="semi_supervised_kernel_eq08288499342375314727.png" alt="$\theta$"></a></li><li><a href="#6">Improved semi-supervised learning: empirical misclassification rate on Gaussian data</a></li><li><a href="#7">Intra- and inter-class distance of MNIST data</a></li></ul></div><h2 id="1">First intuitions on Gaussian mixture</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 4.5.2 Semi-supervised kernel learning</h1><!--introduction--><p>This page contains simulations in Section 4.5.2.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">First intuitions on Gaussian mixture</a></li><li><a href="#2">First intuitions on MNIST data</a></li><li><a href="#3">Empirical classification of "classical" Laplacian learning of two "nested balls"</a></li><li><a href="#4">Improved semi-supervised learning: theoretical misclassification rate on function of <img src="semi_supervised_kernel_eq08288499342375314727.png" alt="$\theta$" style="width:3px;height:5px;"></a></li><li><a href="#5">Improved semi-supervised learning: empirical misclassification rate on Gaussian data</a></li><li><a href="#6">Intra- and inter-class distance of MNIST data</a></li></ul></div><h2 id="1">First intuitions on Gaussian mixture</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); <span class="comment">% nb of classes</span>
+k = length(cs); <span class="comment">% number of classes</span>
 
 n = 200;
 alpha = -1;
@@ -79,7 +79,6 @@ nu = n - nl;
 label_ind = zeros(nl,1);
 unlabel_ind = zeros(nu,1);
 
-rng(928);
 p = 20;
 means = @(i) [(-1)^i*2;zeros(p-1,1)];
 covs  = @(i) eye(p);
@@ -116,11 +115,17 @@ S(unlabel_ind,:) = hat_Su;
 figure
 hold <span class="string">on</span>
 plot(S)
+xline(nl*cs(1),<span class="string">'--'</span>)
+xline(n*cs(1),<span class="string">'--'</span>)
+xline(n*cs(1)+nl*cs(2),<span class="string">'--'</span>)
+yline(0.5,<span class="string">'--'</span>)
 legend(<span class="string">'scores for $\mathcal C_1$'</span>, <span class="string">'scores for $\mathcal C_2$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 15);
+xlabel(<span class="string">'Index'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+ylabel(<span class="string">'Score'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 </pre><img vspace="5" hspace="5" src="semi_supervised_kernel_01.png" alt=""> <h2 id="2">First intuitions on MNIST data</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); <span class="comment">% nb of classes</span>
+k = length(cs); <span class="comment">% number of classes</span>
 
 n = 200;
 alpha = -1;
@@ -129,8 +134,8 @@ nu = n - nl;
 label_ind = zeros(nl,1);
 unlabel_ind = zeros(nu,1);
 
-init_data = loadMNISTImages(<span class="string">'../../datasets/MNIST/train-images-idx3-ubyte'</span>);
-init_labels = loadMNISTLabels(<span class="string">'../../datasets/MNIST/train-labels-idx1-ubyte'</span>);
+init_data = loadMNISTImages(<span class="string">'../datasets/MNIST/train-images-idx3-ubyte'</span>);
+init_labels = loadMNISTLabels(<span class="string">'../datasets/MNIST/train-labels-idx1-ubyte'</span>);
 
 [labels,idx_init_labels]=sort(init_labels,<span class="string">'ascend'</span>);
 data=init_data(:,idx_init_labels);
@@ -143,7 +148,9 @@ selected_labels=[1 2];
 <span class="keyword">if</span> length(selected_labels) ~= k
     error(<span class="string">'Error: selected labels and nb of classes not equal!'</span>)
 <span class="keyword">end</span>
-</pre><h2 id="3">Data preprecessing</h2><pre class="codeinput">data = data/max(data(:));
+
+<span class="comment">% Data preprecessing</span>
+data = data/max(data(:));
 mean_data=mean(data,2);
 norm2_data=0;
 <span class="keyword">for</span> i=1:init_n
@@ -153,11 +160,9 @@ data=(data-mean_data*ones(1,size(data,2)))/sqrt(norm2_data)*sqrt(p);
 
 
 selected_data = cell(k,1);
-cascade_selected_data=[];
 j=1;
 <span class="keyword">for</span> i=selected_labels
     selected_data{j}=data(:,labels==i);
-    cascade_selected_data = [cascade_selected_data, selected_data{j}];
     j = j+1;
 <span class="keyword">end</span>
 
@@ -165,8 +170,8 @@ j=1;
 X=zeros(p,n);
 S = zeros(n,k);
 <span class="keyword">for</span> i = 1:k
-    data = selected_data{i};
-    <span class="comment">%data = selected_data{i}(:,randperm(size(selected_data{i},2)));</span>
+    <span class="comment">%data = selected_data{i};</span>
+    data = selected_data{i}(:,randperm(size(selected_data{i},2)));
     X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=data(:,1:n*cs(i));
     S(sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n,i) = ones(cs(i)*n,1);
     label_ind(sum(cs(1:(i-1)))*nl+1:sum(cs(1:i))*nl) = sum(cs(1:(i-1)))*n+1:sum(cs(1:(i-1)))*n+cs(i)*nl;
@@ -193,11 +198,17 @@ S(unlabel_ind,:) = hat_Su;
 figure
 hold <span class="string">on</span>
 plot(S)
+xline(nl*cs(1),<span class="string">'--'</span>)
+xline(n*cs(1),<span class="string">'--'</span>)
+xline(n*cs(1)+nl*cs(2),<span class="string">'--'</span>)
+yline(0.5,<span class="string">'--'</span>)
 legend(<span class="string">'scores for $\mathcal C_1$'</span>, <span class="string">'scores for $\mathcal C_2$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 15);
-</pre><img vspace="5" hspace="5" src="semi_supervised_kernel_02.png" alt=""> <h2 id="4">Empirical classification of "classical" Laplacian approach</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+xlabel(<span class="string">'Index'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+ylabel(<span class="string">'Score'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+</pre><img vspace="5" hspace="5" src="semi_supervised_kernel_02.png" alt=""> <h2 id="3">Empirical classification of "classical" Laplacian learning of two "nested balls"</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); <span class="comment">% nb of classes</span>
+k = length(cs); <span class="comment">% number of classes</span>
 
 n = 1024;
 p = 512;
@@ -212,7 +223,6 @@ kernel = <span class="string">'poly2'</span>; <span class="comment">% 'gauss' or
 means = @(i) zeros(p,1);
 covs  = @(i) (1 + (i-1)*3/sqrt(p))*eye(p);
 
-rng(928);
 S = zeros(n,k);
 W=zeros(p,n);
 <span class="keyword">for</span> i=1:k
@@ -286,16 +296,18 @@ figure
     <span class="keyword">case</span> <span class="string">'gauss'</span>
         semilogx(sigma2_loop,store_error, <span class="string">'^-'</span>);
         axis([min(sigma2_loop), max(sigma2_loop), 0.25, 0.75]);
+        yline(0.5)
         xlabel(<span class="string">'$\sigma^2$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
         ylabel(<span class="string">'Misclassication rate'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
     <span class="keyword">case</span> <span class="string">'poly2'</span>
         plot(fp_tau_loop,store_error, <span class="string">'^-'</span>);
+        yline(0.5)
         xlabel(<span class="string">'$f^{\prime}(\tau_p)$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
         ylabel(<span class="string">'Misclassication rate'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
         xline(-1,<span class="string">'--'</span>);
         xline(1,<span class="string">'--'</span>);
 <span class="keyword">end</span>
-</pre><img vspace="5" hspace="5" src="semi_supervised_kernel_03.png" alt=""> <h2 id="5">Improved semi-supervised learning: theoretical misclassification rate on function of <img src="semi_supervised_kernel_eq08288499342375314727.png" alt="$\theta$"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+</pre><img vspace="5" hspace="5" src="semi_supervised_kernel_03.png" alt=""> <h2 id="4">Improved semi-supervised learning: theoretical misclassification rate on function of <img src="semi_supervised_kernel_eq08288499342375314727.png" alt="$\theta$" style="width:3px;height:5px;"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 p = 100;
 covs = toeplitz(.1.^(0:(p-1)));
@@ -304,7 +316,7 @@ Delta_mu = [2;zeros(p-1,1)];
 cs = [1/2 1/2];
 thetas = linspace(.05,1-eps,50);
 
-testcase = <span class="string">'nu'</span>; <span class="comment">% nu or nl</span>
+testcase = <span class="string">'nl'</span>; <span class="comment">% nu or nl</span>
 
 <span class="keyword">switch</span> testcase
     <span class="keyword">case</span> <span class="string">'nu'</span>
@@ -316,6 +328,7 @@ testcase = <span class="string">'nu'</span>; <span class="comment">% nu or nl</s
         nls = [400, 200, 100];
         params = nls;
 <span class="keyword">end</span>
+
 
 store_output = zeros(length(params), length(thetas));
 <span class="keyword">for</span> i = 1:length(params)
@@ -332,11 +345,11 @@ store_output = zeros(length(params), length(thetas));
         xi = fsolve( @(t)cs(1)*cs(2).*t*Delta_mu'*((eye(p) - t*covs)\Delta_mu) - theta, .5, options);
 
         inv_C_Delta_mu = (eye(p) - xi*covs)\Delta_mu;
-        eta = xi^2*norm( (eye(p) - xi*covs)\covs, <span class="string">'fro'</span>)^2;
+        eta = xi^2*norm( (eye(p) - xi*covs)\covs, <span class="string">'fro'</span>)^2/p;
         zeta = cs(1)*cs(2)*xi^2*inv_C_Delta_mu'*covs*inv_C_Delta_mu;
 
         E = 2*nl*theta/nu./(1-theta);
-        V = cs(1)*cs(2)*( (2*nl+E*nu)^2*zeta + (4*nl + E^2*nu)*eta )/( nu*(nu-eta) );
+        V = cs(1)*cs(2)*( (2*nl+E*nu)^2*zeta + (4*nl + E^2*nu)*p*eta )/( nu*(nu-p*eta) );
 
         store_output(i,iter) = cs(1)*qfunc((1-cs(1))*E/sqrt(V)) + cs(2)*qfunc((1-cs(2))*E/sqrt(V));
         iter = iter + 1;
@@ -362,10 +375,10 @@ plot(thetas(ind1), max1, <span class="string">'bo'</span>); plot(thetas(ind2), m
 <span class="keyword">end</span>
 xlabel( <span class="string">'$\theta$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
 ylabel( <span class="string">'Misclassicaiton rate'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
-</pre><img vspace="5" hspace="5" src="semi_supervised_kernel_04.png" alt=""> <h2 id="6">Improved semi-supervised learning: empirical misclassification rate on Gaussian data</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+</pre><img vspace="5" hspace="5" src="semi_supervised_kernel_04.png" alt=""> <h2 id="5">Improved semi-supervised learning: empirical misclassification rate on Gaussian data</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); <span class="comment">% nb of classes</span>
+k = length(cs); <span class="comment">% number of classes</span>
 p = 100;
 nl = 200;
 
@@ -378,7 +391,7 @@ store_error = zeros(length(nu_loop),3);
 
 iter = 1;
 nb_average_loop = 50;
-rng(928);
+<span class="comment">%rng(1024);</span>
 <span class="keyword">for</span> nu = nu_loop
     n = nl + nu;
     label_ind = zeros(nl,1);
@@ -471,17 +484,17 @@ plot(nu_loop,store_error(:,1), <span class="string">'r*-'</span>)
 plot(nu_loop,store_error(:,2),<span class="string">'b*-'</span>)
 plot(nu_loop,store_error(:,3),<span class="string">'g*-'</span>)
 legend(<span class="string">'RMT improved'</span>, <span class="string">'Classical Laplacian'</span>, <span class="string">'Spectral Clustering'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'Fontsize'</span>, 15)
-</pre><img vspace="5" hspace="5" src="semi_supervised_kernel_05.png" alt=""> <h2 id="7">Intra- and inter-class distance of MNIST data</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+</pre><img vspace="5" hspace="5" src="semi_supervised_kernel_05.png" alt=""> <h2 id="6">Intra- and inter-class distance of MNIST data</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); <span class="comment">% nb of classes</span>
+k = length(cs); <span class="comment">% number of classes</span>
 
 n = 4000;
 selected_labels=[8 9];
-noise_level_dB=3;
+noise_level_dB = -Inf;
 
-init_data = loadMNISTImages(<span class="string">'../../datasets/MNIST/train-images-idx3-ubyte'</span>);
-init_labels = loadMNISTLabels(<span class="string">'../../datasets/MNIST/train-labels-idx1-ubyte'</span>);
+init_data = loadMNISTImages(<span class="string">'../datasets/MNIST/train-images-idx3-ubyte'</span>);
+init_labels = loadMNISTLabels(<span class="string">'../datasets/MNIST/train-labels-idx1-ubyte'</span>);
 
 [labels,idx_init_labels]=sort(init_labels,<span class="string">'ascend'</span>);
 data=init_data(:,idx_init_labels);
@@ -542,7 +555,7 @@ legend(<span class="string">'intra-class'</span>, <span class="string">'inter-cl
 </pre><pre class="codeoutput">
 ans =
 
-   -9.0201
+   Inf
 
 </pre><img vspace="5" hspace="5" src="semi_supervised_kernel_06.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
@@ -553,7 +566,7 @@ ans =
 close all; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); % nb of classes
+k = length(cs); % number of classes
 
 n = 200;
 alpha = -1;
@@ -562,7 +575,6 @@ nu = n - nl;
 label_ind = zeros(nl,1);
 unlabel_ind = zeros(nu,1);
 
-rng(928);
 p = 20;
 means = @(i) [(-1)^i*2;zeros(p-1,1)];
 covs  = @(i) eye(p);
@@ -599,13 +611,19 @@ S(unlabel_ind,:) = hat_Su;
 figure
 hold on
 plot(S)
+xline(nl*cs(1),'REPLACE_WITH_DASH_DASH')
+xline(n*cs(1),'REPLACE_WITH_DASH_DASH')
+xline(n*cs(1)+nl*cs(2),'REPLACE_WITH_DASH_DASH')
+yline(0.5,'REPLACE_WITH_DASH_DASH')
 legend('scores for $\mathcal C_1$', 'scores for $\mathcal C_2$', 'Interpreter', 'latex', 'FontSize', 15);
+xlabel('Index', 'Interpreter', 'latex')
+ylabel('Score', 'Interpreter', 'latex')
 
 %% First intuitions on MNIST data
 close all; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); % nb of classes
+k = length(cs); % number of classes
 
 n = 200;
 alpha = -1;
@@ -614,8 +632,8 @@ nu = n - nl;
 label_ind = zeros(nl,1);
 unlabel_ind = zeros(nu,1);
 
-init_data = loadMNISTImages('../../datasets/MNIST/train-images-idx3-ubyte');
-init_labels = loadMNISTLabels('../../datasets/MNIST/train-labels-idx1-ubyte');
+init_data = loadMNISTImages('../datasets/MNIST/train-images-idx3-ubyte');
+init_labels = loadMNISTLabels('../datasets/MNIST/train-labels-idx1-ubyte');
 
 [labels,idx_init_labels]=sort(init_labels,'ascend');
 data=init_data(:,idx_init_labels);
@@ -629,7 +647,7 @@ if length(selected_labels) ~= k
     error('Error: selected labels and nb of classes not equal!')
 end
 
-%%% Data preprecessing
+% Data preprecessing
 data = data/max(data(:));
 mean_data=mean(data,2);
 norm2_data=0;
@@ -640,11 +658,9 @@ data=(data-mean_data*ones(1,size(data,2)))/sqrt(norm2_data)*sqrt(p);
 
 
 selected_data = cell(k,1);
-cascade_selected_data=[];
 j=1;
 for i=selected_labels
     selected_data{j}=data(:,labels==i);
-    cascade_selected_data = [cascade_selected_data, selected_data{j}];
     j = j+1;
 end
 
@@ -652,8 +668,8 @@ end
 X=zeros(p,n);
 S = zeros(n,k);
 for i = 1:k
-    data = selected_data{i};
-    %data = selected_data{i}(:,randperm(size(selected_data{i},2)));
+    %data = selected_data{i};
+    data = selected_data{i}(:,randperm(size(selected_data{i},2)));
     X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=data(:,1:n*cs(i));
     S(sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n,i) = ones(cs(i)*n,1);
     label_ind(sum(cs(1:(i-1)))*nl+1:sum(cs(1:i))*nl) = sum(cs(1:(i-1)))*n+1:sum(cs(1:(i-1)))*n+cs(i)*nl;
@@ -680,13 +696,19 @@ S(unlabel_ind,:) = hat_Su;
 figure
 hold on
 plot(S)
+xline(nl*cs(1),'REPLACE_WITH_DASH_DASH')
+xline(n*cs(1),'REPLACE_WITH_DASH_DASH')
+xline(n*cs(1)+nl*cs(2),'REPLACE_WITH_DASH_DASH')
+yline(0.5,'REPLACE_WITH_DASH_DASH')
 legend('scores for $\mathcal C_1$', 'scores for $\mathcal C_2$', 'Interpreter', 'latex', 'FontSize', 15);
+xlabel('Index', 'Interpreter', 'latex')
+ylabel('Score', 'Interpreter', 'latex')
 
-%% Empirical classification of "classical" Laplacian approach
+%% Empirical classification of "classical" Laplacian learning of two "nested balls"
 close all; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); % nb of classes
+k = length(cs); % number of classes
 
 n = 1024;
 p = 512;
@@ -701,7 +723,6 @@ kernel = 'poly2'; % 'gauss' or 'poly2'
 means = @(i) zeros(p,1);
 covs  = @(i) (1 + (i-1)*3/sqrt(p))*eye(p);
 
-rng(928);
 S = zeros(n,k);
 W=zeros(p,n);
 for i=1:k
@@ -775,10 +796,12 @@ switch kernel
     case 'gauss'
         semilogx(sigma2_loop,store_error, '^-');
         axis([min(sigma2_loop), max(sigma2_loop), 0.25, 0.75]);
+        yline(0.5)
         xlabel('$\sigma^2$', 'Interpreter', 'latex');
         ylabel('Misclassication rate', 'Interpreter', 'latex');
     case 'poly2'
         plot(fp_tau_loop,store_error, '^-');
+        yline(0.5)
         xlabel('$f^{\prime}(\tau_p)$', 'Interpreter', 'latex');
         ylabel('Misclassication rate', 'Interpreter', 'latex');
         xline(-1,'REPLACE_WITH_DASH_DASH');
@@ -795,7 +818,7 @@ Delta_mu = [2;zeros(p-1,1)];
 cs = [1/2 1/2];
 thetas = linspace(.05,1-eps,50);
 
-testcase = 'nu'; % nu or nl
+testcase = 'nl'; % nu or nl
 
 switch testcase
     case 'nu'
@@ -807,6 +830,7 @@ switch testcase
         nls = [400, 200, 100];
         params = nls;
 end
+
 
 store_output = zeros(length(params), length(thetas));
 for i = 1:length(params)
@@ -823,11 +847,11 @@ for i = 1:length(params)
         xi = fsolve( @(t)cs(1)*cs(2).*t*Delta_mu'*((eye(p) - t*covs)\Delta_mu) - theta, .5, options);
         
         inv_C_Delta_mu = (eye(p) - xi*covs)\Delta_mu;
-        eta = xi^2*norm( (eye(p) - xi*covs)\covs, 'fro')^2;
+        eta = xi^2*norm( (eye(p) - xi*covs)\covs, 'fro')^2/p;
         zeta = cs(1)*cs(2)*xi^2*inv_C_Delta_mu'*covs*inv_C_Delta_mu;
         
         E = 2*nl*theta/nu./(1-theta);
-        V = cs(1)*cs(2)*( (2*nl+E*nu)^2*zeta + (4*nl + E^2*nu)*eta )/( nu*(nu-eta) );
+        V = cs(1)*cs(2)*( (2*nl+E*nu)^2*zeta + (4*nl + E^2*nu)*p*eta )/( nu*(nu-p*eta) );
         
         store_output(i,iter) = cs(1)*qfunc((1-cs(1))*E/sqrt(V)) + cs(2)*qfunc((1-cs(2))*E/sqrt(V));
         iter = iter + 1;
@@ -858,7 +882,7 @@ ylabel( 'Misclassicaiton rate', 'Interpreter', 'latex');
 close all; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); % nb of classes
+k = length(cs); % number of classes
 p = 100;
 nl = 200;
 
@@ -871,7 +895,7 @@ store_error = zeros(length(nu_loop),3);
 
 iter = 1;
 nb_average_loop = 50;
-rng(928);
+%rng(1024);
 for nu = nu_loop
     n = nl + nu;
     label_ind = zeros(nl,1);
@@ -969,14 +993,14 @@ legend('RMT improved', 'Classical Laplacian', 'Spectral Clustering', 'Interprete
 close all; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); % nb of classes
+k = length(cs); % number of classes
 
 n = 4000;
 selected_labels=[8 9];
-noise_level_dB=3;
+noise_level_dB = -Inf;
 
-init_data = loadMNISTImages('../../datasets/MNIST/train-images-idx3-ubyte');
-init_labels = loadMNISTLabels('../../datasets/MNIST/train-labels-idx1-ubyte');
+init_data = loadMNISTImages('../datasets/MNIST/train-images-idx3-ubyte');
+init_labels = loadMNISTLabels('../datasets/MNIST/train-labels-idx1-ubyte');
 
 [labels,idx_init_labels]=sort(init_labels,'ascend');
 data=init_data(:,idx_init_labels);

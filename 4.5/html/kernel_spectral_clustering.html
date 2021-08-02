@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 4.5.1 Application to kernel spectral clustering</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-07-29"><meta name="DC.source" content="kernel_spectral_clustering.m"><style type="text/css">
+      --><title>Section 4.5.1 Application to kernel spectral clustering</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-08-02"><meta name="DC.source" content="kernel_spectral_clustering.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -491,6 +491,8 @@ a1_over_a2_range = 0:25;
 nb_average_loop = 50;
 nb_eigs = 2;
 
+P = eye(n) - ones(n,n)/n;
+
 K_gauss_error = zeros(nb_average_loop,1);
 K_proper_error = zeros(length(a1_over_a2_range),nb_average_loop);
 
@@ -501,10 +503,7 @@ K_proper_error = zeros(length(a1_over_a2_range),nb_average_loop);
         data = selected_data{i}(:,randperm(size(selected_data{i},2)));
         X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=data(:,1:n*cs(i));
     <span class="keyword">end</span>
-
-    P = eye(n) - ones(n,n)/n;
     X = X*P;
-    y = [-ones(1,cs(1)*n),ones(1,cs(2)*n)];
 
     XX=X'*X;
     dist_matrix = (-2*XX+diag(XX)*ones(1,n)+ones(n,1)*(diag(XX)'))/p;
@@ -1001,6 +1000,8 @@ a1_over_a2_range = 0:25;
 nb_average_loop = 50;
 nb_eigs = 2;
 
+P = eye(n) - ones(n,n)/n;
+
 K_gauss_error = zeros(nb_average_loop,1);
 K_proper_error = zeros(length(a1_over_a2_range),nb_average_loop);
 
@@ -1011,10 +1012,7 @@ for loop = 1:nb_average_loop
         data = selected_data{i}(:,randperm(size(selected_data{i},2)));
         X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=data(:,1:n*cs(i));
     end
-    
-    P = eye(n) - ones(n,n)/n;
     X = X*P;
-    y = [-ones(1,cs(1)*n),ones(1,cs(2)*n)];
     
     XX=X'*X;
     dist_matrix = (-2*XX+diag(XX)*ones(1,n)+ones(n,1)*(diag(XX)'))/p;
