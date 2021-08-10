@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 4.7 Practical Lecture Material 3</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-11-29"><meta name="DC.source" content="sparse_clustering.m"><style type="text/css">
+      --><title>Section 4.7: Practical Lecture Material 3</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-08-03"><meta name="DC.source" content="sparse_clustering.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 4.7 Practical Lecture Material 3</h1><!--introduction--><p>This page contains simulations of Practical Lecture Material 3: Complexity-performance trade-off in spectral clustering with sparse kernel.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Spectra of uniformly "punctured" kernel matrices</a></li><li><a href="#2">Behavior of isolated eigenvector of <img src="sparse_clustering_eq03845174387838694102.png" alt="$K$"></a></li></ul></div><h2 id="1">Spectra of uniformly "punctured" kernel matrices</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 4.7: Practical Lecture Material 3</h1><!--introduction--><p>This page contains simulations of Practical course material 3 in Section 4.6.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Spectra of uniformly "punctured" kernel matrices</a></li><li><a href="#2">Behavior of isolated eigenvector of <img src="sparse_clustering_eq03845174387838694102.png" alt="$K$" style="width:5px;height:4px;"></a></li></ul></div><h2 id="1">Spectra of uniformly "punctured" kernel matrices</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 2;
 p = 256*coeff;
@@ -109,11 +109,11 @@ m=0;
 <span class="keyword">end</span>
 
 figure
-histogram(eigs_K, 40, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+histogram(eigs_K, 40, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>, <span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
 hold <span class="string">on</span>;
 plot(edges,dens,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
-legend(<span class="string">'Empirical spectrum'</span>, <span class="string">'Limiting spectrum'</span>, <span class="string">'FontSize'</span>, 15)
-</pre><img vspace="5" hspace="5" src="sparse_clustering_01.png" alt=""> <h2 id="2">Behavior of isolated eigenvector of <img src="sparse_clustering_eq03845174387838694102.png" alt="$K$"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+legend(<span class="string">'Empirical spectrum'</span>, <span class="string">'Limiting spectrum'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
+</pre><img vspace="5" hspace="5" src="sparse_clustering_01.png" alt=""> <h2 id="2">Behavior of isolated eigenvector of <img src="sparse_clustering_eq03845174387838694102.png" alt="$K$" style="width:5px;height:4px;"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 2;
 p = 256*coeff;
@@ -123,7 +123,7 @@ c = p/n;
 j = [-ones(n/2,1);ones(n/2,1)];
 B_eps = .5;
 
-nb_average_loop  = 10;
+nb_average_loop  = 30;
 rho_range = linspace(0,2,20);
 
 store_align = zeros(length(rho_range),nb_average_loop);
@@ -165,15 +165,14 @@ theo_align = zeros(length(rho_range),1);
 
 figure
 hold <span class="string">on</span>
-plot(rho_range, mean(store_align,2), <span class="string">'o'</span>)
-plot(rho_range, theo_align)
+plot(rho_range, mean(store_align,2), <span class="string">'b--o'</span>);
+plot(rho_range, theo_align, <span class="string">'r'</span>);
 xlabel(<span class="string">'$\rho$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
-ylabel(<span class="string">'$|\hat v^T j|^2/n$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+ylabel(<span class="string">'$|\hat u^T j|^2/n$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 </pre><img vspace="5" hspace="5" src="sparse_clustering_02.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% Section 4.7 Practical Lecture Material 3
-% This page contains simulations of Practical Lecture Material 3:
-% Complexity-performance trade-off in spectral clustering with sparse kernel.
+%% Section 4.7: Practical Lecture Material 3
+% This page contains simulations of Practical course material 3 in Section 4.6.
 
 %% Spectra of uniformly "punctured" kernel matrices
 close all; clear; clc
@@ -218,10 +217,10 @@ for index=1:length(zs)
 end
 
 figure
-histogram(eigs_K, 40, 'Normalization', 'pdf');
+histogram(eigs_K, 40, 'Normalization', 'pdf', 'EdgeColor', 'white');
 hold on;
 plot(edges,dens,'r', 'Linewidth',2);
-legend('Empirical spectrum', 'Limiting spectrum', 'FontSize', 15)
+legend('Empirical spectrum', 'Limiting spectrum', 'FontSize', 15, 'Interpreter', 'latex');
 
 %% Behavior of isolated eigenvector of $K$
 close all; clear; clc
@@ -234,7 +233,7 @@ c = p/n;
 j = [-ones(n/2,1);ones(n/2,1)];
 B_eps = .5; 
 
-nb_average_loop  = 10;
+nb_average_loop  = 30;
 rho_range = linspace(0,2,20);
 
 store_align = zeros(length(rho_range),nb_average_loop);
@@ -276,10 +275,10 @@ end
 
 figure
 hold on
-plot(rho_range, mean(store_align,2), 'o')
-plot(rho_range, theo_align)
+plot(rho_range, mean(store_align,2), 'bREPLACE_WITH_DASH_DASHo');
+plot(rho_range, theo_align, 'r');
 xlabel('$\rho$', 'Interpreter', 'latex')
-ylabel('$|\hat v^T j|^2/n$', 'Interpreter', 'latex')
+ylabel('$|\hat u^T j|^2/n$', 'Interpreter', 'latex')
 
 ##### SOURCE END #####
 --></body></html>

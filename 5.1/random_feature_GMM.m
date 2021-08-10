@@ -82,14 +82,19 @@ K = real(K_xy(X,X));
 PKP = P*K*P;
 [U_PKP,L_PKP]=svd(PKP);
 
-
 figure 
 subplot(2,1,1)
 plot(U_PKP(:,1));
 xlim([1, n])
 title('First eigenvalues of $PKP$', 'Interpreter', 'latex')
+xline(n*cs(1), '--')
+xline(n*(cs(1)+cs(2)), '--')
+xline(n*(cs(1)+cs(2)+cs(3)), '--')
+
 subplot(2,1,2)
 plot(U_PKP(:,2));
 xlim([1, n])
 title('Second eigenvalues of $PKP$', 'Interpreter', 'latex')
-
+xline(n*cs(1), '--')
+xline(n*(cs(1)+cs(2)), '--')
+xline(n*(cs(1)+cs(2)+cs(3)), '--')

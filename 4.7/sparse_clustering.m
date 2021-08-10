@@ -1,6 +1,5 @@
 %% Section 4.7: Practical Lecture Material 3
-% This page contains simulations of Practical Lecture Material 3:
-% Complexity-performance trade-off in spectral clustering with sparse kernel.
+% This page contains simulations of Practical course material 3 in Section 4.6.
 
 %% Spectra of uniformly "punctured" kernel matrices
 close all; clear; clc
@@ -45,10 +44,10 @@ for index=1:length(zs)
 end
 
 figure
-histogram(eigs_K, 40, 'Normalization', 'pdf');
+histogram(eigs_K, 40, 'Normalization', 'pdf', 'EdgeColor', 'white');
 hold on;
 plot(edges,dens,'r', 'Linewidth',2);
-legend('Empirical spectrum', 'Limiting spectrum', 'FontSize', 15)
+legend('Empirical spectrum', 'Limiting spectrum', 'FontSize', 15, 'Interpreter', 'latex');
 
 %% Behavior of isolated eigenvector of $K$
 close all; clear; clc
@@ -61,7 +60,7 @@ c = p/n;
 j = [-ones(n/2,1);ones(n/2,1)];
 B_eps = .5; 
 
-nb_average_loop  = 10;
+nb_average_loop  = 30;
 rho_range = linspace(0,2,20);
 
 store_align = zeros(length(rho_range),nb_average_loop);
@@ -103,7 +102,7 @@ end
 
 figure
 hold on
-plot(rho_range, mean(store_align,2), 'o')
-plot(rho_range, theo_align)
+plot(rho_range, mean(store_align,2), 'b--o');
+plot(rho_range, theo_align, 'r');
 xlabel('$\rho$', 'Interpreter', 'latex')
-ylabel('$|\hat v^T j|^2/n$', 'Interpreter', 'latex')
+ylabel('$|\hat u^T j|^2/n$', 'Interpreter', 'latex')

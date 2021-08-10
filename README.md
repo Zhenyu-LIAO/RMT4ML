@@ -53,14 +53,12 @@ In each subfolder (named after the corresponding section) there are:
 	* Section 5.2 Gradient descent dynamics in learning linear neural nets: [Matlab code](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/5.2/html/grad_descent_dynamics.html) and [Python code](https://nbviewer.jupyter.org/github/Zhenyu-LIAO/RMT4ML/blob/master/5.2/grad_descent_dynamics.ipynb)
 	* Section 5.3 Recurrent neural nets: echo-state networks: [Matlab code](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/5.3/html/ESN.html) and [Python code](https://nbviewer.jupyter.org/github/Zhenyu-LIAO/RMT4ML/blob/master/5.3/ENS.ipynb)
 	* Section 5.4 Concluding remarks
-	* Section 5.5 Practical course material
-		* Effective kernel of large dimensional random Fourier features: [Matlab code](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/5.5/html/random_Fourier.html) and [Python code](https://nbviewer.jupyter.org/github/Zhenyu-LIAO/RMT4ML/blob/master/5.5/html/random_Fourier.ipynb)
+	* Section 5.5 Practical course material: performance of large dimensional random Fourier features: [Matlab code](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/5.5/html/random_Fourier.html) and [Python code](https://nbviewer.jupyter.org/github/Zhenyu-LIAO/RMT4ML/blob/master/5.5/html/random_Fourier.ipynb)
 * Chapter 6 Large Dimensional Convex Optimization
 	* Section 6.1 Generalized linear classifier: [Matlab code](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/6.1/html/empirical_risk_min.html) and [Python code](https://nbviewer.jupyter.org/github/Zhenyu-LIAO/RMT4ML/blob/master/6.1/empirical_risk_min.ipynb)
 	* Section 6.2 Large dimensional support vector machines
 	* Section 6.3 Concluding remarks
-	* Section 6.4 Practical course material
-		* Phase retrieval: [Matlab code](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/6.4/html/phase_retrieval.html) and [Python code](https://nbviewer.jupyter.org/github/Zhenyu-LIAO/RMT4ML/blob/master/6.4/phase_retrieval.ipynb)
+	* Section 6.4 Practical course material: phase retrieval: [Matlab code](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/6.4/html/phase_retrieval.html) and [Python code](https://nbviewer.jupyter.org/github/Zhenyu-LIAO/RMT4ML/blob/master/6.4/phase_retrieval.ipynb)
 * Chapter 7 Community Detection on Graphs
 	* Section 7.1 Community detection in dense graphs
 		* Section 7.1.1 The stochastic block model: [Matlab code](https://htmlpreview.github.io/?https://github.com/Zhenyu-LIAO/RMT4ML/blob/master/7.1/html/SBM.html) and [Python code](https://nbviewer.jupyter.org/github/Zhenyu-LIAO/RMT4ML/blob/master/7.1/SBM.ipynb)

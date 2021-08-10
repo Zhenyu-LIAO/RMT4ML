@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 5.2: Gradient descent dynamics in learning linear neural networks</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-10-04"><meta name="DC.source" content="grad_descent_dynamics.m"><style type="text/css">
+      --><title>Section 5.2: Gradient descent dynamics in learning linear neural networks</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-08-10"><meta name="DC.source" content="grad_descent_dynamics.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 5.2: Gradient descent dynamics in learning linear neural networks</h1><!--introduction--><p>This page contains simulations in Section 5.2.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Training and test error rates as a function of the training time</a></li><li><a href="#2">Test performance with positive regularization</a></li><li><a href="#3">FUNCTIONS</a></li></ul></div><h2 id="1">Training and test error rates as a function of the training time</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 5.2: Gradient descent dynamics in learning linear neural networks</h1><!--introduction--><p>This page contains simulations in Section 5.2.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Training and test error rates as a function of the training time</a></li><li><a href="#2">Test performance with zero and positive regularizations</a></li></ul></div><h2 id="1">Training and test error rates as a function of the training time</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 p = 256;
 n = 512;
@@ -81,7 +81,7 @@ gamma = 0; <span class="comment">% regularization penalty</span>
 t_max = 1000;
 alpha = 1e-2;
 
-sigma2_init = .1;
+sigma2_init = 0.1;
 w_init = sqrt(sigma2_init)*randn(p,1)/sqrt(p);
 
 
@@ -101,11 +101,10 @@ V_test_func1 = @(x,t) (1 - f(x+gamma,t)).^2./((x+gamma).^2).*omega(x);
 V_test_func2 = @(x,t) (f(x+gamma,t)).^2.*nu(x);
 V_test = @(t) (norm_mu2+c)/norm_mu2*( integral( @(x)V_test_func1(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) + max(norm_mu2^2-c,0)/norm_mu2*(1 - f(lambda_s+gamma,t)).^2./((lambda_s+gamma).^2)) + sigma2_init*(integral( @(x)V_test_func2(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) + max(1-1/c,0)*f(gamma,t).^2 );
 
-
 E_train = @(t) (norm_mu2+c)/norm_mu2*E_test(t);
 V_train_func1 = @(x,t) x.*(1 - f(x+gamma,t)).^2./((gamma+x).^2).*omega(x);
 V_train_func2 = @(x,t) x.*(f(x+gamma,t)).^2.*nu(x);
-V_train = @(t) (norm_mu2+c)/norm_mu2*( integral( @(x)V_train_func1(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) + max(norm_mu2^2-c,0)/norm_mu2*lambda_s*(1 - f(lambda_s+gamma,t)).^2./((lambda_s+gamma).^2)) + sigma2_init*(integral( @(x)V_train_func2(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) ) - E_train(t).^2; <span class="comment">%+ max(1-1/c,0)*0.*f(gamma,t).^2</span>
+V_train = @(t) (norm_mu2+c)/norm_mu2*( integral( @(x)V_train_func1(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) + max(norm_mu2^2-c,0)/norm_mu2*lambda_s*(1 - f(lambda_s+gamma,t)).^2./((lambda_s+gamma).^2)) + sigma2_init*(integral( @(x)V_train_func2(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) ) - E_train(t).^2 ;
 
 store_theory = zeros(t_max, 2);
 <span class="keyword">for</span> t=1:t_max
@@ -138,13 +137,15 @@ time_index =[1:5:100,101:15:t_max];
 time = time(time_index);
 
 figure
-plot(time, mean(store_perf(time_index,:,1),2), <span class="string">'bx'</span>);
+plot(time, mean(store_perf(time_index,:,1),2), <span class="string">'bo'</span>);
 hold <span class="string">on</span>
-plot(time, mean(store_perf(time_index,:,2),2), <span class="string">'bo'</span>);
+plot(time, mean(store_perf(time_index,:,2),2), <span class="string">'bx'</span>);
 plot(time, store_theory(time_index,1),<span class="string">'r-'</span>)
 plot(time, store_theory(time_index,2),<span class="string">'r--'</span>)
-legend(<span class="string">'Empirical training error'</span>, <span class="string">'Empirical test error'</span>, <span class="string">'Asymptotic training error'</span>, <span class="string">'Asymptotic test error'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
-</pre><img vspace="5" hspace="5" src="grad_descent_dynamics_01.png" alt=""> <h2 id="2">Test performance with positive regularization</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+xlabel(<span class="string">'$t$'</span>,<span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
+ylabel(<span class="string">'Misclassification rate'</span>,<span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
+legend(<span class="string">'Empirical training'</span>, <span class="string">'Empirical test'</span>, <span class="string">'Theoretical training'</span>, <span class="string">'Theoretical test'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+</pre><img vspace="5" hspace="5" src="grad_descent_dynamics_01.png" alt=""> <h2 id="2">Test performance with zero and positive regularizations</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 p = 512;
 n = 512;
@@ -153,7 +154,7 @@ c = p/n;
 
 mu = [sqrt(2);zeros(p-1,1)];
 norm_mu2 = norm(mu)^2;
-gamma = 0.1; <span class="comment">% regularization penalty</span>
+gamma = 0; <span class="comment">% regularization penalty</span>
 
 t_max = 1000;
 alpha = 1e-1;
@@ -218,12 +219,23 @@ time = 1:t_max;
 time_index =[1:9,floor(10.^(1:.1:3))];
 time = time(time_index);
 
-figure
-semilogx(time, mean(store_perf(time_index,:,2),2), <span class="string">'bo'</span>);
-hold <span class="string">on</span>
-semilogx(time, store_theory(time_index,2),<span class="string">'r--'</span>)
-legend(<span class="string">'Empirical test error'</span>, <span class="string">'Asymptotic test error'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
-</pre><h2 id="3">FUNCTIONS</h2><pre class="codeinput"><span class="keyword">function</span> w_new = gd(w0, X, y, gamma, step, nb_step)
+<span class="keyword">if</span> gamma==0
+    figure
+    semilogx(time, mean(store_perf(time_index,:,2),2), <span class="string">'b^'</span>);
+    hold <span class="string">on</span>
+    semilogx(time, store_theory(time_index,2),<span class="string">'r-'</span>)
+<span class="keyword">elseif</span> gamma==0.1
+    figure
+    semilogx(time, mean(store_perf(time_index,:,2),2), <span class="string">'bx'</span>);
+    hold <span class="string">on</span>
+    semilogx(time, store_theory(time_index,2),<span class="string">'r--'</span>)
+<span class="keyword">end</span>
+xlabel(<span class="string">'$t$'</span>,<span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
+ylabel(<span class="string">'Misclassification rate'</span>,<span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
+legend(<span class="string">'Empirical test'</span>, <span class="string">'Thoeretical test'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
+
+<span class="comment">% FUNCTIONS</span>
+<span class="keyword">function</span> w_new = gd(w0, X, y, gamma, step, nb_step)
 [p,n] = size(X);
 w_tmp = w0;
 
@@ -241,7 +253,7 @@ w_tmp = w0;
     w_tmp = w_new;
 <span class="keyword">end</span>
 <span class="keyword">end</span>
-</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="grad_descent_dynamics_02.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Section 5.2: Gradient descent dynamics in learning linear neural networks
 % This page contains simulations in Section 5.2.
@@ -261,7 +273,7 @@ gamma = 0; % regularization penalty
 t_max = 1000;
 alpha = 1e-2;
 
-sigma2_init = .1;
+sigma2_init = 0.1;
 w_init = sqrt(sigma2_init)*randn(p,1)/sqrt(p);
 
 
@@ -281,11 +293,10 @@ V_test_func1 = @(x,t) (1 - f(x+gamma,t)).^2./((x+gamma).^2).*omega(x);
 V_test_func2 = @(x,t) (f(x+gamma,t)).^2.*nu(x);
 V_test = @(t) (norm_mu2+c)/norm_mu2*( integral( @(x)V_test_func1(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) + max(norm_mu2^2-c,0)/norm_mu2*(1 - f(lambda_s+gamma,t)).^2./((lambda_s+gamma).^2)) + sigma2_init*(integral( @(x)V_test_func2(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) + max(1-1/c,0)*f(gamma,t).^2 );
 
-
 E_train = @(t) (norm_mu2+c)/norm_mu2*E_test(t);
 V_train_func1 = @(x,t) x.*(1 - f(x+gamma,t)).^2./((gamma+x).^2).*omega(x);
 V_train_func2 = @(x,t) x.*(f(x+gamma,t)).^2.*nu(x);
-V_train = @(t) (norm_mu2+c)/norm_mu2*( integral( @(x)V_train_func1(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) + max(norm_mu2^2-c,0)/norm_mu2*lambda_s*(1 - f(lambda_s+gamma,t)).^2./((lambda_s+gamma).^2)) + sigma2_init*(integral( @(x)V_train_func2(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) ) - E_train(t).^2; %+ max(1-1/c,0)*0.*f(gamma,t).^2
+V_train = @(t) (norm_mu2+c)/norm_mu2*( integral( @(x)V_train_func1(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) + max(norm_mu2^2-c,0)/norm_mu2*lambda_s*(1 - f(lambda_s+gamma,t)).^2./((lambda_s+gamma).^2)) + sigma2_init*(integral( @(x)V_train_func2(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) ) - E_train(t).^2 ;
 
 store_theory = zeros(t_max, 2);
 for t=1:t_max
@@ -318,14 +329,16 @@ time_index =[1:5:100,101:15:t_max];
 time = time(time_index);
 
 figure
-plot(time, mean(store_perf(time_index,:,1),2), 'bx');
+plot(time, mean(store_perf(time_index,:,1),2), 'bo');
 hold on
-plot(time, mean(store_perf(time_index,:,2),2), 'bo');
+plot(time, mean(store_perf(time_index,:,2),2), 'bx');
 plot(time, store_theory(time_index,1),'r-')
 plot(time, store_theory(time_index,2),'rREPLACE_WITH_DASH_DASH')
-legend('Empirical training error', 'Empirical test error', 'Asymptotic training error', 'Asymptotic test error', 'FontSize', 15, 'Interpreter', 'latex')
+xlabel('$t$','Interpreter', 'latex');
+ylabel('Misclassification rate','Interpreter', 'latex');
+legend('Empirical training', 'Empirical test', 'Theoretical training', 'Theoretical test', 'FontSize', 15, 'Interpreter', 'latex')
 
-%% Test performance with positive regularization
+%% Test performance with zero and positive regularizations
 close all; clear; clc
 
 p = 512;
@@ -335,7 +348,7 @@ c = p/n;
 
 mu = [sqrt(2);zeros(p-1,1)]; 
 norm_mu2 = norm(mu)^2;
-gamma = 0.1; % regularization penalty
+gamma = 0; % regularization penalty
 
 t_max = 1000;
 alpha = 1e-1;
@@ -400,13 +413,22 @@ time = 1:t_max;
 time_index =[1:9,floor(10.^(1:.1:3))]; 
 time = time(time_index);
 
-figure
-semilogx(time, mean(store_perf(time_index,:,2),2), 'bo');
-hold on
-semilogx(time, store_theory(time_index,2),'rREPLACE_WITH_DASH_DASH')
-legend('Empirical test error', 'Asymptotic test error', 'FontSize', 15, 'Interpreter', 'latex');
+if gamma==0
+    figure
+    semilogx(time, mean(store_perf(time_index,:,2),2), 'b^');
+    hold on
+    semilogx(time, store_theory(time_index,2),'r-')
+elseif gamma==0.1
+    figure
+    semilogx(time, mean(store_perf(time_index,:,2),2), 'bx');
+    hold on
+    semilogx(time, store_theory(time_index,2),'rREPLACE_WITH_DASH_DASH')
+end
+xlabel('$t$','Interpreter', 'latex');
+ylabel('Misclassification rate','Interpreter', 'latex');
+legend('Empirical test', 'Thoeretical test', 'FontSize', 15, 'Interpreter', 'latex');
 
-%% FUNCTIONS
+% FUNCTIONS
 function w_new = gd(w0, X, y, gamma, step, nb_step)
 [p,n] = size(X);
 w_tmp = w0;

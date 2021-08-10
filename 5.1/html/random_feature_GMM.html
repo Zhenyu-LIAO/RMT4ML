@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 5.1.2: Delving deeper into limiting kernels</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-09-27"><meta name="DC.source" content="random_feature_GMM.m"><style type="text/css">
+      --><title>Section 5.1.2: Delving deeper into limiting kernels</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-08-06"><meta name="DC.source" content="random_feature_GMM.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -147,16 +147,22 @@ K = real(K_xy(X,X));
 PKP = P*K*P;
 [U_PKP,L_PKP]=svd(PKP);
 
-
 figure
 subplot(2,1,1)
 plot(U_PKP(:,1));
 xlim([1, n])
 title(<span class="string">'First eigenvalues of $PKP$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+xline(n*cs(1), <span class="string">'--'</span>)
+xline(n*(cs(1)+cs(2)), <span class="string">'--'</span>)
+xline(n*(cs(1)+cs(2)+cs(3)), <span class="string">'--'</span>)
+
 subplot(2,1,2)
 plot(U_PKP(:,2));
 xlim([1, n])
 title(<span class="string">'Second eigenvalues of $PKP$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+xline(n*cs(1), <span class="string">'--'</span>)
+xline(n*(cs(1)+cs(2)), <span class="string">'--'</span>)
+xline(n*(cs(1)+cs(2)+cs(3)), <span class="string">'--'</span>)
 </pre><img vspace="5" hspace="5" src="random_feature_GMM_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Section 5.1.2: Delving deeper into limiting kernels
@@ -243,17 +249,22 @@ K = real(K_xy(X,X));
 PKP = P*K*P;
 [U_PKP,L_PKP]=svd(PKP);
 
-
 figure 
 subplot(2,1,1)
 plot(U_PKP(:,1));
 xlim([1, n])
 title('First eigenvalues of $PKP$', 'Interpreter', 'latex')
+xline(n*cs(1), 'REPLACE_WITH_DASH_DASH')
+xline(n*(cs(1)+cs(2)), 'REPLACE_WITH_DASH_DASH')
+xline(n*(cs(1)+cs(2)+cs(3)), 'REPLACE_WITH_DASH_DASH')
+
 subplot(2,1,2)
 plot(U_PKP(:,2));
 xlim([1, n])
 title('Second eigenvalues of $PKP$', 'Interpreter', 'latex')
-
+xline(n*cs(1), 'REPLACE_WITH_DASH_DASH')
+xline(n*(cs(1)+cs(2)), 'REPLACE_WITH_DASH_DASH')
+xline(n*(cs(1)+cs(2)+cs(3)), 'REPLACE_WITH_DASH_DASH')
 
 ##### SOURCE END #####
 --></body></html>

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 5.5 Practical course material: Effectvie kernel of large dimensional random Fourier features</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-10-11"><meta name="DC.source" content="random_Fourier.m"><style type="text/css">
+      --><title>Section 5.5 Practical course material: Performance of large dimensional random Fourier features</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-08-10"><meta name="DC.source" content="random_Fourier.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,9 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 5.5 Practical course material: Effectvie kernel of large dimensional random Fourier features</h1><!--introduction--><p>This page contains simulations in Section 5.5 Practical course material.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Training MSEs of random Fourier feature and Gaussian kernel regressions</a></li></ul></div><h2 id="1">Training MSEs of random Fourier feature and Gaussian kernel regressions</h2><pre class="codeinput">clear;close <span class="string">all</span>;clc
-
-close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 5.5 Practical course material: Performance of large dimensional random Fourier features</h1><!--introduction--><p>This page contains simulations in Section 5.5.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Training MSEs of random Fourier features versus Gaussian kernel regressions</a></li></ul></div><h2 id="1">Training MSEs of random Fourier features versus Gaussian kernel regressions</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 testcase=<span class="string">'MNIST'</span>; <span class="comment">% among 'MNIST', 'fashion', 'Kuzushiji', 'kannada'</span>
 
@@ -81,20 +79,20 @@ k = length(cs);
 <span class="keyword">switch</span> testcase
     <span class="keyword">case</span> <span class="string">'MNIST'</span>
         selected_labels=[3 7];
-        init_data = loadMNISTImages(<span class="string">'../../datasets/MNIST/train-images-idx3-ubyte'</span>);
-        init_labels = loadMNISTLabels(<span class="string">'../../datasets/MNIST/train-labels-idx1-ubyte'</span>);
+        init_data = loadMNISTImages(<span class="string">'../datasets/MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../datasets/MNIST/train-labels-idx1-ubyte'</span>);
     <span class="keyword">case</span> <span class="string">'fashion'</span>
         selected_labels=[1 2];
-        init_data = loadMNISTImages(<span class="string">'../../datasets/fashion-MNIST/train-images-idx3-ubyte'</span>);
-        init_labels = loadMNISTLabels(<span class="string">'../../datasets/fashion-MNIST/train-labels-idx1-ubyte'</span>);
+        init_data = loadMNISTImages(<span class="string">'../datasets/fashion-MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../datasets/fashion-MNIST/train-labels-idx1-ubyte'</span>);
     <span class="keyword">case</span> <span class="string">'Kuzushiji'</span>
         selected_labels=[3 4];
-        init_data = loadMNISTImages(<span class="string">'../../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte'</span>);
+        init_data = loadMNISTImages(<span class="string">'../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte'</span>);
         init_labels = loadMNISTLabels(<span class="string">'../../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte'</span>);
     <span class="keyword">case</span> <span class="string">'kannada'</span>
         selected_labels=[4 8];
-        init_data = loadMNISTImages(<span class="string">'../../datasets/kannada-MNIST/train-images-idx3-ubyte'</span>);
-        init_labels = loadMNISTLabels(<span class="string">'../../datasets/kannada-MNIST/train-labels-idx1-ubyte'</span>);
+        init_data = loadMNISTImages(<span class="string">'../datasets/kannada-MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../datasets/kannada-MNIST/train-labels-idx1-ubyte'</span>);
 <span class="keyword">end</span>
 
 [labels,idx_init_labels]=sort(init_labels,<span class="string">'ascend'</span>);
@@ -128,15 +126,13 @@ norm2_selected_images=mean(sum(abs(selected_images-mean_selected_images*ones(1,l
 <span class="keyword">end</span>
 
 
-nb_data_loop = 30;
+nb_data_loop = 10;
 gamma_loop = 10.^(-4:.25:2);
 
 store_MSE_train_1 = zeros(length(gamma_loop),nb_data_loop);
 store_MSE_train_2 = zeros(length(gamma_loop),nb_data_loop);
 
 theo_MSE_train = zeros(length(gamma_loop),nb_data_loop);
-
-<span class="comment">%h = waitbar(0,'Please wait...');</span>
 
 <span class="keyword">for</span> gamma_index = 1:length(gamma_loop)
 
@@ -190,7 +186,6 @@ theo_MSE_train = zeros(length(gamma_loop),nb_data_loop);
         theo_MSE_train(gamma_index,data_loop) = gamma^2*norm(bar_Q_y)^2/n + gamma^2*N/n*( tmp(1)*bar_Q_y'*K_cos*bar_Q_y + tmp(2)*bar_Q_y'*K_sin*bar_Q_y )/n;
 
     <span class="keyword">end</span>
-    <span class="comment">%waitbar(gamma_index/length(gamma_loop),h)</span>
 <span class="keyword">end</span>
 
 figure
@@ -200,14 +195,13 @@ loglog(gamma_loop,mean(store_MSE_train_2,2), <span class="string">'k--'</span>)
 loglog(gamma_loop,mean(theo_MSE_train,2),<span class="string">'r'</span>)
 xlabel(<span class="string">'$\lambda$'</span>,<span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 ylabel(<span class="string">'Training MSE'</span>,<span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+legend(<span class="string">'Empirical'</span>, <span class="string">'Gaussian'</span>, <span class="string">'RMT'</span>,<span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'Location'</span>, <span class="string">'southeast'</span>, <span class="string">'FontSize'</span>, 15)
 </pre><img vspace="5" hspace="5" src="random_Fourier_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% Section 5.5 Practical course material: Effectvie kernel of large dimensional random Fourier features
-% This page contains simulations in Section 5.5 Practical course material.
+%% Section 5.5 Practical course material: Performance of large dimensional random Fourier features
+% This page contains simulations in Section 5.5.
 
-%% Training MSEs of random Fourier feature and Gaussian kernel regressions
-clear;close all;clc
-
+%% Training MSEs of random Fourier features versus Gaussian kernel regressions
 close all; clear; clc
 
 testcase='MNIST'; % among 'MNIST', 'fashion', 'Kuzushiji', 'kannada'
@@ -220,20 +214,20 @@ k = length(cs);
 switch testcase
     case 'MNIST'
         selected_labels=[3 7]; 
-        init_data = loadMNISTImages('../../datasets/MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/MNIST/train-labels-idx1-ubyte');
     case 'fashion'
         selected_labels=[1 2];
-        init_data = loadMNISTImages('../../datasets/fashion-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/fashion-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/fashion-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/fashion-MNIST/train-labels-idx1-ubyte');
     case 'Kuzushiji'
         selected_labels=[3 4];
-        init_data = loadMNISTImages('../../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte');
+        init_data = loadMNISTImages('../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte');
         init_labels = loadMNISTLabels('../../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte');
     case 'kannada'
         selected_labels=[4 8];
-        init_data = loadMNISTImages('../../datasets/kannada-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/kannada-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/kannada-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/kannada-MNIST/train-labels-idx1-ubyte');
 end
 
 [labels,idx_init_labels]=sort(init_labels,'ascend');
@@ -267,15 +261,13 @@ for j=1:length(selected_labels)
 end
 
 
-nb_data_loop = 30;
+nb_data_loop = 10;
 gamma_loop = 10.^(-4:.25:2);
 
 store_MSE_train_1 = zeros(length(gamma_loop),nb_data_loop);
 store_MSE_train_2 = zeros(length(gamma_loop),nb_data_loop);
 
 theo_MSE_train = zeros(length(gamma_loop),nb_data_loop);
-
-%h = waitbar(0,'Please wait...');
 
 for gamma_index = 1:length(gamma_loop)
     
@@ -329,7 +321,6 @@ for gamma_index = 1:length(gamma_loop)
         theo_MSE_train(gamma_index,data_loop) = gamma^2*norm(bar_Q_y)^2/n + gamma^2*N/n*( tmp(1)*bar_Q_y'*K_cos*bar_Q_y + tmp(2)*bar_Q_y'*K_sin*bar_Q_y )/n;
     
     end
-    %waitbar(gamma_index/length(gamma_loop),h)
 end
 
 figure
@@ -339,6 +330,7 @@ loglog(gamma_loop,mean(store_MSE_train_2,2), 'kREPLACE_WITH_DASH_DASH')
 loglog(gamma_loop,mean(theo_MSE_train,2),'r')
 xlabel('$\lambda$','Interpreter', 'latex')
 ylabel('Training MSE','Interpreter', 'latex')
+legend('Empirical', 'Gaussian', 'RMT','Interpreter', 'latex', 'Location', 'southeast', 'FontSize', 15)
 
 ##### SOURCE END #####
 --></body></html>

@@ -1,9 +1,7 @@
-%% Section 5.5 Practical course material: Effectvie kernel of large dimensional random Fourier features
-% This page contains simulations in Section 5.5 Practical course material.
+%% Section 5.5 Practical course material: Performance of large dimensional random Fourier features
+% This page contains simulations in Section 5.5.
 
-%% Training MSEs of random Fourier feature and Gaussian kernel regressions
-clear;close all;clc
-
+%% Training MSEs of random Fourier features versus Gaussian kernel regressions
 close all; clear; clc
 
 testcase='MNIST'; % among 'MNIST', 'fashion', 'Kuzushiji', 'kannada'
@@ -16,20 +14,20 @@ k = length(cs);
 switch testcase
     case 'MNIST'
         selected_labels=[3 7]; 
-        init_data = loadMNISTImages('../../datasets/MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/MNIST/train-labels-idx1-ubyte');
     case 'fashion'
         selected_labels=[1 2];
-        init_data = loadMNISTImages('../../datasets/fashion-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/fashion-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/fashion-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/fashion-MNIST/train-labels-idx1-ubyte');
     case 'Kuzushiji'
         selected_labels=[3 4];
-        init_data = loadMNISTImages('../../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte');
+        init_data = loadMNISTImages('../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte');
         init_labels = loadMNISTLabels('../../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte');
     case 'kannada'
         selected_labels=[4 8];
-        init_data = loadMNISTImages('../../datasets/kannada-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/kannada-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/kannada-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/kannada-MNIST/train-labels-idx1-ubyte');
 end
 
 [labels,idx_init_labels]=sort(init_labels,'ascend');
@@ -63,15 +61,13 @@ for j=1:length(selected_labels)
 end
 
 
-nb_data_loop = 30;
+nb_data_loop = 10;
 gamma_loop = 10.^(-4:.25:2);
 
 store_MSE_train_1 = zeros(length(gamma_loop),nb_data_loop);
 store_MSE_train_2 = zeros(length(gamma_loop),nb_data_loop);
 
 theo_MSE_train = zeros(length(gamma_loop),nb_data_loop);
-
-%h = waitbar(0,'Please wait...');
 
 for gamma_index = 1:length(gamma_loop)
     
@@ -125,7 +121,6 @@ for gamma_index = 1:length(gamma_loop)
         theo_MSE_train(gamma_index,data_loop) = gamma^2*norm(bar_Q_y)^2/n + gamma^2*N/n*( tmp(1)*bar_Q_y'*K_cos*bar_Q_y + tmp(2)*bar_Q_y'*K_sin*bar_Q_y )/n;
     
     end
-    %waitbar(gamma_index/length(gamma_loop),h)
 end
 
 figure
@@ -135,3 +130,4 @@ loglog(gamma_loop,mean(store_MSE_train_2,2), 'k--')
 loglog(gamma_loop,mean(theo_MSE_train,2),'r')
 xlabel('$\lambda$','Interpreter', 'latex')
 ylabel('Training MSE','Interpreter', 'latex')
+legend('Empirical', 'Gaussian', 'RMT','Interpreter', 'latex', 'Location', 'southeast', 'FontSize', 15)

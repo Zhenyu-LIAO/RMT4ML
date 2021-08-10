@@ -1,7 +1,7 @@
 %% Section 4.5.3 Kernel ridge regression
 % This page contains simulations in Section 4.5.3.
 
-%% Classification of two mixture with same mean and covariance trace
+%% Classification of two-class mixture with same mean and covariance trace
 close all; clear; clc
 
 cs = [1/2 1/2];
@@ -84,11 +84,11 @@ plot(fp_tau_loop, store_error(:,3), 'r')
 xlabel( '$f^\prime(\tau_p)$', 'Interpreter', 'latex')
 ylabel('Misclassification rate', 'Interpreter', 'latex')
 
-%% Normal approximation of soft decision function $g(x)$
+%% Normal approximation of LS-SVM soft decision function $g(x)$
 close all; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); % nb of classes
+k = length(cs); % number of classes
 n = 2048;
 n_test = 512;
 
@@ -198,18 +198,18 @@ xs = linspace(min(store_output(:)), max(store_output(:)), 200);
 
 figure
 hold on
-histogram(reshape(store_output(:,1:cs(1)*n_test),nb_average_loop*cs(1)*n_test,1), 30, 'Normalization', 'pdf')
-histogram(reshape(store_output(:,cs(1)*n_test+1:end),nb_average_loop*cs(2)*n_test,1), 30, 'Normalization', 'pdf')
+histogram(reshape(store_output(:,1:cs(1)*n_test),nb_average_loop*cs(1)*n_test,1), 30, 'Normalization', 'pdf','EdgeColor', 'white');
+histogram(reshape(store_output(:,cs(1)*n_test+1:end),nb_average_loop*cs(2)*n_test,1), 30, 'Normalization', 'pdf', 'EdgeColor', 'white');
 plot(xs,normpdf(xs,E(1),sqrt(V(1))),'b--','LineWidth',2);
 plot(xs,normpdf(xs,E(2),sqrt(V(2))),'r--','LineWidth',2);
 ylabel('Histogram of $g(x)$', 'Interpreter', 'latex')
 
 
-%% Misclassification of real data as a function of decision threshold $\xi$
+%% Misclassification rates on real data as a function of decision threshold $\xi$
 close all; clear; clc
 
 cs = [7/16 9/16];
-k = length(cs); % nb of classes
+k = length(cs); % number of classes
 n = 512;
 n_test = 128;
 

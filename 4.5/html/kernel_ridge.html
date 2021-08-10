@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 4.5.3 Kernel ridge regression</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-08-02"><meta name="DC.source" content="kernel_ridge.m"><style type="text/css">
+      --><title>Section 4.5.3 Kernel ridge regression</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-08-03"><meta name="DC.source" content="kernel_ridge.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 4.5.3 Kernel ridge regression</h1><!--introduction--><p>This page contains simulations in Section 4.5.3.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classification of two mixture with same mean and covariance trace</a></li><li><a href="#2">Normal approximation of soft decision function <img src="kernel_ridge_eq11695215030516304895.png" alt="$g(x)$" style="width:10px;height:6px;"></a></li><li><a href="#3">Misclassification of real data as a function of decision threshold <img src="kernel_ridge_eq07512430879093679749.png" alt="$\xi$" style="width:3px;height:6px;"></a></li></ul></div><h2 id="1">Classification of two mixture with same mean and covariance trace</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 4.5.3 Kernel ridge regression</h1><!--introduction--><p>This page contains simulations in Section 4.5.3.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classification of two-class mixture with same mean and covariance trace</a></li><li><a href="#2">Normal approximation of LS-SVM soft decision function <img src="kernel_ridge_eq11695215030516304895.png" alt="$g(x)$" style="width:10px;height:6px;"></a></li><li><a href="#3">Misclassification rates on real data as a function of decision threshold <img src="kernel_ridge_eq07512430879093679749.png" alt="$\xi$" style="width:3px;height:6px;"></a></li></ul></div><h2 id="1">Classification of two-class mixture with same mean and covariance trace</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 cs = [1/2 1/2];
 k = length(cs); <span class="comment">% number of classes</span>
@@ -148,10 +148,10 @@ errorbar(fp_tau_loop, store_error(:,1), store_error(:,2))
 plot(fp_tau_loop, store_error(:,3), <span class="string">'r'</span>)
 xlabel( <span class="string">'$f^\prime(\tau_p)$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 ylabel(<span class="string">'Misclassification rate'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
-</pre><img vspace="5" hspace="5" src="kernel_ridge_01.png" alt=""> <h2 id="2">Normal approximation of soft decision function <img src="kernel_ridge_eq11695215030516304895.png" alt="$g(x)$" style="width:10px;height:6px;"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+</pre><img vspace="5" hspace="5" src="kernel_ridge_01.png" alt=""> <h2 id="2">Normal approximation of LS-SVM soft decision function <img src="kernel_ridge_eq11695215030516304895.png" alt="$g(x)$" style="width:10px;height:6px;"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); <span class="comment">% nb of classes</span>
+k = length(cs); <span class="comment">% number of classes</span>
 n = 2048;
 n_test = 512;
 
@@ -261,15 +261,15 @@ xs = linspace(min(store_output(:)), max(store_output(:)), 200);
 
 figure
 hold <span class="string">on</span>
-histogram(reshape(store_output(:,1:cs(1)*n_test),nb_average_loop*cs(1)*n_test,1), 30, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>)
-histogram(reshape(store_output(:,cs(1)*n_test+1:end),nb_average_loop*cs(2)*n_test,1), 30, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>)
+histogram(reshape(store_output(:,1:cs(1)*n_test),nb_average_loop*cs(1)*n_test,1), 30, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>,<span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
+histogram(reshape(store_output(:,cs(1)*n_test+1:end),nb_average_loop*cs(2)*n_test,1), 30, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>, <span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
 plot(xs,normpdf(xs,E(1),sqrt(V(1))),<span class="string">'b--'</span>,<span class="string">'LineWidth'</span>,2);
 plot(xs,normpdf(xs,E(2),sqrt(V(2))),<span class="string">'r--'</span>,<span class="string">'LineWidth'</span>,2);
 ylabel(<span class="string">'Histogram of $g(x)$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
-</pre><img vspace="5" hspace="5" src="kernel_ridge_02.png" alt=""> <h2 id="3">Misclassification of real data as a function of decision threshold <img src="kernel_ridge_eq07512430879093679749.png" alt="$\xi$" style="width:3px;height:6px;"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+</pre><img vspace="5" hspace="5" src="kernel_ridge_02.png" alt=""> <h2 id="3">Misclassification rates on real data as a function of decision threshold <img src="kernel_ridge_eq07512430879093679749.png" alt="$\xi$" style="width:3px;height:6px;"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 cs = [7/16 9/16];
-k = length(cs); <span class="comment">% nb of classes</span>
+k = length(cs); <span class="comment">% number of classes</span>
 n = 512;
 n_test = 128;
 
@@ -379,7 +379,7 @@ ylabel(<span class="string">'Misclassification rate'</span>, <span class="string
 %% Section 4.5.3 Kernel ridge regression
 % This page contains simulations in Section 4.5.3.
 
-%% Classification of two mixture with same mean and covariance trace
+%% Classification of two-class mixture with same mean and covariance trace
 close all; clear; clc
 
 cs = [1/2 1/2];
@@ -462,11 +462,11 @@ plot(fp_tau_loop, store_error(:,3), 'r')
 xlabel( '$f^\prime(\tau_p)$', 'Interpreter', 'latex')
 ylabel('Misclassification rate', 'Interpreter', 'latex')
 
-%% Normal approximation of soft decision function $g(x)$
+%% Normal approximation of LS-SVM soft decision function $g(x)$
 close all; clear; clc
 
 cs = [1/2 1/2];
-k = length(cs); % nb of classes
+k = length(cs); % number of classes
 n = 2048;
 n_test = 512;
 
@@ -576,18 +576,18 @@ xs = linspace(min(store_output(:)), max(store_output(:)), 200);
 
 figure
 hold on
-histogram(reshape(store_output(:,1:cs(1)*n_test),nb_average_loop*cs(1)*n_test,1), 30, 'Normalization', 'pdf')
-histogram(reshape(store_output(:,cs(1)*n_test+1:end),nb_average_loop*cs(2)*n_test,1), 30, 'Normalization', 'pdf')
+histogram(reshape(store_output(:,1:cs(1)*n_test),nb_average_loop*cs(1)*n_test,1), 30, 'Normalization', 'pdf','EdgeColor', 'white');
+histogram(reshape(store_output(:,cs(1)*n_test+1:end),nb_average_loop*cs(2)*n_test,1), 30, 'Normalization', 'pdf', 'EdgeColor', 'white');
 plot(xs,normpdf(xs,E(1),sqrt(V(1))),'bREPLACE_WITH_DASH_DASH','LineWidth',2);
 plot(xs,normpdf(xs,E(2),sqrt(V(2))),'rREPLACE_WITH_DASH_DASH','LineWidth',2);
 ylabel('Histogram of $g(x)$', 'Interpreter', 'latex')
 
 
-%% Misclassification of real data as a function of decision threshold $\xi$
+%% Misclassification rates on real data as a function of decision threshold $\xi$
 close all; clear; clc
 
 cs = [7/16 9/16];
-k = length(cs); % nb of classes
+k = length(cs); % number of classes
 n = 512;
 n_test = 128;
 

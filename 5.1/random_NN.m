@@ -16,20 +16,20 @@ k = length(cs);
 switch testcase
     case 'MNIST'
         selected_labels=[7 9]; % mean [0 1], [5 6]
-        init_data = loadMNISTImages('../../datasets/MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/MNIST/train-labels-idx1-ubyte');
     case 'fashion'
         selected_labels=[1 2];
-        init_data = loadMNISTImages('../../datasets/fashion-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/fashion-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/fashion-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/fashion-MNIST/train-labels-idx1-ubyte');
     case 'Kuzushiji'
         selected_labels=[3 4];
-        init_data = loadMNISTImages('../../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte');
     case 'kannada'
         selected_labels=[4 8];
-        init_data = loadMNISTImages('../../datasets/kannada-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/kannada-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/kannada-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/kannada-MNIST/train-labels-idx1-ubyte');
 end
 
 [labels,idx_init_labels]=sort(init_labels,'ascend');
@@ -164,7 +164,7 @@ for gamma=gammas
     iter_gamma=iter_gamma+1;
 end
 
-loops=30;
+loops = 30;
 
 E_train = zeros(length(gammas),loops);
 E_test = zeros(length(gammas),loops);

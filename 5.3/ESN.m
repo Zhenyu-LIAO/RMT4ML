@@ -1,4 +1,4 @@
-%% Section 5.3: Recurrent neural nets: echo-state networks (ESNs)
+%% Section 5.3: Recurrent neural nets: echo-state networks
 % This page contains simulations in Section 5.3.
 
 %% Memory curve for block Haar $W$
@@ -9,20 +9,18 @@ c1 = 0.01; alpha1 = 0.99;
 c2 = 0.1; alpha2 = 0.9;
 c3 = 0.89; alpha3 = 0.5;
 
-
 taus = linspace(1,30,30);
 MC_multip = ( c1*alpha1.^(2*taus) + c2*alpha2.^(2*taus) + c3*alpha3.^(2*taus) )/( c1/(1-alpha1^2) + c2/(1-alpha2^2) + c3/(1-alpha3^2) )/(1-c);
 MC1 = ( alpha1.^(2*taus)*(1-alpha1^2) )/(1-c);
 MC2 = ( alpha2.^(2*taus)*(1-alpha2^2) )/(1-c);
 MC3 = ( alpha3.^(2*taus)*(1-alpha3^2) )/(1-c);
 
-
 figure
 semilogy(taus, MC_multip, 'r')
 hold on
 semilogy(taus, MC1, 'b--')
-semilogy(taus, MC2, 'bo-')
-semilogy(taus, MC3, 'bs-')
+semilogy(taus, MC2, 'bo--')
+semilogy(taus, MC3, 'b^--')
 legend('$MC(\tau;W)$', '$MC(\tau;W_1^+)$', '$MC(\tau;W_2^+)$', '$MC(\tau;W_3^+)$', 'Interpreter', 'latex', 'FontSize', 15)
 axis([1, 30, 1e-4, 3])
 xlabel('$\tau$', 'Interpreter', 'latex')
@@ -33,31 +31,31 @@ close all; clc; clear;
 
 choice_W = 'Wigner'; % 'iid', 'Wigner', 'Haar'
 alpha = 0.9;
-n = 200;
+N = 200;
 T = 400;
 
 switch choice_W
     case 'iid'
-        W = randn(n)/sqrt(n);
+        W = randn(N)/sqrt(N);
         W = W/max(abs(eig(W)));
         W = alpha*W;
     case 'Wigner'
-        W = randn(n)/sqrt(n);
-        W = triu(W,1)+tril(W',-1)+diag(randn(n,1)/sqrt(n));
+        W = randn(N)/sqrt(N);
+        W = triu(W,1)+tril(W',-1)+diag(randn(N,1)/sqrt(N));
         W = W/abs(eigs(W,1));
         W = alpha*W;
     case 'Haar'
-        W = randn(n)/sqrt(n);
+        W = randn(N)/sqrt(N);
         W = (W*W')^(-1/2)*W;
         W = W/max(abs(eig(W)));
         W = alpha*W;
 end
 
-pW = zeros(n,n,T);
-pW(:,:,1)=eye(n);
+pW = zeros(N,N,T);
+pW(:,:,1)=eye(N);
 
-pWW = zeros(n,n,T);
-pWW(:,:,1)=eye(n);
+pWW = zeros(N,N,T);
+pWW(:,:,1)=eye(N);
 
 for i=2:T
     pW(:,:,i)=W*pW(:,:,i-1);
@@ -65,14 +63,14 @@ for i=2:T
 end
 
 sumpWW = sum(pWW,3);
-S=zeros(n,n,T);
+S=zeros(N,N,T);
 for i=1:T
     S(:,:,i)=sumpWW*pW(:,:,i)';
 end
 
-start_R=n/T/abs(1-n/T)*eye(T);
-start_tR=abs(1-n/T)*sumpWW;
-[R,tR]=computeR(n,T,S,start_R,start_tR);
+start_R=N/T/abs(1-N/T)*eye(T);
+start_tR=abs(1-N/T)*sumpWW;
+[R,tR]=computeR(N,T,S,start_R,start_tR);
 
 
 figure
@@ -96,7 +94,7 @@ Rtmp  = zeros(T);
 R = start_R;
 tR= start_tR;
 
-while max(abs((R(:)-Rtmp(:))))>1e-15
+while max(abs((R(:)-Rtmp(:))))>1e-6
     Rtmp=R;
     
     invtR = inv(dIn+tR);
@@ -115,5 +113,3 @@ while max(abs((R(:)-Rtmp(:))))>1e-15
     max(abs(R(:)-Rtmp(:)));
 end
 end
-
-

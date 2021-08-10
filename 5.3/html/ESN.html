@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 5.3: Recurrent neural nets: echo-state networks (ESNs)</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-10-11"><meta name="DC.source" content="ESN.m"><style type="text/css">
+      --><title>Section 5.3: Recurrent neural nets: echo-state networks</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-08-10"><meta name="DC.source" content="ESN.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,13 +67,12 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 5.3: Recurrent neural nets: echo-state networks (ESNs)</h1><!--introduction--><p>This page contains simulations in Section 5.3.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Memory curve for block Haar <img src="ESN_eq14900514129597942148.png" alt="$W$"></a></li><li><a href="#2">Illustration of <img src="ESN_eq02631104721331331854.png" alt="$\mathcal{R}$"> for non-symmetric and (Wigner) symmetric Gaussian <img src="ESN_eq14900514129597942148.png" alt="$W$"></a></li><li><a href="#3">FUNCTIONS</a></li></ul></div><h2 id="1">Memory curve for block Haar <img src="ESN_eq14900514129597942148.png" alt="$W$"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 5.3: Recurrent neural nets: echo-state networks</h1><!--introduction--><p>This page contains simulations in Section 5.3.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Memory curve for block Haar <img src="ESN_eq14900514129597942148.png" alt="$W$" style="width:6px;height:4px;"></a></li><li><a href="#2">Illustration of <img src="ESN_eq02631104721331331854.png" alt="$\mathcal{R}$" style="width:5px;height:4px;"> for non-symmetric and (Wigner) symmetric Gaussian <img src="ESN_eq14900514129597942148.png" alt="$W$" style="width:6px;height:4px;"></a></li><li><a href="#3">FUNCTIONS</a></li></ul></div><h2 id="1">Memory curve for block Haar <img src="ESN_eq14900514129597942148.png" alt="$W$" style="width:6px;height:4px;"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 c = .75;
 c1 = 0.01; alpha1 = 0.99;
 c2 = 0.1; alpha2 = 0.9;
 c3 = 0.89; alpha3 = 0.5;
-
 
 taus = linspace(1,30,30);
 MC_multip = ( c1*alpha1.^(2*taus) + c2*alpha2.^(2*taus) + c3*alpha3.^(2*taus) )/( c1/(1-alpha1^2) + c2/(1-alpha2^2) + c3/(1-alpha3^2) )/(1-c);
@@ -81,46 +80,45 @@ MC1 = ( alpha1.^(2*taus)*(1-alpha1^2) )/(1-c);
 MC2 = ( alpha2.^(2*taus)*(1-alpha2^2) )/(1-c);
 MC3 = ( alpha3.^(2*taus)*(1-alpha3^2) )/(1-c);
 
-
 figure
 semilogy(taus, MC_multip, <span class="string">'r'</span>)
 hold <span class="string">on</span>
 semilogy(taus, MC1, <span class="string">'b--'</span>)
-semilogy(taus, MC2, <span class="string">'bo-'</span>)
-semilogy(taus, MC3, <span class="string">'bs-'</span>)
+semilogy(taus, MC2, <span class="string">'bo--'</span>)
+semilogy(taus, MC3, <span class="string">'b^--'</span>)
 legend(<span class="string">'$MC(\tau;W)$'</span>, <span class="string">'$MC(\tau;W_1^+)$'</span>, <span class="string">'$MC(\tau;W_2^+)$'</span>, <span class="string">'$MC(\tau;W_3^+)$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 15)
 axis([1, 30, 1e-4, 3])
 xlabel(<span class="string">'$\tau$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 ylabel(<span class="string">'Memory capacity'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
-</pre><img vspace="5" hspace="5" src="ESN_01.png" alt=""> <h2 id="2">Illustration of <img src="ESN_eq02631104721331331854.png" alt="$\mathcal{R}$"> for non-symmetric and (Wigner) symmetric Gaussian <img src="ESN_eq14900514129597942148.png" alt="$W$"></h2><pre class="codeinput">close <span class="string">all</span>; clc; clear;
+</pre><img vspace="5" hspace="5" src="ESN_01.png" alt=""> <h2 id="2">Illustration of <img src="ESN_eq02631104721331331854.png" alt="$\mathcal{R}$" style="width:5px;height:4px;"> for non-symmetric and (Wigner) symmetric Gaussian <img src="ESN_eq14900514129597942148.png" alt="$W$" style="width:6px;height:4px;"></h2><pre class="codeinput">close <span class="string">all</span>; clc; clear;
 
 choice_W = <span class="string">'Wigner'</span>; <span class="comment">% 'iid', 'Wigner', 'Haar'</span>
 alpha = 0.9;
-n = 200;
+N = 200;
 T = 400;
 
 <span class="keyword">switch</span> choice_W
     <span class="keyword">case</span> <span class="string">'iid'</span>
-        W = randn(n)/sqrt(n);
+        W = randn(N)/sqrt(N);
         W = W/max(abs(eig(W)));
         W = alpha*W;
     <span class="keyword">case</span> <span class="string">'Wigner'</span>
-        W = randn(n)/sqrt(n);
-        W = triu(W,1)+tril(W',-1)+diag(randn(n,1)/sqrt(n));
+        W = randn(N)/sqrt(N);
+        W = triu(W,1)+tril(W',-1)+diag(randn(N,1)/sqrt(N));
         W = W/abs(eigs(W,1));
         W = alpha*W;
     <span class="keyword">case</span> <span class="string">'Haar'</span>
-        W = randn(n)/sqrt(n);
+        W = randn(N)/sqrt(N);
         W = (W*W')^(-1/2)*W;
         W = W/max(abs(eig(W)));
         W = alpha*W;
 <span class="keyword">end</span>
 
-pW = zeros(n,n,T);
-pW(:,:,1)=eye(n);
+pW = zeros(N,N,T);
+pW(:,:,1)=eye(N);
 
-pWW = zeros(n,n,T);
-pWW(:,:,1)=eye(n);
+pWW = zeros(N,N,T);
+pWW(:,:,1)=eye(N);
 
 <span class="keyword">for</span> i=2:T
     pW(:,:,i)=W*pW(:,:,i-1);
@@ -128,14 +126,14 @@ pWW(:,:,1)=eye(n);
 <span class="keyword">end</span>
 
 sumpWW = sum(pWW,3);
-S=zeros(n,n,T);
+S=zeros(N,N,T);
 <span class="keyword">for</span> i=1:T
     S(:,:,i)=sumpWW*pW(:,:,i)';
 <span class="keyword">end</span>
 
-start_R=n/T/abs(1-n/T)*eye(T);
-start_tR=abs(1-n/T)*sumpWW;
-[R,tR]=computeR(n,T,S,start_R,start_tR);
+start_R=N/T/abs(1-N/T)*eye(T);
+start_tR=abs(1-N/T)*sumpWW;
+[R,tR]=computeR(N,T,S,start_R,start_tR);
 
 
 figure
@@ -178,7 +176,7 @@ tR= start_tR;
 <span class="keyword">end</span>
 </pre><img vspace="5" hspace="5" src="ESN_02.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% Section 5.3: Recurrent neural nets: echo-state networks (ESNs)
+%% Section 5.3: Recurrent neural nets: echo-state networks
 % This page contains simulations in Section 5.3.
 
 %% Memory curve for block Haar $W$
@@ -189,20 +187,18 @@ c1 = 0.01; alpha1 = 0.99;
 c2 = 0.1; alpha2 = 0.9;
 c3 = 0.89; alpha3 = 0.5;
 
-
 taus = linspace(1,30,30);
 MC_multip = ( c1*alpha1.^(2*taus) + c2*alpha2.^(2*taus) + c3*alpha3.^(2*taus) )/( c1/(1-alpha1^2) + c2/(1-alpha2^2) + c3/(1-alpha3^2) )/(1-c);
 MC1 = ( alpha1.^(2*taus)*(1-alpha1^2) )/(1-c);
 MC2 = ( alpha2.^(2*taus)*(1-alpha2^2) )/(1-c);
 MC3 = ( alpha3.^(2*taus)*(1-alpha3^2) )/(1-c);
 
-
 figure
 semilogy(taus, MC_multip, 'r')
 hold on
 semilogy(taus, MC1, 'bREPLACE_WITH_DASH_DASH')
-semilogy(taus, MC2, 'bo-')
-semilogy(taus, MC3, 'bs-')
+semilogy(taus, MC2, 'boREPLACE_WITH_DASH_DASH')
+semilogy(taus, MC3, 'b^REPLACE_WITH_DASH_DASH')
 legend('$MC(\tau;W)$', '$MC(\tau;W_1^+)$', '$MC(\tau;W_2^+)$', '$MC(\tau;W_3^+)$', 'Interpreter', 'latex', 'FontSize', 15)
 axis([1, 30, 1e-4, 3])
 xlabel('$\tau$', 'Interpreter', 'latex')
@@ -213,31 +209,31 @@ close all; clc; clear;
 
 choice_W = 'Wigner'; % 'iid', 'Wigner', 'Haar'
 alpha = 0.9;
-n = 200;
+N = 200;
 T = 400;
 
 switch choice_W
     case 'iid'
-        W = randn(n)/sqrt(n);
+        W = randn(N)/sqrt(N);
         W = W/max(abs(eig(W)));
         W = alpha*W;
     case 'Wigner'
-        W = randn(n)/sqrt(n);
-        W = triu(W,1)+tril(W',-1)+diag(randn(n,1)/sqrt(n));
+        W = randn(N)/sqrt(N);
+        W = triu(W,1)+tril(W',-1)+diag(randn(N,1)/sqrt(N));
         W = W/abs(eigs(W,1));
         W = alpha*W;
     case 'Haar'
-        W = randn(n)/sqrt(n);
+        W = randn(N)/sqrt(N);
         W = (W*W')^(-1/2)*W;
         W = W/max(abs(eig(W)));
         W = alpha*W;
 end
 
-pW = zeros(n,n,T);
-pW(:,:,1)=eye(n);
+pW = zeros(N,N,T);
+pW(:,:,1)=eye(N);
 
-pWW = zeros(n,n,T);
-pWW(:,:,1)=eye(n);
+pWW = zeros(N,N,T);
+pWW(:,:,1)=eye(N);
 
 for i=2:T
     pW(:,:,i)=W*pW(:,:,i-1);
@@ -245,21 +241,20 @@ for i=2:T
 end
 
 sumpWW = sum(pWW,3);
-S=zeros(n,n,T);
+S=zeros(N,N,T);
 for i=1:T
     S(:,:,i)=sumpWW*pW(:,:,i)';
 end
 
-start_R=n/T/abs(1-n/T)*eye(T);
-start_tR=abs(1-n/T)*sumpWW;
-[R,tR]=computeR(n,T,S,start_R,start_tR);
+start_R=N/T/abs(1-N/T)*eye(T);
+start_tR=abs(1-N/T)*sumpWW;
+[R,tR]=computeR(N,T,S,start_R,start_tR);
 
 
 figure
 colormap gray
 imagesc(1-R(1:10,1:10));
 title('Illustration of $\mathcal{R}$','Interpreter', 'latex')
-
 %% FUNCTIONS
 function [R,tR]=computeR(n,T,S,start_R,start_tR)
 

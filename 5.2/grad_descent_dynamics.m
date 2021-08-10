@@ -16,7 +16,7 @@ gamma = 0; % regularization penalty
 t_max = 1000;
 alpha = 1e-2;
 
-sigma2_init = .1;
+sigma2_init = 0.1;
 w_init = sqrt(sigma2_init)*randn(p,1)/sqrt(p);
 
 
@@ -36,11 +36,10 @@ V_test_func1 = @(x,t) (1 - f(x+gamma,t)).^2./((x+gamma).^2).*omega(x);
 V_test_func2 = @(x,t) (f(x+gamma,t)).^2.*nu(x);
 V_test = @(t) (norm_mu2+c)/norm_mu2*( integral( @(x)V_test_func1(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) + max(norm_mu2^2-c,0)/norm_mu2*(1 - f(lambda_s+gamma,t)).^2./((lambda_s+gamma).^2)) + sigma2_init*(integral( @(x)V_test_func2(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) + max(1-1/c,0)*f(gamma,t).^2 );
 
-
 E_train = @(t) (norm_mu2+c)/norm_mu2*E_test(t);
 V_train_func1 = @(x,t) x.*(1 - f(x+gamma,t)).^2./((gamma+x).^2).*omega(x);
 V_train_func2 = @(x,t) x.*(f(x+gamma,t)).^2.*nu(x);
-V_train = @(t) (norm_mu2+c)/norm_mu2*( integral( @(x)V_train_func1(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) + max(norm_mu2^2-c,0)/norm_mu2*lambda_s*(1 - f(lambda_s+gamma,t)).^2./((lambda_s+gamma).^2)) + sigma2_init*(integral( @(x)V_train_func2(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) ) - E_train(t).^2; %+ max(1-1/c,0)*0.*f(gamma,t).^2
+V_train = @(t) (norm_mu2+c)/norm_mu2*( integral( @(x)V_train_func1(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) + max(norm_mu2^2-c,0)/norm_mu2*lambda_s*(1 - f(lambda_s+gamma,t)).^2./((lambda_s+gamma).^2)) + sigma2_init*(integral( @(x)V_train_func2(x,t), (1-sqrt(c))^2+tolerance, (1+sqrt(c))^2-tolerance) ) - E_train(t).^2 ;
 
 store_theory = zeros(t_max, 2);
 for t=1:t_max
@@ -73,14 +72,16 @@ time_index =[1:5:100,101:15:t_max];
 time = time(time_index);
 
 figure
-plot(time, mean(store_perf(time_index,:,1),2), 'bx');
+plot(time, mean(store_perf(time_index,:,1),2), 'bo');
 hold on
-plot(time, mean(store_perf(time_index,:,2),2), 'bo');
+plot(time, mean(store_perf(time_index,:,2),2), 'bx');
 plot(time, store_theory(time_index,1),'r-')
 plot(time, store_theory(time_index,2),'r--')
-legend('Empirical training error', 'Empirical test error', 'Asymptotic training error', 'Asymptotic test error', 'FontSize', 15, 'Interpreter', 'latex')
+xlabel('$t$','Interpreter', 'latex');
+ylabel('Misclassification rate','Interpreter', 'latex');
+legend('Empirical training', 'Empirical test', 'Theoretical training', 'Theoretical test', 'FontSize', 15, 'Interpreter', 'latex')
 
-%% Test performance with positive regularization
+%% Test performance with zero and positive regularizations
 close all; clear; clc
 
 p = 512;
@@ -90,7 +91,7 @@ c = p/n;
 
 mu = [sqrt(2);zeros(p-1,1)]; 
 norm_mu2 = norm(mu)^2;
-gamma = 0.1; % regularization penalty
+gamma = 0; % regularization penalty
 
 t_max = 1000;
 alpha = 1e-1;
@@ -155,13 +156,22 @@ time = 1:t_max;
 time_index =[1:9,floor(10.^(1:.1:3))]; 
 time = time(time_index);
 
-figure
-semilogx(time, mean(store_perf(time_index,:,2),2), 'bo');
-hold on
-semilogx(time, store_theory(time_index,2),'r--')
-legend('Empirical test error', 'Asymptotic test error', 'FontSize', 15, 'Interpreter', 'latex');
+if gamma==0
+    figure
+    semilogx(time, mean(store_perf(time_index,:,2),2), 'b^');
+    hold on
+    semilogx(time, store_theory(time_index,2),'r-')
+elseif gamma==0.1
+    figure
+    semilogx(time, mean(store_perf(time_index,:,2),2), 'bx');
+    hold on
+    semilogx(time, store_theory(time_index,2),'r--')
+end
+xlabel('$t$','Interpreter', 'latex');
+ylabel('Misclassification rate','Interpreter', 'latex');
+legend('Empirical test', 'Thoeretical test', 'FontSize', 15, 'Interpreter', 'latex');
 
-%% FUNCTIONS
+% FUNCTIONS
 function w_new = gd(w0, X, y, gamma, step, nb_step)
 [p,n] = size(X);
 w_tmp = w0;

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 5.1.1: Regression with random neural networks</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-09-27"><meta name="DC.source" content="random_NN.m"><style type="text/css">
+      --><title>Section 5.1.1: Regression with random neural networks</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-08-03"><meta name="DC.source" content="random_NN.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -81,20 +81,20 @@ k = length(cs);
 <span class="keyword">switch</span> testcase
     <span class="keyword">case</span> <span class="string">'MNIST'</span>
         selected_labels=[7 9]; <span class="comment">% mean [0 1], [5 6]</span>
-        init_data = loadMNISTImages(<span class="string">'../../datasets/MNIST/train-images-idx3-ubyte'</span>);
-        init_labels = loadMNISTLabels(<span class="string">'../../datasets/MNIST/train-labels-idx1-ubyte'</span>);
+        init_data = loadMNISTImages(<span class="string">'../datasets/MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../datasets/MNIST/train-labels-idx1-ubyte'</span>);
     <span class="keyword">case</span> <span class="string">'fashion'</span>
         selected_labels=[1 2];
-        init_data = loadMNISTImages(<span class="string">'../../datasets/fashion-MNIST/train-images-idx3-ubyte'</span>);
-        init_labels = loadMNISTLabels(<span class="string">'../../datasets/fashion-MNIST/train-labels-idx1-ubyte'</span>);
+        init_data = loadMNISTImages(<span class="string">'../datasets/fashion-MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../datasets/fashion-MNIST/train-labels-idx1-ubyte'</span>);
     <span class="keyword">case</span> <span class="string">'Kuzushiji'</span>
         selected_labels=[3 4];
-        init_data = loadMNISTImages(<span class="string">'../../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte'</span>);
-        init_labels = loadMNISTLabels(<span class="string">'../../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte'</span>);
+        init_data = loadMNISTImages(<span class="string">'../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte'</span>);
     <span class="keyword">case</span> <span class="string">'kannada'</span>
         selected_labels=[4 8];
-        init_data = loadMNISTImages(<span class="string">'../../datasets/kannada-MNIST/train-images-idx3-ubyte'</span>);
-        init_labels = loadMNISTLabels(<span class="string">'../../datasets/kannada-MNIST/train-labels-idx1-ubyte'</span>);
+        init_data = loadMNISTImages(<span class="string">'../datasets/kannada-MNIST/train-images-idx3-ubyte'</span>);
+        init_labels = loadMNISTLabels(<span class="string">'../datasets/kannada-MNIST/train-labels-idx1-ubyte'</span>);
 <span class="keyword">end</span>
 
 [labels,idx_init_labels]=sort(init_labels,<span class="string">'ascend'</span>);
@@ -151,9 +151,8 @@ X_test = X_test/sqrt(p);
 
     <span class="keyword">case</span> <span class="string">'poly2'</span>
         poly2A = -1/2; poly2B = 0; poly2C = 1;
-        m4 = 3; m3 = 0; m2 = 1;
         sig = @(t) poly2A*t.^2+poly2B*t+poly2C;
-        K_xy = @(x,y) poly2A^2*(m2^2*(2*(x'*y).^2+(x.^2)'*ones(size(x,1))*(y.^2))+(m4-3*m2^2)*(x.^2)'*(y.^2))+poly2B^2*(m2*(x'*y))+poly2A*poly2B*m3*((x.^2)'*y+x'*(y.^2))+poly2A*poly2C*m2*(diag(x'*x)*ones(1,size(y,2))+ones(size(x,2),1)*diag(y'*y)')+poly2C^2;
+        K_xy = @(x,y) poly2A^2*( 2*(x'*y).^2+(x.^2)'*ones(size(x,1))*(y.^2))+poly2B^2*(x'*y)+poly2A*poly2C*(diag(x'*x)*ones(1,size(y,2))+ones(size(x,2),1)*diag(y'*y)')+poly2C^2;
 
     <span class="keyword">case</span> <span class="string">'ReLU'</span>
         sig = @(t) max(t,0);
@@ -230,7 +229,7 @@ delta = 0;
     iter_gamma=iter_gamma+1;
 <span class="keyword">end</span>
 
-loops=30;
+loops = 30;
 
 E_train = zeros(length(gammas),loops);
 E_test = zeros(length(gammas),loops);
@@ -322,7 +321,7 @@ xlabel(<span class="string">'$N/n$'</span>, <span class="string">'Interpreter'</
 ylabel(<span class="string">'MSE'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 legend(<span class="string">'$\bar E_{train}$'</span>, <span class="string">'$\bar E_{test}$'</span>, <span class="string">'$E_{train}$'</span>, <span class="string">'$E_{test}$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 14)
 axis( [ min(Ns/n), max(Ns/n), 0, .5] )
-</pre><img vspace="5" hspace="5" src="random_NN_02.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="random_NN_02.png" alt=""> <img vspace="5" hspace="5" src="random_NN_03.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Section 5.1.1: Regression with random neural networks
 % This page contains simulations in Section 5.1.1.
@@ -342,20 +341,20 @@ k = length(cs);
 switch testcase
     case 'MNIST'
         selected_labels=[7 9]; % mean [0 1], [5 6]
-        init_data = loadMNISTImages('../../datasets/MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/MNIST/train-labels-idx1-ubyte');
     case 'fashion'
         selected_labels=[1 2];
-        init_data = loadMNISTImages('../../datasets/fashion-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/fashion-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/fashion-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/fashion-MNIST/train-labels-idx1-ubyte');
     case 'Kuzushiji'
         selected_labels=[3 4];
-        init_data = loadMNISTImages('../../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/Kuzushiji-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/Kuzushiji-MNIST/train-labels-idx1-ubyte');
     case 'kannada'
         selected_labels=[4 8];
-        init_data = loadMNISTImages('../../datasets/kannada-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/kannada-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/kannada-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/kannada-MNIST/train-labels-idx1-ubyte');
 end
 
 [labels,idx_init_labels]=sort(init_labels,'ascend');
@@ -412,10 +411,9 @@ switch sigma_fun
         
     case 'poly2'
         poly2A = -1/2; poly2B = 0; poly2C = 1;
-        m4 = 3; m3 = 0; m2 = 1;
         sig = @(t) poly2A*t.^2+poly2B*t+poly2C;
-        K_xy = @(x,y) poly2A^2*(m2^2*(2*(x'*y).^2+(x.^2)'*ones(size(x,1))*(y.^2))+(m4-3*m2^2)*(x.^2)'*(y.^2))+poly2B^2*(m2*(x'*y))+poly2A*poly2B*m3*((x.^2)'*y+x'*(y.^2))+poly2A*poly2C*m2*(diag(x'*x)*ones(1,size(y,2))+ones(size(x,2),1)*diag(y'*y)')+poly2C^2;
-        
+        K_xy = @(x,y) poly2A^2*( 2*(x'*y).^2+(x.^2)'*ones(size(x,1))*(y.^2))+poly2B^2*(x'*y)+poly2A*poly2C*(diag(x'*x)*ones(1,size(y,2))+ones(size(x,2),1)*diag(y'*y)')+poly2C^2;
+
     case 'ReLU'
         sig = @(t) max(t,0);
         angle_xy = @(x,y) diag(1./sqrt(diag(x'*x)))*(x'*y)*diag(1./sqrt(diag(y'*y)));
@@ -491,7 +489,7 @@ for gamma=gammas
     iter_gamma=iter_gamma+1;
 end
 
-loops=30;
+loops = 30;
 
 E_train = zeros(length(gammas),loops);
 E_test = zeros(length(gammas),loops);
