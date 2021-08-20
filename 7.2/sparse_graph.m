@@ -41,7 +41,6 @@ hold on
 plot(eigs_N,'x')
 
 %% Eigenvalue-eigenvector pairs of Bethe Hessian $H_{\gamma}$ under DC-SBM
-
 close all; clear; clc
 
 n = 1000;
@@ -79,13 +78,10 @@ H = (gamma^2 - 1)*eye(n) + D - gamma*A;
 eigs_H = eigs_H(ind);
 V_H = V_H(:,ind);
 
-clc
 figure
-histogram(eigs_H, 50, 'Normalization', 'pdf')
+histogram(eigs_H, 50, 'Normalization', 'pdf', 'EdgeColor', 'white');
 title('Eigenvalue distribution', 'Interpreter', 'latex')
 
 figure
 plot(V_H(:,2))
 title('Informative Eigenvector of $H_{\gamma}$', 'Interpreter', 'latex')
-
-%% FUNCTIONS

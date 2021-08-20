@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 6.1: Generalized linear classifier</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-10-31"><meta name="DC.source" content="empirical_risk_min.m"><style type="text/css">
+      --><title>Section 6.1: Generalized linear classifier</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-08-11"><meta name="DC.source" content="empirical_risk_min.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 6.1: Generalized linear classifier</h1><!--introduction--><p>This page contains simulations in Section 6.1.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Histogram of <img src="empirical_risk_min_eq15296569795873157302.png" alt="$\beta_{-i}^T \tilde x_i$"> versus the limiting Gaussian behavior</a></li><li><a href="#2">Comparison of expectation of <img src="empirical_risk_min_eq17331442575217596290.png" alt="$\beta$"> to the optimal Bayes solution <img src="empirical_risk_min_eq00692811444960890203.png" alt="$\beta_*$"></a></li><li><a href="#3">FUNCTIONS</a></li></ul></div><h2 id="1">Histogram of <img src="empirical_risk_min_eq15296569795873157302.png" alt="$\beta_{-i}^T \tilde x_i$"> versus the limiting Gaussian behavior</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 6.1: Generalized linear classifier</h1><!--introduction--><p>This page contains simulations in Section 6.1.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Histogram of <img src="empirical_risk_min_eq15296569795873157302.png" alt="$\beta_{-i}^T \tilde x_i$" style="width:12px;height:7px;"> versus the limiting Gaussian behavior</a></li><li><a href="#2">Comparison of expectation of <img src="empirical_risk_min_eq17331442575217596290.png" alt="$\beta$" style="width:4px;height:6px;"> to the optimal Bayes solution <img src="empirical_risk_min_eq00692811444960890203.png" alt="$\beta_*$" style="width:5px;height:6px;"></a></li></ul></div><h2 id="1">Histogram of <img src="empirical_risk_min_eq15296569795873157302.png" alt="$\beta_{-i}^T \tilde x_i$" style="width:12px;height:7px;"> versus the limiting Gaussian behavior</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 1;
 p = 256*coeff;
@@ -115,7 +115,7 @@ estim_sigma2 = var(r); <span class="comment">% Using empirical estimation as ini
 param = [estim_M,sqrt(estim_sigma2),estim_delta]; <span class="comment">%param(1)=M, param(2)=sqrt(sigma2), param(3)=delta;</span>
 param_tmp = [0,0,0];
 
-nb_average = 1000;
+nb_average = 500;
 z = randn(nb_average,1);
 
 <span class="keyword">while</span> min(abs(param - param_tmp)) &gt; 1e-6
@@ -167,11 +167,11 @@ store_r = zeros(n,1);
 
 xs = linspace(M-3*sigma,M+3*sigma,100);
 figure
-histogram(store_r,30,<span class="string">'Normalization'</span>,<span class="string">'pdf'</span>)
+histogram(store_r,30,<span class="string">'Normalization'</span>,<span class="string">'pdf'</span>,<span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
 hold <span class="string">on</span>
 plot(xs,normpdf(xs,M,sigma), <span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2)
 legend(<span class="string">'Histogram of $\beta_{-i}^T \tilde x_i$'</span>, <span class="string">'$\mathcal N(M, \sigma^2)$'</span>,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 15);
-</pre><img vspace="5" hspace="5" src="empirical_risk_min_01.png" alt=""> <h2 id="2">Comparison of expectation of <img src="empirical_risk_min_eq17331442575217596290.png" alt="$\beta$"> to the optimal Bayes solution <img src="empirical_risk_min_eq00692811444960890203.png" alt="$\beta_*$"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+</pre><img vspace="5" hspace="5" src="empirical_risk_min_01.png" alt=""> <h2 id="2">Comparison of expectation of <img src="empirical_risk_min_eq17331442575217596290.png" alt="$\beta$" style="width:4px;height:6px;"> to the optimal Bayes solution <img src="empirical_risk_min_eq00692811444960890203.png" alt="$\beta_*$" style="width:5px;height:6px;"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 1;
 p = 64*coeff;
@@ -238,7 +238,9 @@ beta_star = C\mu*2;
 plot(beta_star);
 plot(rescale_beta_store,<span class="string">'o'</span>);
 legend(<span class="string">'Averaged $\beta$'</span>, <span class="string">'$\beta_*$'</span>, <span class="string">'Rescaled $\beta$'</span> ,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 15)
-</pre><h2 id="3">FUNCTIONS</h2><pre class="codeinput"><span class="keyword">function</span> [loss,grad] = f(beta,X,gamma,loss_type)
+
+<span class="comment">% FUNCTIONS</span>
+<span class="keyword">function</span> [loss,grad] = f(beta,X,gamma,loss_type)
 
 <span class="keyword">switch</span> loss_type
     <span class="keyword">case</span> <span class="string">'quadraic'</span>
@@ -293,7 +295,7 @@ gnorm = inf; beta = beta0; nIter = 0; d_beta = inf;
 beta_opt = beta;
 f_opt = f(beta_opt);
 <span class="keyword">end</span>
-</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="empirical_risk_min_02.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Section 6.1: Generalized linear classifier
 % This page contains simulations in Section 6.1.
@@ -347,7 +349,7 @@ estim_sigma2 = var(r); % Using empirical estimation as initialization of fixed-p
 param = [estim_M,sqrt(estim_sigma2),estim_delta]; %param(1)=M, param(2)=sqrt(sigma2), param(3)=delta;
 param_tmp = [0,0,0];
 
-nb_average = 1000;
+nb_average = 500;
 z = randn(nb_average,1);
 
 while min(abs(param - param_tmp)) > 1e-6
@@ -399,7 +401,7 @@ end
 
 xs = linspace(M-3*sigma,M+3*sigma,100);
 figure
-histogram(store_r,30,'Normalization','pdf')
+histogram(store_r,30,'Normalization','pdf','EdgeColor', 'white');
 hold on
 plot(xs,normpdf(xs,M,sigma), 'r', 'Linewidth',2)
 legend('Histogram of $\beta_{-i}^T \tilde x_i$', '$\mathcal N(M, \sigma^2)$','Interpreter','latex', 'FontSize', 15);
@@ -473,7 +475,7 @@ plot(beta_star);
 plot(rescale_beta_store,'o');
 legend('Averaged $\beta$', '$\beta_*$', 'Rescaled $\beta$' ,'Interpreter','latex', 'FontSize', 15)
 
-%% FUNCTIONS
+% FUNCTIONS
 function [loss,grad] = f(beta,X,gamma,loss_type)
 
 switch loss_type

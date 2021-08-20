@@ -1,0 +1,734 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Section 4.4 Properly scaling kernels</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-07-20"><meta name="DC.source" content="proper_scale_kernel.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Section 4.4 Properly scaling kernels</h1><!--introduction--><p>This page contains simulations in Section 4.4.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Eigenspectrum of properly scaling kernel: "null model"</a></li><li><a href="#2">Possible non-informative spikes</a></li><li><a href="#3">Asymptotic equivalent of properly scaling kernel</a></li></ul></div><h2 id="1">Eigenspectrum of properly scaling kernel: "null model"</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+coeff = 4;
+p = 200*coeff;
+n = 800*coeff;
+c = p/n;
+
+f0 = @(t) tanh(t);
+
+integral_max = Inf;
+a0 = integral(@(t) f0(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max);
+f = @(t) f0(t) - a0;
+
+a1 = integral(@(t) t.*f(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max);
+a2 = integral(@(t) (t.^2-1).*f(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max)/sqrt(2);
+nu = integral(@(t) f(t).^2.*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max);
+
+
+Z_dist = <span class="string">'gauss'</span>;
+
+<span class="keyword">switch</span> Z_dist
+    <span class="keyword">case</span> <span class="string">'gauss'</span>
+        Z = randn(p,n);
+        kappa = 3;
+    <span class="keyword">case</span> <span class="string">'bern'</span> <span class="comment">% Bernoulli with pairs (1,.5),(-1,.5)</span>
+        Z = sign(randn(p,n));
+        kappa = 2;
+    <span class="keyword">case</span> <span class="string">'student'</span> <span class="comment">% student-t with param nu_student</span>
+        nu_student = 7;
+        Z = trnd(nu_student,p,n)/sqrt(nu_student/(nu_student-2));
+        kappa = 6/(nu_student-4)+3;
+<span class="keyword">end</span>
+
+K_N = f(Z'*Z/sqrt(p))/sqrt(p);
+K_N = K_N - diag(diag(K_N));
+eigs_K_N = eig(K_N);
+[~,ind] = sort(eigs_K_N);
+eigs_K_N = eigs_K_N(ind);
+
+<span class="keyword">if</span> min(eigs_K_N)&lt;0
+    edges = linspace(min(eigs_K_N)*1.1,max(eigs_K_N)*1.1,200);
+<span class="keyword">else</span>
+    edges = linspace(min(eigs_K_N)*0.9,max(eigs_K_M)*1.1,200);
+<span class="keyword">end</span>
+
+
+<span class="keyword">if</span> abs(a1)&lt;1e-6
+    mu = sqrt(max(4*nu/c - edges.^2,0))*c/nu/2/pi;
+<span class="keyword">else</span>
+    clear <span class="string">i</span> <span class="comment">% make sure i stands for the imaginary unit</span>
+    y = 1e-5;
+    zs = edges+y*1i;
+    mu = zeros(length(zs),1);
+
+    m=0;
+    <span class="keyword">for</span> j=1:length(zs)
+        z = zs(j);
+
+        m_tmp=-1;
+        <span class="keyword">while</span> abs(m-m_tmp)&gt;1e-6
+            m_tmp=m;
+            m = -1/( z + a1^2*m/(c+a1*m) + (nu-a1^2)*m/c );
+        <span class="keyword">end</span>
+        mu(j)=imag(m)/pi;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+figure
+histogram(eigs_K_N, 50, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>, <span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
+hold <span class="string">on</span>;
+plot(edges,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
+legend(<span class="string">'Empirical spectrum of $K_N$'</span>, <span class="string">'Limiting law'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
+</pre><img vspace="5" hspace="5" src="proper_scale_kernel_01.png" alt=""> <h2 id="2">Possible non-informative spikes</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+coeff = 4;
+p = 128*coeff;
+n = 512*coeff;
+c = p/n;
+
+f0 = @(t) max(t,0);
+<span class="comment">%f0 = @(t) (t.^2-1)/sqrt(2) + t;</span>
+
+integral_max = Inf;
+a0 = integral(@(t) f0(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max);
+f = @(t) f0(t) - a0;
+
+a1 = integral(@(t) t.*f(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max);
+a2 = integral(@(t) (t.^2-1).*f(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max)/sqrt(2);
+nu = integral(@(t) f(t).^2.*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max);
+
+Z_dist = <span class="string">'gauss'</span>;
+
+<span class="keyword">switch</span> Z_dist
+    <span class="keyword">case</span> <span class="string">'gauss'</span>
+        Z = randn(p,n);
+        kappa = 3;
+    <span class="keyword">case</span> <span class="string">'bern'</span> <span class="comment">% Bernoulli with pairs (1,.5),(-1,.5)</span>
+        Z = sign(randn(p,n));
+        kappa = 2;
+    <span class="keyword">case</span> <span class="string">'student'</span> <span class="comment">% student-t with param nu_student</span>
+        nu_student = 7;
+        Z = trnd(nu_student,p,n)/sqrt(nu_student/(nu_student-2));
+        kappa = 6/(nu_student-4)+3;
+<span class="keyword">end</span>
+
+K_N = f(Z'*Z/sqrt(p))/sqrt(p);
+K_N = K_N - diag(diag(K_N));
+eigs_K_N = eig(K_N);
+[~,ind] = sort(eigs_K_N);
+eigs_K_N = eigs_K_N(ind);
+
+<span class="keyword">if</span> min(eigs_K_N)&lt;0
+    edges = linspace(min(eigs_K_N)*1.1,max(eigs_K_N)*1.1,200);
+<span class="keyword">else</span>
+    edges = linspace(min(eigs_K_N)*0.9,max(eigs_K_M)*1.1,200);
+<span class="keyword">end</span>
+
+
+<span class="keyword">if</span> abs(a1)&lt;1e-6
+    mu = sqrt(max(4*nu/c - edges.^2,0))*c/nu/2/pi;
+<span class="keyword">else</span>
+    clear <span class="string">i</span> <span class="comment">% make sure i stands for the imaginary unit</span>
+    y = 1e-5;
+    zs = edges+y*1i;
+    mu = zeros(length(zs),1);
+
+    m=0;
+    <span class="keyword">for</span> j=1:length(zs)
+        z = zs(j);
+
+        m_tmp=-1;
+        <span class="keyword">while</span> abs(m-m_tmp)&gt;1e-6
+            m_tmp=m;
+            m = -1/( z + a1^2*m/(c+a1*m) + (nu-a1^2)*m/c );
+        <span class="keyword">end</span>
+        mu(j)=imag(m)/pi;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+figure
+histogram(eigs_K_N, 60, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>, <span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
+hold <span class="string">on</span>;
+plot(edges,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
+<span class="keyword">if</span> and(kappa~=1,abs(a2)&gt;1e-5)
+    delta = sqrt(2/(kappa-1))/a2;
+    <span class="keyword">if</span> and(abs(a1)&gt;1e-5, abs(abs(delta)-abs(1/a1))&gt;1e-5)
+        spike1 = -1/c/delta - a1^2*delta/(1+a1*delta) - (nu-a1^2)*delta;
+        spike2 =  1/c/delta + a1^2*delta/(1-a1*delta) + (nu-a1^2)*delta;
+        <span class="keyword">if</span> (nu-a1^2)*delta^2+(a1*delta)^2/(1+a1*delta)^2 &lt; 1/c
+            plot(spike1,0,<span class="string">'xr'</span>, <span class="string">'LineWidth'</span>, 2);
+            disp(spike1)
+        <span class="keyword">end</span>
+        <span class="keyword">if</span> (nu-a1^2)*delta^2+(a1*delta)^2/(1-a1*delta)^2 &lt; 1/c
+            plot(spike2,0,<span class="string">'xr'</span>, <span class="string">'LineWidth'</span>, 2);
+            disp(spike2)
+        <span class="keyword">end</span>
+    <span class="keyword">else</span>
+        spike = -nu/a1 - a1*(2-c)/2/c;
+        plot(spike,0,<span class="string">'xr'</span>, <span class="string">'LineWidth'</span>, 2);
+        disp(spike)
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+legend(<span class="string">'Empirical spectrum of $K_N$'</span>, <span class="string">'Limiting law'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
+</pre><pre class="codeoutput">   -1.7701
+
+</pre><img vspace="5" hspace="5" src="proper_scale_kernel_02.png" alt=""> <h2 id="3">Asymptotic equivalent of properly scaling kernel</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+
+coeff = 8;
+p = 128*coeff;
+n = 256*coeff;
+c = p/n;
+
+cs = [1/2 1/2];
+k = length(cs);
+
+<span class="comment">% a2=0</span>
+<span class="comment">%f0 = @(t) t;</span>
+<span class="comment">%f0 = @(t) erf(t);</span>
+<span class="comment">%f0 = @(t) tanh(t);</span>
+<span class="comment">%f0 = @(t) atan(t);</span>
+<span class="comment">%f0 = @(t) 1./(1+exp(-t));</span>
+<span class="comment">%f0 = @(t) sign(t);</span>
+<span class="comment">% a1=0</span>
+<span class="comment">%f0 = @(t) abs(t);</span>
+<span class="comment">%f0 = @(t) cos(t);</span>
+<span class="comment">%f0 = @(t) (t.^2-1)/sqrt(2);</span>
+<span class="comment">%f0 = @(t) (t.^3-3*t)/sqrt(6);</span>
+<span class="comment">%f0 = @(t) t.^4/12;</span>
+<span class="comment">% a1, a2 neq 0</span>
+f0 = @(t) max(t,0);
+
+
+integral_max = Inf;
+a0 = integral(@(t) f0(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max);
+f = @(t) f0(t) - a0;
+
+a1 = integral(@(t) t.*f(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max);
+a2 = integral(@(t) (t.^2-1).*f(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max)/sqrt(2);
+nu = integral(@(t) f(t).^2.*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max);
+
+Z_dist = <span class="string">'gauss'</span>;
+testcase_option = <span class="string">'mixed'</span>;
+
+<span class="keyword">switch</span> testcase_option
+    <span class="keyword">case</span> <span class="string">'iid'</span>
+        means = @(i) zeros(p,1);
+        covs_dif  = @(i) zeros(p);
+    <span class="keyword">case</span> <span class="string">'means'</span>
+        means = @(i) [zeros(i-1,1);1;zeros(p-i,1)]*2;
+        covs_dif  = @(i) zeros(p);
+    <span class="keyword">case</span> <span class="string">'var'</span>
+        means = @(i) zeros(p,1);
+        covs_dif  = @(i) eye(p)*((-1)^i/sqrt(p)*3);
+    <span class="keyword">case</span> <span class="string">'mixed'</span>
+        means = @(i) (-1)^(i)*[1;zeros(p-1,1)]*2;
+        covs_dif  = @(i) eye(p)*((-1)^i/sqrt(p)*5);
+<span class="keyword">end</span>
+
+<span class="keyword">switch</span> Z_dist
+    <span class="keyword">case</span> <span class="string">'gauss'</span>
+        Z = randn(p,n);
+        kappa = 3;
+    <span class="keyword">case</span> <span class="string">'bern'</span> <span class="comment">% Bernoulli with pairs (1,.5),(-1,.5)</span>
+        Z = sign(randn(p,n));
+        kappa = 2;
+    <span class="keyword">case</span> <span class="string">'student'</span> <span class="comment">% student-t with param nu_student</span>
+        nu_student = 7;
+        Z = trnd(nu_student,p,n)/sqrt(nu_student/(nu_student-2));
+        kappa = 6/(nu_student-4)+3;
+<span class="keyword">end</span>
+
+J = @(i) [zeros(n*sum(cs(1:i-1)),1);ones(n*cs(i),1);zeros(n*sum(cs(i+1:k)),1)];
+
+W=zeros(p,n);
+<span class="keyword">for</span> i=1:k
+    W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=sqrtm(eye(p)+covs_dif(i))*Z(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n);
+<span class="keyword">end</span>
+
+X=zeros(p,n);
+<span class="keyword">for</span> i=1:k
+    X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)+means(i)*ones(1,cs(i)*n);
+<span class="keyword">end</span>
+
+P = eye(n) - ones(n)/n;
+X_center = X*P;
+K = f(X_center'*X_center/sqrt(p))/sqrt(p);
+K = K - diag(diag(K));
+[V_K, eigs_K] = eig(K,<span class="string">'vector'</span>);
+[~,ind] = sort(eigs_K);
+eigs_K = eigs_K(ind);
+V_K = V_K(:,ind);
+
+
+<span class="keyword">if</span> min(eigs_K)&lt;0
+    edges = linspace(min(eigs_K)*1.1,max(eigs_K)*1.1,200);
+<span class="keyword">else</span>
+    edges = linspace(min(eigs_K)*0.9,max(eigs_K)*1.1,200);
+<span class="keyword">end</span>
+
+<span class="keyword">if</span> abs(a1)&lt;1e-6
+    mu = sqrt(max(4*nu/c - edges.^2,0))*c/nu/2/pi;
+    mu = mu';
+<span class="keyword">else</span>
+    clear <span class="string">i</span> <span class="comment">% make sure i stands for the imaginary unit</span>
+    y = 1e-5;
+    zs = edges+y*1i;
+    mu = zeros(length(zs),1);
+
+    m=0;
+    <span class="keyword">for</span> j=1:length(zs)
+        z = zs(j);
+
+        m_tmp=-1;
+        <span class="keyword">while</span> abs(m-m_tmp)&gt;1e-6
+            m_tmp=m;
+            m = -1/( z + a1^2*m/(c+a1*m) + (nu-a1^2)*m/c );
+        <span class="keyword">end</span>
+        mu(j)=imag(m)/pi;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+K_N = f(Z'*Z/sqrt(p))/sqrt(p);
+K_N = K_N - diag(diag(K_N));
+eigs_K_N = eig(K_N);
+
+means_average = zeros(p,1);
+<span class="keyword">for</span> i=1:k
+    means_average = means_average + means(i)/k;
+<span class="keyword">end</span>
+
+M = zeros(p,k);
+V = zeros(n,2*k);
+t = zeros(k,1);
+S = zeros(k,k);
+<span class="keyword">for</span> i=1:k
+    M(:,i) = means(i)-means_average;
+
+    V(:,i) = J(i)/sqrt(p);
+    V(:,k+i) = Z'*(means(i)-means_average)/sqrt(p);
+
+    t(i) = trace(covs_dif(i))/sqrt(p);
+    <span class="keyword">for</span> j=1:k
+        S(i,j) = trace(covs_dif(i)*covs_dif(j))/sqrt(p);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+A = [a1*(M')*M + a2/sqrt(2)*(t*ones(1,k) + ones(k,1)*(t') + S), a1*eye(k); a1*eye(k), zeros(k)];
+K_approx = K_N + V*A*(V');
+[V_K_approx, eigs_K_approx] = eig(K_approx,<span class="string">'vector'</span>);
+[~,ind] = sort(eigs_K_approx);
+eigs_K_approx = eigs_K_approx(ind);
+V_K_approx = V_K_approx(:,ind);
+
+
+figure
+subplot(1,2,1)
+hold <span class="string">on</span>
+histogram(eigs_K, 50, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>, <span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
+plot(edges,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,1);
+axis([-2.1, 6.5, 0, 0.6]);
+title(<span class="string">'eigvalues of $K$'</span>,<span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
+subplot(1,2,2)
+hold <span class="string">on</span>
+histogram(eigs_K_approx, 50, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>, <span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
+plot(edges,mu,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,1);
+title(<span class="string">'eigvalues of $\tilde K$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
+axis([-2.1, 6.5, 0, 0.6]);
+</pre><img vspace="5" hspace="5" src="proper_scale_kernel_03.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Section 4.4 Properly scaling kernels
+% This page contains simulations in Section 4.4.
+
+%% Eigenspectrum of properly scaling kernel: "null model"
+close all; clear; clc
+
+coeff = 4;
+p = 200*coeff;
+n = 800*coeff;
+c = p/n;
+
+f0 = @(t) tanh(t);
+
+integral_max = Inf;
+a0 = integral(@(t) f0(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max);
+f = @(t) f0(t) - a0;
+
+a1 = integral(@(t) t.*f(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max);
+a2 = integral(@(t) (t.^2-1).*f(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max)/sqrt(2);
+nu = integral(@(t) f(t).^2.*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max);
+
+
+Z_dist = 'gauss';
+
+switch Z_dist
+    case 'gauss'
+        Z = randn(p,n);
+        kappa = 3;
+    case 'bern' % Bernoulli with pairs (1,.5),(-1,.5)
+        Z = sign(randn(p,n));
+        kappa = 2;
+    case 'student' % student-t with param nu_student
+        nu_student = 7;
+        Z = trnd(nu_student,p,n)/sqrt(nu_student/(nu_student-2));
+        kappa = 6/(nu_student-4)+3;  
+end
+
+K_N = f(Z'*Z/sqrt(p))/sqrt(p);
+K_N = K_N - diag(diag(K_N));
+eigs_K_N = eig(K_N);
+[~,ind] = sort(eigs_K_N);
+eigs_K_N = eigs_K_N(ind);
+
+if min(eigs_K_N)<0
+    edges = linspace(min(eigs_K_N)*1.1,max(eigs_K_N)*1.1,200);
+else
+    edges = linspace(min(eigs_K_N)*0.9,max(eigs_K_M)*1.1,200);
+end
+
+
+if abs(a1)<1e-6
+    mu = sqrt(max(4*nu/c - edges.^2,0))*c/nu/2/pi;
+else
+    clear i % make sure i stands for the imaginary unit
+    y = 1e-5;
+    zs = edges+y*1i;
+    mu = zeros(length(zs),1);
+    
+    m=0;
+    for j=1:length(zs)
+        z = zs(j);
+        
+        m_tmp=-1;
+        while abs(m-m_tmp)>1e-6
+            m_tmp=m;
+            m = -1/( z + a1^2*m/(c+a1*m) + (nu-a1^2)*m/c );
+        end
+        mu(j)=imag(m)/pi;
+    end
+end
+
+figure
+histogram(eigs_K_N, 50, 'Normalization', 'pdf', 'EdgeColor', 'white');
+hold on;
+plot(edges,mu,'r', 'Linewidth',2);
+legend('Empirical spectrum of $K_N$', 'Limiting law', 'FontSize', 15, 'Interpreter', 'latex');
+
+%% Possible non-informative spikes
+close all; clear; clc
+
+coeff = 4;
+p = 128*coeff;
+n = 512*coeff;
+c = p/n;
+
+f0 = @(t) max(t,0);
+%f0 = @(t) (t.^2-1)/sqrt(2) + t;
+
+integral_max = Inf;
+a0 = integral(@(t) f0(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max);
+f = @(t) f0(t) - a0;
+
+a1 = integral(@(t) t.*f(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max);
+a2 = integral(@(t) (t.^2-1).*f(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max)/sqrt(2);
+nu = integral(@(t) f(t).^2.*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max);
+
+Z_dist = 'gauss';
+
+switch Z_dist
+    case 'gauss'
+        Z = randn(p,n);
+        kappa = 3;
+    case 'bern' % Bernoulli with pairs (1,.5),(-1,.5)
+        Z = sign(randn(p,n));
+        kappa = 2;
+    case 'student' % student-t with param nu_student
+        nu_student = 7;
+        Z = trnd(nu_student,p,n)/sqrt(nu_student/(nu_student-2));
+        kappa = 6/(nu_student-4)+3;  
+end
+
+K_N = f(Z'*Z/sqrt(p))/sqrt(p);
+K_N = K_N - diag(diag(K_N));
+eigs_K_N = eig(K_N);
+[~,ind] = sort(eigs_K_N);
+eigs_K_N = eigs_K_N(ind);
+
+if min(eigs_K_N)<0
+    edges = linspace(min(eigs_K_N)*1.1,max(eigs_K_N)*1.1,200);
+else
+    edges = linspace(min(eigs_K_N)*0.9,max(eigs_K_M)*1.1,200);
+end
+
+
+if abs(a1)<1e-6
+    mu = sqrt(max(4*nu/c - edges.^2,0))*c/nu/2/pi;
+else
+    clear i % make sure i stands for the imaginary unit
+    y = 1e-5;
+    zs = edges+y*1i;
+    mu = zeros(length(zs),1);
+    
+    m=0;
+    for j=1:length(zs)
+        z = zs(j);
+        
+        m_tmp=-1;
+        while abs(m-m_tmp)>1e-6
+            m_tmp=m;
+            m = -1/( z + a1^2*m/(c+a1*m) + (nu-a1^2)*m/c );
+        end
+        mu(j)=imag(m)/pi;
+    end
+end
+
+figure
+histogram(eigs_K_N, 60, 'Normalization', 'pdf', 'EdgeColor', 'white');
+hold on;
+plot(edges,mu,'r', 'Linewidth',2);
+if and(kappa~=1,abs(a2)>1e-5)
+    delta = sqrt(2/(kappa-1))/a2;
+    if and(abs(a1)>1e-5, abs(abs(delta)-abs(1/a1))>1e-5)
+        spike1 = -1/c/delta - a1^2*delta/(1+a1*delta) - (nu-a1^2)*delta;
+        spike2 =  1/c/delta + a1^2*delta/(1-a1*delta) + (nu-a1^2)*delta;
+        if (nu-a1^2)*delta^2+(a1*delta)^2/(1+a1*delta)^2 < 1/c
+            plot(spike1,0,'xr', 'LineWidth', 2);
+            disp(spike1)
+        end
+        if (nu-a1^2)*delta^2+(a1*delta)^2/(1-a1*delta)^2 < 1/c
+            plot(spike2,0,'xr', 'LineWidth', 2);
+            disp(spike2)
+        end
+    else 
+        spike = -nu/a1 - a1*(2-c)/2/c;
+        plot(spike,0,'xr', 'LineWidth', 2);
+        disp(spike)
+    end
+end
+legend('Empirical spectrum of $K_N$', 'Limiting law', 'FontSize', 15, 'Interpreter', 'latex');
+
+%% Asymptotic equivalent of properly scaling kernel
+close all; clear; clc
+
+coeff = 8;
+p = 128*coeff;
+n = 256*coeff;
+c = p/n;
+
+cs = [1/2 1/2];
+k = length(cs);
+
+% a2=0
+%f0 = @(t) t;
+%f0 = @(t) erf(t);
+%f0 = @(t) tanh(t);
+%f0 = @(t) atan(t);
+%f0 = @(t) 1./(1+exp(-t));
+%f0 = @(t) sign(t);
+% a1=0
+%f0 = @(t) abs(t);
+%f0 = @(t) cos(t);
+%f0 = @(t) (t.^2-1)/sqrt(2);
+%f0 = @(t) (t.^3-3*t)/sqrt(6);
+%f0 = @(t) t.^4/12;
+% a1, a2 neq 0
+f0 = @(t) max(t,0);
+
+
+integral_max = Inf;
+a0 = integral(@(t) f0(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max);
+f = @(t) f0(t) - a0;
+
+a1 = integral(@(t) t.*f(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max);
+a2 = integral(@(t) (t.^2-1).*f(t).*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max)/sqrt(2);
+nu = integral(@(t) f(t).^2.*exp(-t.^2/2)/sqrt(2*pi), -integral_max,+integral_max);
+
+Z_dist = 'gauss';
+testcase_option = 'mixed';
+
+switch testcase_option
+    case 'iid'
+        means = @(i) zeros(p,1);
+        covs_dif  = @(i) zeros(p);
+    case 'means'
+        means = @(i) [zeros(i-1,1);1;zeros(p-i,1)]*2;
+        covs_dif  = @(i) zeros(p);
+    case 'var'
+        means = @(i) zeros(p,1);
+        covs_dif  = @(i) eye(p)*((-1)^i/sqrt(p)*3);
+    case 'mixed'
+        means = @(i) (-1)^(i)*[1;zeros(p-1,1)]*2;
+        covs_dif  = @(i) eye(p)*((-1)^i/sqrt(p)*5);
+end
+
+switch Z_dist
+    case 'gauss'
+        Z = randn(p,n);
+        kappa = 3;
+    case 'bern' % Bernoulli with pairs (1,.5),(-1,.5)
+        Z = sign(randn(p,n));
+        kappa = 2;
+    case 'student' % student-t with param nu_student
+        nu_student = 7;
+        Z = trnd(nu_student,p,n)/sqrt(nu_student/(nu_student-2));
+        kappa = 6/(nu_student-4)+3;  
+end
+
+J = @(i) [zeros(n*sum(cs(1:i-1)),1);ones(n*cs(i),1);zeros(n*sum(cs(i+1:k)),1)];
+
+W=zeros(p,n);
+for i=1:k
+    W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=sqrtm(eye(p)+covs_dif(i))*Z(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n);
+end
+
+X=zeros(p,n);
+for i=1:k
+    X(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)=W(:,sum(cs(1:(i-1)))*n+1:sum(cs(1:i))*n)+means(i)*ones(1,cs(i)*n);
+end
+
+P = eye(n) - ones(n)/n;
+X_center = X*P;
+K = f(X_center'*X_center/sqrt(p))/sqrt(p);
+K = K - diag(diag(K));
+[V_K, eigs_K] = eig(K,'vector');
+[~,ind] = sort(eigs_K);
+eigs_K = eigs_K(ind);
+V_K = V_K(:,ind);
+
+
+if min(eigs_K)<0
+    edges = linspace(min(eigs_K)*1.1,max(eigs_K)*1.1,200);
+else
+    edges = linspace(min(eigs_K)*0.9,max(eigs_K)*1.1,200);
+end
+
+if abs(a1)<1e-6
+    mu = sqrt(max(4*nu/c - edges.^2,0))*c/nu/2/pi;
+    mu = mu';
+else
+    clear i % make sure i stands for the imaginary unit
+    y = 1e-5;
+    zs = edges+y*1i;
+    mu = zeros(length(zs),1);
+    
+    m=0;
+    for j=1:length(zs)
+        z = zs(j);
+        
+        m_tmp=-1;
+        while abs(m-m_tmp)>1e-6
+            m_tmp=m;
+            m = -1/( z + a1^2*m/(c+a1*m) + (nu-a1^2)*m/c );
+        end
+        mu(j)=imag(m)/pi;
+    end
+end
+
+K_N = f(Z'*Z/sqrt(p))/sqrt(p);
+K_N = K_N - diag(diag(K_N));
+eigs_K_N = eig(K_N);
+
+means_average = zeros(p,1);
+for i=1:k
+    means_average = means_average + means(i)/k;
+end
+
+M = zeros(p,k);
+V = zeros(n,2*k);
+t = zeros(k,1);
+S = zeros(k,k);
+for i=1:k
+    M(:,i) = means(i)-means_average;
+    
+    V(:,i) = J(i)/sqrt(p);
+    V(:,k+i) = Z'*(means(i)-means_average)/sqrt(p);
+    
+    t(i) = trace(covs_dif(i))/sqrt(p);
+    for j=1:k
+        S(i,j) = trace(covs_dif(i)*covs_dif(j))/sqrt(p);
+    end
+end
+
+A = [a1*(M')*M + a2/sqrt(2)*(t*ones(1,k) + ones(k,1)*(t') + S), a1*eye(k); a1*eye(k), zeros(k)];
+K_approx = K_N + V*A*(V');
+[V_K_approx, eigs_K_approx] = eig(K_approx,'vector');
+[~,ind] = sort(eigs_K_approx);
+eigs_K_approx = eigs_K_approx(ind);
+V_K_approx = V_K_approx(:,ind);
+
+
+figure
+subplot(1,2,1)
+hold on
+histogram(eigs_K, 50, 'Normalization', 'pdf', 'EdgeColor', 'white');
+plot(edges,mu,'r', 'Linewidth',1);
+axis([-2.1, 6.5, 0, 0.6]);
+title('eigvalues of $K$','Interpreter', 'latex');
+subplot(1,2,2)
+hold on
+histogram(eigs_K_approx, 50, 'Normalization', 'pdf', 'EdgeColor', 'white');
+plot(edges,mu,'r', 'Linewidth',1);
+title('eigvalues of $\tilde K$', 'Interpreter', 'latex');
+axis([-2.1, 6.5, 0, 0.6]);
+
+##### SOURCE END #####
+--></body></html>

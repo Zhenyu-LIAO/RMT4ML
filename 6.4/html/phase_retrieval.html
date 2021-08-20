@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 6.4: Practical Lecture Material 6</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-11-29"><meta name="DC.source" content="phase_retrieval.m"><style type="text/css">
+      --><title>Section 6.4: Practical Lecture Material 6: Phase retrieval</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-08-18"><meta name="DC.source" content="phase_retrieval.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,11 +67,11 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 6.4: Practical Lecture Material 6</h1><!--introduction--><p>This page contains simulations of Practical Lecture Material 6: Phase retrieval</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Spectra of <img src="phase_retrieval_eq17354617462179732091.png" alt="$H$"> versus the limiting law</a></li><li><a href="#2">phase transition behavior of the top eigenvalue-eigenvector pair</a></li></ul></div><h2 id="1">Spectra of <img src="phase_retrieval_eq17354617462179732091.png" alt="$H$"> versus the limiting law</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 6.4: Practical Lecture Material 6: Phase retrieval</h1><!--introduction--><p>This page contains simulations in Section 6.4.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Empirical spectrum of <img src="phase_retrieval_eq17354617462179732091.png" alt="$H$" style="width:5px;height:4px;"> versus the limiting law</a></li><li><a href="#2">Empirical alignment of the top eigenvector for different functions <img src="phase_retrieval_eq18096895394918367257.png" alt="$f$" style="width:6px;height:10px;"></a></li></ul></div><h2 id="1">Empirical spectrum of <img src="phase_retrieval_eq17354617462179732091.png" alt="$H$" style="width:5px;height:4px;"> versus the limiting law</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 2;
 p = 250*coeff;
-n = 1500*coeff;
+n = 1000*coeff;
 c = p/n;
 
 <span class="comment">% processing/truncating function</span>
@@ -79,9 +79,8 @@ c = p/n;
 f = @(t) (max(t,0)-1)./(max(t,0)+sqrt(2/c)-1);
 
 value_posit = 100;
-alpha = [zeros(value_posit-1,1); 1; zeros(p-value_posit,1)]; <span class="comment">%%% vector to recover</span>
+alpha = [zeros(value_posit-1,1); 1; zeros(p-value_posit,1)]; <span class="comment">% vector to recover</span>
 alpha = alpha/norm(alpha);
-
 
 X = randn(p,n);
 v = X'*alpha;
@@ -89,15 +88,13 @@ y = v.^2;
 fD = diag(f(y));
 eigs_fD = diag(fD);
 
-<span class="comment">%chi_s = @(t) exp(-t/2)./sqrt(t)/sqrt(2)/gamma(1/2);</span>
-
 H = X*fD*(X')/n;
 eigs_H = eig(H);
 
 <span class="keyword">if</span> min(eigs_H)&lt;0
-    edges = linspace(min(eigs_H)*1.1, max(eigs_H)*1.1, 100);
+    edges = linspace(min(eigs_H)*1.1, max(eigs_H)*1.1, 200);
 <span class="keyword">else</span>
-    edges = linspace(min(eigs_H)*0.9, max(eigs_H)*1.1, 100);
+    edges = linspace(min(eigs_H)*0.9, max(eigs_H)*1.1, 200);
 <span class="keyword">end</span>
 
 clear <span class="string">i</span> <span class="comment">% make sure i stands for the imaginary unit</span>
@@ -118,14 +115,14 @@ m=1;
 <span class="keyword">end</span>
 
 figure
-histogram(eigs_H, 40, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>);
+histogram(eigs_H, 40, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>, <span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
 hold <span class="string">on</span>;
 plot(edges,dens,<span class="string">'r'</span>, <span class="string">'Linewidth'</span>,2);
-legend(<span class="string">'Empirical spectrum'</span>, <span class="string">'Limiting spectrum'</span>, <span class="string">'FontSize'</span>, 15)
-</pre><img vspace="5" hspace="5" src="phase_retrieval_01.png" alt=""> <h2 id="2">phase transition behavior of the top eigenvalue-eigenvector pair</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+legend(<span class="string">'Empirical spectrum'</span>, <span class="string">'Limiting spectrum'</span>, <span class="string">'FontSize'</span>, 15, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+</pre><img vspace="5" hspace="5" src="phase_retrieval_01.png" alt=""> <h2 id="2">Empirical alignment of the top eigenvector for different functions <img src="phase_retrieval_eq18096895394918367257.png" alt="$f$" style="width:6px;height:10px;"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 coeff = 1;
-p = 500*coeff;
+p = 512*coeff;
 c_loop = 0.1:0.1:1.9;
 n_loop = p./c_loop;
 
@@ -133,45 +130,54 @@ alpha = [-ones(p/2,1); ones(p/2,1)];
 alpha = alpha/norm(alpha);
 
 nb_average_loop = 50;
-store_align = zeros(length(n_loop), nb_average_loop);
+store_align1 = zeros(length(n_loop), nb_average_loop);
+store_align2 = zeros(length(n_loop), nb_average_loop);
+
 <span class="keyword">for</span> n_index = 1:length(n_loop)
     n = floor(n_loop(n_index));
     c = p/n;
 
     <span class="comment">% processing/truncating function</span>
-    <span class="comment">%f = @(t) t;</span>
-    f = @(t) (max(t,0)-1)./(max(t,0)+sqrt(2/c)-1);
+    f1 = @(t) t;
+    f2 = @(t) (max(t,0)-1)./(max(t,0)+sqrt(2/c)-1);
 
     <span class="keyword">for</span> average_loop = 1:nb_average_loop
         X = randn(p,n);
         v = X'*alpha;
         y = v.^2;
-        fD = diag(f(y));
-        eigs_fD = diag(fD);
-        H = X*fD*(X')/n;
-        [hat_v,~] = eigs(H,1,<span class="string">'largestreal'</span>);
+        fD1 = diag(f1(y));
+        fD2 = diag(f2(y));
 
-        store_align(n_index, average_loop) = (alpha'*hat_v)^2;
+        eigs_fD1 = diag(fD1);
+        H1 = X*fD1*(X')/n;
+        [hat_u1,~] = eigs(H1,1,<span class="string">'largestreal'</span>);
+        eigs_fD2 = diag(fD2);
+        H2 = X*fD2*(X')/n;
+        [hat_u2,~] = eigs(H2,1,<span class="string">'largestreal'</span>);
+
+        store_align1(n_index, average_loop) = (alpha'*hat_u1)^2;
+        store_align2(n_index, average_loop) = (alpha'*hat_u2)^2;
     <span class="keyword">end</span>
 <span class="keyword">end</span>
 
-
 figure
-errorbar(c_loop, mean(store_align,2), std(store_align,1,2))
+hold <span class="string">on</span>
+errorbar(c_loop, mean(store_align1,2), std(store_align1,1,2), <span class="string">'-o'</span>)
+errorbar(c_loop, mean(store_align2,2), std(store_align2,1,2), <span class="string">'-^'</span>)
+legend(<span class="string">'$f(t) = t$'</span>, <span class="string">'Optimal $f$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 15)
 xlabel(<span class="string">'$c= p/n$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 ylabel(<span class="string">'($a^T \hat v)^2$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 </pre><img vspace="5" hspace="5" src="phase_retrieval_02.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% Section 6.4: Practical Lecture Material 6
-% This page contains simulations of Practical Lecture Material 6: Phase
-% retrieval
+%% Section 6.4: Practical Lecture Material 6: Phase retrieval
+% This page contains simulations in Section 6.4.
 
-%% Spectra of $H$ versus the limiting law
+%% Empirical spectrum of $H$ versus the limiting law
 close all; clear; clc
 
 coeff = 2;
 p = 250*coeff;
-n = 1500*coeff;
+n = 1000*coeff;
 c = p/n;
 
 % processing/truncating function
@@ -179,9 +185,8 @@ c = p/n;
 f = @(t) (max(t,0)-1)./(max(t,0)+sqrt(2/c)-1);
 
 value_posit = 100;
-alpha = [zeros(value_posit-1,1); 1; zeros(p-value_posit,1)]; %%% vector to recover
+alpha = [zeros(value_posit-1,1); 1; zeros(p-value_posit,1)]; % vector to recover
 alpha = alpha/norm(alpha);
-
 
 X = randn(p,n);
 v = X'*alpha;
@@ -189,15 +194,13 @@ y = v.^2;
 fD = diag(f(y));
 eigs_fD = diag(fD);
 
-%chi_s = @(t) exp(-t/2)./sqrt(t)/sqrt(2)/gamma(1/2);
-
 H = X*fD*(X')/n;
 eigs_H = eig(H);
 
 if min(eigs_H)<0
-    edges = linspace(min(eigs_H)*1.1, max(eigs_H)*1.1, 100);
+    edges = linspace(min(eigs_H)*1.1, max(eigs_H)*1.1, 200);
 else
-    edges = linspace(min(eigs_H)*0.9, max(eigs_H)*1.1, 100);
+    edges = linspace(min(eigs_H)*0.9, max(eigs_H)*1.1, 200);
 end
 
 clear i % make sure i stands for the imaginary unit
@@ -218,16 +221,16 @@ for j=1:length(zs)
 end
 
 figure
-histogram(eigs_H, 40, 'Normalization', 'pdf');
+histogram(eigs_H, 40, 'Normalization', 'pdf', 'EdgeColor', 'white');
 hold on;
 plot(edges,dens,'r', 'Linewidth',2);
-legend('Empirical spectrum', 'Limiting spectrum', 'FontSize', 15)
+legend('Empirical spectrum', 'Limiting spectrum', 'FontSize', 15, 'Interpreter', 'latex')
 
-%% phase transition behavior of the top eigenvalue-eigenvector pair
+%% Empirical alignment of the top eigenvector for different functions $f$
 close all; clear; clc
 
 coeff = 1;
-p = 500*coeff;
+p = 512*coeff;
 c_loop = 0.1:0.1:1.9;
 n_loop = p./c_loop;
 
@@ -235,31 +238,41 @@ alpha = [-ones(p/2,1); ones(p/2,1)];
 alpha = alpha/norm(alpha);
 
 nb_average_loop = 50;
-store_align = zeros(length(n_loop), nb_average_loop);
+store_align1 = zeros(length(n_loop), nb_average_loop);
+store_align2 = zeros(length(n_loop), nb_average_loop);
+
 for n_index = 1:length(n_loop)
     n = floor(n_loop(n_index));
     c = p/n;
     
     % processing/truncating function
-    %f = @(t) t;
-    f = @(t) (max(t,0)-1)./(max(t,0)+sqrt(2/c)-1);
+    f1 = @(t) t;
+    f2 = @(t) (max(t,0)-1)./(max(t,0)+sqrt(2/c)-1);
     
     for average_loop = 1:nb_average_loop
         X = randn(p,n);
         v = X'*alpha;
         y = v.^2;
-        fD = diag(f(y));
-        eigs_fD = diag(fD);
-        H = X*fD*(X')/n;
-        [hat_v,~] = eigs(H,1,'largestreal');
+        fD1 = diag(f1(y));
+        fD2 = diag(f2(y));
         
-        store_align(n_index, average_loop) = (alpha'*hat_v)^2;
+        eigs_fD1 = diag(fD1);
+        H1 = X*fD1*(X')/n;
+        [hat_u1,~] = eigs(H1,1,'largestreal');
+        eigs_fD2 = diag(fD2);
+        H2 = X*fD2*(X')/n;
+        [hat_u2,~] = eigs(H2,1,'largestreal');
+        
+        store_align1(n_index, average_loop) = (alpha'*hat_u1)^2;
+        store_align2(n_index, average_loop) = (alpha'*hat_u2)^2;
     end
 end
 
-
 figure
-errorbar(c_loop, mean(store_align,2), std(store_align,1,2))
+hold on
+errorbar(c_loop, mean(store_align1,2), std(store_align1,1,2), '-o')
+errorbar(c_loop, mean(store_align2,2), std(store_align2,1,2), '-^')
+legend('$f(t) = t$', 'Optimal $f$', 'Interpreter', 'latex', 'FontSize', 15)
 xlabel('$c= p/n$', 'Interpreter', 'latex')
 ylabel('($a^T \hat v)^2$', 'Interpreter', 'latex')
 

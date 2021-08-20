@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 7.1.2: The degree-corrected stochastic block model</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-11-15"><meta name="DC.source" content="DCSBM.m"><style type="text/css">
+      --><title>Section 7.1.2: The degree-corrected stochastic block model</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-08-15"><meta name="DC.source" content="DCSBM.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 7.1.2: The degree-corrected stochastic block model</h1><!--introduction--><p>This page contains simulations in Section 7.1.2.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Limiting spectrum and isolated eigen-pairs of a <img src="DCSBM_eq14956984979706529373.png" alt="$3$">-class DC-SBM</a></li><li><a href="#2">Overlap performance of different <img src="DCSBM_eq14221827199139923399.png" alt="$\alpha$"> on DS-SBM for bimodal <img src="DCSBM_eq17206279351962342546.png" alt="$q_i$"></a></li><li><a href="#3">FUNCTIONS</a></li></ul></div><h2 id="1">Limiting spectrum and isolated eigen-pairs of a <img src="DCSBM_eq14956984979706529373.png" alt="$3$">-class DC-SBM</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 7.1.2: The degree-corrected stochastic block model</h1><!--introduction--><p>This page contains simulations in Section 7.1.2.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Limiting spectrum and isolated eigen-pairs of a <img src="DCSBM_eq14956984979706529373.png" alt="$3$" style="width:3px;height:4px;">-class DC-SBM</a></li><li><a href="#2">Overlap performance of different <img src="DCSBM_eq14221827199139923399.png" alt="$\alpha$" style="width:4px;height:3px;"> on DS-SBM for bimodal <img src="DCSBM_eq17206279351962342546.png" alt="$q_i$" style="width:4px;height:4px;"></a></li><li><a href="#3">FUNCTIONS</a></li></ul></div><h2 id="1">Limiting spectrum and isolated eigen-pairs of a <img src="DCSBM_eq14956984979706529373.png" alt="$3$" style="width:3px;height:4px;">-class DC-SBM</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 n = 3000;
 cs = [0.1, 0.3, 0.6];
@@ -108,17 +108,22 @@ eigs_B = eigs_B(ind);
 V_B = V_B(:,ind);
 
 figure
-histogram(eigs_B, 50, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>)
-title(<span class="string">'Eigenvalue distribution'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+histogram(eigs_B, 50, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>,<span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
+title(<span class="string">'Eigenvalues of $B$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 
 figure
-subplot(1,2,1)
+subplot(2,1,1)
 plot(V_B(:,n))
+xline(n*cs(1),<span class="string">'--'</span>)
+xline(n*(cs(1)+cs(2)),<span class="string">'--'</span>)
 xlabel(<span class="string">'Eigenvector $1$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
-subplot(1,2,2)
+
+subplot(2,1,2)
 plot(V_B(:,n-1))
+xline(n*cs(1),<span class="string">'--'</span>)
+xline(n*(cs(1)+cs(2)),<span class="string">'--'</span>)
 xlabel(<span class="string">'Eigenvector $2$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
-</pre><img vspace="5" hspace="5" src="DCSBM_01.png" alt=""> <img vspace="5" hspace="5" src="DCSBM_02.png" alt=""> <h2 id="2">Overlap performance of different <img src="DCSBM_eq14221827199139923399.png" alt="$\alpha$"> on DS-SBM for bimodal <img src="DCSBM_eq17206279351962342546.png" alt="$q_i$"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+</pre><img vspace="5" hspace="5" src="DCSBM_01.png" alt=""> <img vspace="5" hspace="5" src="DCSBM_02.png" alt=""> <h2 id="2">Overlap performance of different <img src="DCSBM_eq14221827199139923399.png" alt="$\alpha$" style="width:4px;height:3px;"> on DS-SBM for bimodal <img src="DCSBM_eq17206279351962342546.png" alt="$q_i$" style="width:4px;height:4px;"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 n = 3000;
 cs = [1/3, 1/3, 1/3];
@@ -196,11 +201,9 @@ figure;
 hold <span class="string">on</span>;
 plot(range_q2,mean(classif_overlap,2));
 xlabel(<span class="string">'$q_{(2)}$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
-ylabel(<span class="string">'Classification overlap'</span>)
-</pre><pre class="codeoutput">Warning: Failed to converge in 100 iterations. 
-Warning: Failed to converge in 100 iterations. 
-Warning: Failed to converge in 100 iterations. 
-</pre><img vspace="5" hspace="5" src="DCSBM_03.png" alt=""> <h2 id="3">FUNCTIONS</h2><pre class="codeinput"><span class="keyword">function</span> optim_alpha = find_optim_alpha(d)
+ylabel(<span class="string">'Classification overlap'</span>,<span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
+</pre><pre class="codeoutput">&#35686;&#21578;: &#26410;&#33021;&#22312; 100 &#27425;&#36845;&#20195;&#21518;&#25910;&#25947;&#12290; 
+</pre><img vspace="5" hspace="5" src="DCSBM_03.png" alt=""> <h2 id="3">FUNCTIONS</h2><p>Code from <a href="https://github.com/hafizTiomoko/improved_spectral_community_detection">https://github.com/hafizTiomoko/improved_spectral_community_detection</a></p><pre class="codeinput"><span class="keyword">function</span> optim_alpha = find_optim_alpha(d)
 
 n = length(d);
 
@@ -309,16 +312,22 @@ eigs_B = eigs_B(ind);
 V_B = V_B(:,ind);
 
 figure
-histogram(eigs_B, 50, 'Normalization', 'pdf')
-title('Eigenvalue distribution', 'Interpreter', 'latex')
+histogram(eigs_B, 50, 'Normalization', 'pdf','EdgeColor', 'white');
+title('Eigenvalues of $B$', 'Interpreter', 'latex')
 
 figure
-subplot(1,2,1)
+subplot(2,1,1)
 plot(V_B(:,n))
+xline(n*cs(1),'REPLACE_WITH_DASH_DASH')
+xline(n*(cs(1)+cs(2)),'REPLACE_WITH_DASH_DASH')
 xlabel('Eigenvector $1$', 'Interpreter', 'latex')
-subplot(1,2,2)
+
+subplot(2,1,2)
 plot(V_B(:,n-1))
+xline(n*cs(1),'REPLACE_WITH_DASH_DASH')
+xline(n*(cs(1)+cs(2)),'REPLACE_WITH_DASH_DASH')
 xlabel('Eigenvector $2$', 'Interpreter', 'latex')
+
 
 %% Overlap performance of different $\alpha$ on DS-SBM for bimodal $q_i$
 close all; clear; clc
@@ -399,9 +408,12 @@ figure;
 hold on;
 plot(range_q2,mean(classif_overlap,2));
 xlabel('$q_{(2)}$', 'Interpreter', 'latex')
-ylabel('Classification overlap')
+ylabel('Classification overlap','Interpreter', 'latex')
 
 %% FUNCTIONS
+% Code from
+% https://github.com/hafizTiomoko/improved_spectral_community_detection
+
 function optim_alpha = find_optim_alpha(d)
 
 n = length(d);

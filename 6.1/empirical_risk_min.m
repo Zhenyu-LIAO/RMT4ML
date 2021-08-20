@@ -50,7 +50,7 @@ estim_sigma2 = var(r); % Using empirical estimation as initialization of fixed-p
 param = [estim_M,sqrt(estim_sigma2),estim_delta]; %param(1)=M, param(2)=sqrt(sigma2), param(3)=delta;
 param_tmp = [0,0,0];
 
-nb_average = 1000;
+nb_average = 500;
 z = randn(nb_average,1);
 
 while min(abs(param - param_tmp)) > 1e-6
@@ -102,7 +102,7 @@ end
 
 xs = linspace(M-3*sigma,M+3*sigma,100);
 figure
-histogram(store_r,30,'Normalization','pdf')
+histogram(store_r,30,'Normalization','pdf','EdgeColor', 'white');
 hold on
 plot(xs,normpdf(xs,M,sigma), 'r', 'Linewidth',2)
 legend('Histogram of $\beta_{-i}^T \tilde x_i$', '$\mathcal N(M, \sigma^2)$','Interpreter','latex', 'FontSize', 15);
@@ -176,7 +176,7 @@ plot(beta_star);
 plot(rescale_beta_store,'o');
 legend('Averaged $\beta$', '$\beta_*$', 'Rescaled $\beta$' ,'Interpreter','latex', 'FontSize', 15)
 
-%% FUNCTIONS
+% FUNCTIONS
 function [loss,grad] = f(beta,X,gamma,loss_type)
 
 switch loss_type

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 7.2: From dense to sparse graphs: a different approach.</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-11-22"><meta name="DC.source" content="sparse_graph.m"><style type="text/css">
+      --><title>Section 7.2: From dense to sparse graphs: a different approach.</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-08-16"><meta name="DC.source" content="sparse_graph.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 7.2: From dense to sparse graphs: a different approach.</h1><!--introduction--><p>This page contains simulations in Section 7.2.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Complex spectrum of the non-backtracking matrix <img src="sparse_graph_eq03672095713503266041.png" alt="$N$"></a></li><li><a href="#2">Eigenvalue-eigenvector pairs of Bethe Hessian <img src="sparse_graph_eq06391815180256886102.png" alt="$H_{\gamma}$"> under DC-SBM</a></li><li><a href="#3">FUNCTIONS</a></li></ul></div><h2 id="1">Complex spectrum of the non-backtracking matrix <img src="sparse_graph_eq03672095713503266041.png" alt="$N$"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 7.2: From dense to sparse graphs: a different approach.</h1><!--introduction--><p>This page contains simulations in Section 7.2.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Complex spectrum of the non-backtracking matrix <img src="sparse_graph_eq03672095713503266041.png" alt="$N$" style="width:5px;height:4px;"></a></li><li><a href="#2">Eigenvalue-eigenvector pairs of Bethe Hessian <img src="sparse_graph_eq06391815180256886102.png" alt="$H_{\gamma}$" style="width:7px;height:6px;"> under DC-SBM</a></li></ul></div><h2 id="1">Complex spectrum of the non-backtracking matrix <img src="sparse_graph_eq03672095713503266041.png" alt="$N$" style="width:5px;height:4px;"></h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 n = 1000;
 
@@ -104,7 +104,7 @@ eigs_N = eig(N);
 figure
 hold <span class="string">on</span>
 plot(eigs_N,<span class="string">'x'</span>)
-</pre><img vspace="5" hspace="5" src="sparse_graph_01.png" alt=""> <h2 id="2">Eigenvalue-eigenvector pairs of Bethe Hessian <img src="sparse_graph_eq06391815180256886102.png" alt="$H_{\gamma}$"> under DC-SBM</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+</pre><img vspace="5" hspace="5" src="sparse_graph_01.png" alt=""> <h2 id="2">Eigenvalue-eigenvector pairs of Bethe Hessian <img src="sparse_graph_eq06391815180256886102.png" alt="$H_{\gamma}$" style="width:7px;height:6px;"> under DC-SBM</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
 n = 1000;
 cs = [0.5, 0.5];
@@ -141,15 +141,14 @@ H = (gamma^2 - 1)*eye(n) + D - gamma*A;
 eigs_H = eigs_H(ind);
 V_H = V_H(:,ind);
 
-clc
 figure
-histogram(eigs_H, 50, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>)
+histogram(eigs_H, 50, <span class="string">'Normalization'</span>, <span class="string">'pdf'</span>, <span class="string">'EdgeColor'</span>, <span class="string">'white'</span>);
 title(<span class="string">'Eigenvalue distribution'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 
 figure
 plot(V_H(:,2))
 title(<span class="string">'Informative Eigenvector of $H_{\gamma}$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
-</pre><img vspace="5" hspace="5" src="sparse_graph_02.png" alt=""> <img vspace="5" hspace="5" src="sparse_graph_03.png" alt=""> <h2 id="3">FUNCTIONS</h2><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="sparse_graph_02.png" alt=""> <img vspace="5" hspace="5" src="sparse_graph_03.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Section 7.2: From dense to sparse graphs: a different approach.
 % This page contains simulations in Section 7.2.
@@ -194,7 +193,6 @@ hold on
 plot(eigs_N,'x')
 
 %% Eigenvalue-eigenvector pairs of Bethe Hessian $H_{\gamma}$ under DC-SBM
-
 close all; clear; clc
 
 n = 1000;
@@ -232,16 +230,13 @@ H = (gamma^2 - 1)*eye(n) + D - gamma*A;
 eigs_H = eigs_H(ind);
 V_H = V_H(:,ind);
 
-clc
 figure
-histogram(eigs_H, 50, 'Normalization', 'pdf')
+histogram(eigs_H, 50, 'Normalization', 'pdf', 'EdgeColor', 'white');
 title('Eigenvalue distribution', 'Interpreter', 'latex')
 
 figure
 plot(V_H(:,2))
 title('Informative Eigenvector of $H_{\gamma}$', 'Interpreter', 'latex')
-
-%% FUNCTIONS
 
 ##### SOURCE END #####
 --></body></html>

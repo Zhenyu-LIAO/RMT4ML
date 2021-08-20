@@ -1,4 +1,4 @@
-%% Chapter 8: Discussions on Universality and Practical Applications.
+%% Chapter 8: Universality and Real Data
 % This page contains simulations in Chapter 1 and 8.
 
 %% Gaussian kernel matrices of small and large dimensional GAUSSIAN data
@@ -8,7 +8,7 @@ n = 5000;
 
 cs = [1/2, 1/2];
 ns = n*cs;
-k = length(cs); % nb of classes
+k = length(cs); % number of classes
 J = [ones(ns(1),1); -ones(ns(2),1)];
 
 p = 250; % data dimension
@@ -54,20 +54,20 @@ n = 5000;
 
 cs = [1/2, 1/2];
 ns = n*cs;
-k = length(cs); % nb of classes
+k = length(cs); % number of classes
 J = [ones(ns(1),1); -ones(ns(2),1)];
 
 testcase = 'MNIST'; % among 'MNIST', 'Fashion-MNIST', 'CIFAR', 'Word2Vec'
 
 switch testcase
     case 'MNIST'
-        init_data = loadMNISTImages('../../datasets/MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/MNIST/train-labels-idx1-ubyte');
         
         selected_labels=[8 9];
     case 'Fashion-MNIST'
-        init_data = loadMNISTImages('../../datasets/fashion-MNIST/train-images-idx3-ubyte');
-        init_labels = loadMNISTLabels('../../datasets/fashion-MNIST/train-labels-idx1-ubyte');
+        init_data = loadMNISTImages('../datasets/fashion-MNIST/train-images-idx3-ubyte');
+        init_labels = loadMNISTLabels('../datasets/fashion-MNIST/train-labels-idx1-ubyte');
         
         selected_labels=[5 7];
     case 'CIFAR'
@@ -141,8 +141,8 @@ title('Second top eigenvector of $K$','Interpreter', 'latex')
 %% MNIST images versus Gaussian vectors with the same statistics
 close all; clear; clc;
 
-init_data = loadMNISTImages('../../datasets/MNIST/train-images-idx3-ubyte');
-init_labels = loadMNISTLabels('../../datasets/MNIST/train-labels-idx1-ubyte');
+init_data = loadMNISTImages('../datasets/MNIST/train-images-idx3-ubyte');
+init_labels = loadMNISTLabels('../datasets/MNIST/train-labels-idx1-ubyte');
 
 selected_labels=[1 2];
 
@@ -151,13 +151,6 @@ images=init_data(:,idx_init_labels);
 init_n=length(images(1,:));
 
 p=length(images(:,1));
-
-% mean_images=mean(images,2);
-% norm2_images=0;
-% for i=1:init_n
-%     norm2_images=norm2_images+1/init_n*norm(images(:,i)-mean_images)^2;
-% end
-% images=(images-mean_images*ones(1,size(images,2)))/sqrt(norm2_images)*sqrt(p);
 
 selected_images=[];
 MNIST = cell(length(selected_labels),1);

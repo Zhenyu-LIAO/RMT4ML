@@ -4,7 +4,8 @@
 %% Classification accuracy of a $2$-class symmetric SBM
 close all; clear; clc
 
-n = 1000;
+coeff = 1;
+n = 512*coeff;
 pout=.4;
 range_pin= pout + linspace(0.5,2.5,30)*(2*sqrt(pout*(1-pout))/sqrt(n));
 
@@ -28,7 +29,7 @@ for pin=range_pin
         A = A - diag(A);
         d = A*ones(n,1);
         
-        B = 1/sqrt(pout*(1-pout)*n)*(A-d*d'/sum(d)); % slightly different from the notation in the text
+        B = 1/sqrt(pout*(1-pout)*n)*(A-d*d'/sum(d)); % slightly different from the notation in the book
         
         [u,~] = eigs(B,1);
         classif_emp(i,loop) = max(sum(u(1:cs(1)*n)>0)+sum(u(cs(1)*n+1:n)<0),sum(u(1:cs(1)*n)<0)+sum(u(cs(1)*n+1:n)>0))/n;
@@ -42,10 +43,11 @@ for pin=range_pin
 end
 
 range_dif = sqrt(n)*(range_pin-pout)/2/sqrt(pout*(1-pout));
+
 figure;
 hold on;
-plot(range_dif,mean(classif_emp,2));
+errorbar(range_dif,mean(classif_emp,2), std(classif_emp,1,2));
 plot(range_dif,classif_theo);
 axis([min(range_dif), max(range_dif), 0.5, 1])
 xlabel('$(\sqrt{n}(p_{\rm in}-p_{\rm out}))/(2\sqrt{p_{\rm out}(1-p_{\rm out})})$', 'Interpreter', 'latex')
-ylabel('Classification accuracy')
+ylabel('Classification accuracy', 'Interpreter', 'latex')

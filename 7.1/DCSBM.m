@@ -43,16 +43,22 @@ eigs_B = eigs_B(ind);
 V_B = V_B(:,ind);
 
 figure
-histogram(eigs_B, 50, 'Normalization', 'pdf')
-title('Eigenvalue distribution', 'Interpreter', 'latex')
+histogram(eigs_B, 50, 'Normalization', 'pdf','EdgeColor', 'white');
+title('Eigenvalues of $B$', 'Interpreter', 'latex')
 
 figure
-subplot(1,2,1)
+subplot(2,1,1)
 plot(V_B(:,n))
+xline(n*cs(1),'--')
+xline(n*(cs(1)+cs(2)),'--')
 xlabel('Eigenvector $1$', 'Interpreter', 'latex')
-subplot(1,2,2)
+
+subplot(2,1,2)
 plot(V_B(:,n-1))
+xline(n*cs(1),'--')
+xline(n*(cs(1)+cs(2)),'--')
 xlabel('Eigenvector $2$', 'Interpreter', 'latex')
+
 
 %% Overlap performance of different $\alpha$ on DS-SBM for bimodal $q_i$
 close all; clear; clc
@@ -133,9 +139,12 @@ figure;
 hold on;
 plot(range_q2,mean(classif_overlap,2));
 xlabel('$q_{(2)}$', 'Interpreter', 'latex')
-ylabel('Classification overlap')
+ylabel('Classification overlap','Interpreter', 'latex')
 
 %% FUNCTIONS
+% Code from
+% https://github.com/hafizTiomoko/improved_spectral_community_detection
+
 function optim_alpha = find_optim_alpha(d)
 
 n = length(d);

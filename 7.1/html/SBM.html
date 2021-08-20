@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 7.1.1: The stochastic block model</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-11-01"><meta name="DC.source" content="SBM.m"><style type="text/css">
+      --><title>Section 7.1.1: The stochastic block model</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-08-14"><meta name="DC.source" content="SBM.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,9 +67,10 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Section 7.1.1: The stochastic block model</h1><!--introduction--><p>This page contains simulations in Section 7.1.1.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classification accuracy of a <img src="SBM_eq17262503285923366262.png" alt="$2$">-class symmetric SBM</a></li></ul></div><h2 id="1">Classification accuracy of a <img src="SBM_eq17262503285923366262.png" alt="$2$">-class symmetric SBM</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
+  </style></head><body><div class="content"><h1>Section 7.1.1: The stochastic block model</h1><!--introduction--><p>This page contains simulations in Section 7.1.1.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Classification accuracy of a <img src="SBM_eq17262503285923366262.png" alt="$2$" style="width:3px;height:4px;">-class symmetric SBM</a></li></ul></div><h2 id="1">Classification accuracy of a <img src="SBM_eq17262503285923366262.png" alt="$2$" style="width:3px;height:4px;">-class symmetric SBM</h2><pre class="codeinput">close <span class="string">all</span>; clear; clc
 
-n = 1000;
+coeff = 1;
+n = 512*coeff;
 pout=.4;
 range_pin= pout + linspace(0.5,2.5,30)*(2*sqrt(pout*(1-pout))/sqrt(n));
 
@@ -107,13 +108,14 @@ i=1;
 <span class="keyword">end</span>
 
 range_dif = sqrt(n)*(range_pin-pout)/2/sqrt(pout*(1-pout));
+
 figure;
 hold <span class="string">on</span>;
-plot(range_dif,mean(classif_emp,2));
+errorbar(range_dif,mean(classif_emp,2), std(classif_emp,1,2));
 plot(range_dif,classif_theo);
 axis([min(range_dif), max(range_dif), 0.5, 1])
 xlabel(<span class="string">'$(\sqrt{n}(p_{\rm in}-p_{\rm out}))/(2\sqrt{p_{\rm out}(1-p_{\rm out})})$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
-ylabel(<span class="string">'Classification accuracy'</span>)
+ylabel(<span class="string">'Classification accuracy'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>)
 </pre><img vspace="5" hspace="5" src="SBM_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Section 7.1.1: The stochastic block model
@@ -122,7 +124,8 @@ ylabel(<span class="string">'Classification accuracy'</span>)
 %% Classification accuracy of a $2$-class symmetric SBM
 close all; clear; clc
 
-n = 1000;
+coeff = 1;
+n = 512*coeff;
 pout=.4;
 range_pin= pout + linspace(0.5,2.5,30)*(2*sqrt(pout*(1-pout))/sqrt(n));
 
@@ -160,13 +163,14 @@ for pin=range_pin
 end
 
 range_dif = sqrt(n)*(range_pin-pout)/2/sqrt(pout*(1-pout));
+
 figure;
 hold on;
-plot(range_dif,mean(classif_emp,2));
+errorbar(range_dif,mean(classif_emp,2), std(classif_emp,1,2));
 plot(range_dif,classif_theo);
 axis([min(range_dif), max(range_dif), 0.5, 1])
 xlabel('$(\sqrt{n}(p_{\rm in}-p_{\rm out}))/(2\sqrt{p_{\rm out}(1-p_{\rm out})})$', 'Interpreter', 'latex')
-ylabel('Classification accuracy')
+ylabel('Classification accuracy', 'Interpreter', 'latex')
 
 ##### SOURCE END #####
 --></body></html>
