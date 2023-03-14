@@ -27,23 +27,24 @@ for i = 1:length(f_alpha_loop)
     for average_loop = 1:nb_average_loop
         %s = randn(n,1); % random signal
         X = sqrt(sigma2)*randn(p,n);
-        tmp_error = tmp_error + (T(X)< f_alpha);
+        tmp_error = tmp_error + (T(X)> f_alpha);
     end
     emp_type_1_error(i) = tmp_error/nb_average_loop;
-    [~,theo_type_1_error(i)] = tracy_widom_appx((f_alpha - (1+sqrt(c))^2)*(1+sqrt(c))^(-4/3)*c^(1/6)*n^(2/3), 1);
+    [~,theo_type_1_error(i)] = tracy_widom_approx((f_alpha - (1+sqrt(c))^2)*(1+sqrt(c))^(-4/3)*c^(1/6)*n^(2/3), 1);
 end
 
 figure
 hold on
 plot(f_alpha_loop,emp_type_1_error,'x')
-plot(f_alpha_loop,theo_type_1_error)
+plot(f_alpha_loop,1-theo_type_1_error)
 xline((1+sqrt(c))^2,'--');
 xlabel('Decision threshold $f(\alpha)$', 'Interpreter','latex')
 ylabel('False alarm rate', 'Interpreter','latex')
-legend('Empirical false alarm rate', '$TW_1 (A_p)$', 'Location','southeast', 'Interpreter','latex', 'FontSize', 15)
+legend('Empirical false alarm rate', '$1- TW_1 (A_p)$', 'Location','northeast', 'Interpreter','latex', 'FontSize', 15)
+
 
 %% FUNCTION
-function [pdftwappx, cdftwappx] = tracy_widom_appx(x, i)
+function [pdftwappx, cdftwappx] = tracy_widom_approx(x, i)
 %
 % [pdftwappx, cdftwappx]=tracywidom_appx(x, i)
 %

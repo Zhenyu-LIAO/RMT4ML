@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 3.1.1: GLRT asymptotics</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-06-19"><meta name="DC.source" content="GLRT.m"><style type="text/css">
+      --><title>Section 3.1.1: GLRT asymptotics</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-03-14"><meta name="DC.source" content="GLRT.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -92,21 +92,21 @@ T = @(X) norm(X*(X')/n)/( trace(X*(X')/n)/p);
     <span class="keyword">for</span> average_loop = 1:nb_average_loop
         <span class="comment">%s = randn(n,1); % random signal</span>
         X = sqrt(sigma2)*randn(p,n);
-        tmp_error = tmp_error + (T(X)&lt; f_alpha);
+        tmp_error = tmp_error + (T(X)&gt; f_alpha);
     <span class="keyword">end</span>
     emp_type_1_error(i) = tmp_error/nb_average_loop;
-    [~,theo_type_1_error(i)] = tracy_widom_appx((f_alpha - (1+sqrt(c))^2)*(1+sqrt(c))^(-4/3)*c^(1/6)*n^(2/3), 1);
+    [~,theo_type_1_error(i)] = tracy_widom_approx((f_alpha - (1+sqrt(c))^2)*(1+sqrt(c))^(-4/3)*c^(1/6)*n^(2/3), 1);
 <span class="keyword">end</span>
 
 figure
 hold <span class="string">on</span>
 plot(f_alpha_loop,emp_type_1_error,<span class="string">'x'</span>)
-plot(f_alpha_loop,theo_type_1_error)
+plot(f_alpha_loop,1-theo_type_1_error)
 xline((1+sqrt(c))^2,<span class="string">'--'</span>);
 xlabel(<span class="string">'Decision threshold $f(\alpha)$'</span>, <span class="string">'Interpreter'</span>,<span class="string">'latex'</span>)
 ylabel(<span class="string">'False alarm rate'</span>, <span class="string">'Interpreter'</span>,<span class="string">'latex'</span>)
-legend(<span class="string">'Empirical false alarm rate'</span>, <span class="string">'$TW_1 (A_p)$'</span>, <span class="string">'Location'</span>,<span class="string">'southeast'</span>, <span class="string">'Interpreter'</span>,<span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 15)
-</pre><h2 id="2">FUNCTION</h2><pre class="codeinput"><span class="keyword">function</span> [pdftwappx, cdftwappx] = tracy_widom_appx(x, i)
+legend(<span class="string">'Empirical false alarm rate'</span>, <span class="string">'$1- TW_1 (A_p)$'</span>, <span class="string">'Location'</span>,<span class="string">'northeast'</span>, <span class="string">'Interpreter'</span>,<span class="string">'latex'</span>, <span class="string">'FontSize'</span>, 15)
+</pre><h2 id="2">FUNCTION</h2><pre class="codeinput"><span class="keyword">function</span> [pdftwappx, cdftwappx] = tracy_widom_approx(x, i)
 <span class="comment">%</span>
 <span class="comment">% [pdftwappx, cdftwappx]=tracywidom_appx(x, i)</span>
 <span class="comment">%</span>
@@ -175,23 +175,24 @@ for i = 1:length(f_alpha_loop)
     for average_loop = 1:nb_average_loop
         %s = randn(n,1); % random signal
         X = sqrt(sigma2)*randn(p,n);
-        tmp_error = tmp_error + (T(X)< f_alpha);
+        tmp_error = tmp_error + (T(X)> f_alpha);
     end
     emp_type_1_error(i) = tmp_error/nb_average_loop;
-    [~,theo_type_1_error(i)] = tracy_widom_appx((f_alpha - (1+sqrt(c))^2)*(1+sqrt(c))^(-4/3)*c^(1/6)*n^(2/3), 1);
+    [~,theo_type_1_error(i)] = tracy_widom_approx((f_alpha - (1+sqrt(c))^2)*(1+sqrt(c))^(-4/3)*c^(1/6)*n^(2/3), 1);
 end
 
 figure
 hold on
 plot(f_alpha_loop,emp_type_1_error,'x')
-plot(f_alpha_loop,theo_type_1_error)
+plot(f_alpha_loop,1-theo_type_1_error)
 xline((1+sqrt(c))^2,'REPLACE_WITH_DASH_DASH');
 xlabel('Decision threshold $f(\alpha)$', 'Interpreter','latex')
 ylabel('False alarm rate', 'Interpreter','latex')
-legend('Empirical false alarm rate', '$TW_1 (A_p)$', 'Location','southeast', 'Interpreter','latex', 'FontSize', 15)
+legend('Empirical false alarm rate', '$1- TW_1 (A_p)$', 'Location','northeast', 'Interpreter','latex', 'FontSize', 15)
+
 
 %% FUNCTION
-function [pdftwappx, cdftwappx] = tracy_widom_appx(x, i)
+function [pdftwappx, cdftwappx] = tracy_widom_approx(x, i)
 %
 % [pdftwappx, cdftwappx]=tracywidom_appx(x, i)
 %
