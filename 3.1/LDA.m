@@ -175,7 +175,7 @@ R = @(ll,l) cs(ll+1)/cs(l+1)*tmp_S(ll+1,l+1);
 bar_QCQ = @(l) bar_Q*covs(l)*bar_Q + R(0,l)*bar_Q*covs(0)*bar_Q + R(1,l)*bar_Q*covs(1)*bar_Q;
 
 delta_mu = means(0) - means(1);
-theo_mean = @(l) (-1)^l*delta_mu'*bar_Q*delta_mu/2 - g(1)/2 + g(2)/2;
+theo_mean = @(l) (-1)^l*delta_mu'*bar_Q*delta_mu/2 - g(1)/2/cs(1) + g(2)/2/cs(2);
 theo_var = @(l) delta_mu'*bar_QCQ(l)*delta_mu + trace(covs(0)*bar_QCQ(l))/(n*cs(1)) + trace(covs(1)*bar_QCQ(l))/(n*cs(2));
 
 edges = linspace(min([T_store0(:);T_store1(:)])-.5,max([T_store0(:);T_store1(:)])+.5,300);

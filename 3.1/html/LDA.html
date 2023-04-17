@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Section 3.1.2: Linear discriminant analysis (LDA)</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-06-21"><meta name="DC.source" content="LDA.m"><style type="text/css">
+      --><title>Section 3.1.2: Linear discriminant analysis (LDA)</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-17"><meta name="DC.source" content="LDA.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -237,7 +237,7 @@ R = @(ll,l) cs(ll+1)/cs(l+1)*tmp_S(ll+1,l+1);
 bar_QCQ = @(l) bar_Q*covs(l)*bar_Q + R(0,l)*bar_Q*covs(0)*bar_Q + R(1,l)*bar_Q*covs(1)*bar_Q;
 
 delta_mu = means(0) - means(1);
-theo_mean = @(l) (-1)^l*delta_mu'*bar_Q*delta_mu/2 - g(1)/2 + g(2)/2;
+theo_mean = @(l) (-1)^l*delta_mu'*bar_Q*delta_mu/2 - g(1)/2/cs(1) + g(2)/2/cs(2);
 theo_var = @(l) delta_mu'*bar_QCQ(l)*delta_mu + trace(covs(0)*bar_QCQ(l))/(n*cs(1)) + trace(covs(1)*bar_QCQ(l))/(n*cs(2));
 
 edges = linspace(min([T_store0(:);T_store1(:)])-.5,max([T_store0(:);T_store1(:)])+.5,300);
@@ -475,7 +475,7 @@ R = @(ll,l) cs(ll+1)/cs(l+1)*tmp_S(ll+1,l+1);
 bar_QCQ = @(l) bar_Q*covs(l)*bar_Q + R(0,l)*bar_Q*covs(0)*bar_Q + R(1,l)*bar_Q*covs(1)*bar_Q;
 
 delta_mu = means(0) - means(1);
-theo_mean = @(l) (-1)^l*delta_mu'*bar_Q*delta_mu/2 - g(1)/2 + g(2)/2;
+theo_mean = @(l) (-1)^l*delta_mu'*bar_Q*delta_mu/2 - g(1)/2/cs(1) + g(2)/2/cs(2);
 theo_var = @(l) delta_mu'*bar_QCQ(l)*delta_mu + trace(covs(0)*bar_QCQ(l))/(n*cs(1)) + trace(covs(1)*bar_QCQ(l))/(n*cs(2));
 
 edges = linspace(min([T_store0(:);T_store1(:)])-.5,max([T_store0(:);T_store1(:)])+.5,300);
